@@ -1,0 +1,6 @@
+Makefile
+addons.make
+config.make
+obj/*
+timelinedebrisa.qbs
+bin/data/videos/tas.mp4
