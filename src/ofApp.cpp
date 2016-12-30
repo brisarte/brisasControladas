@@ -11,11 +11,8 @@ ofxCvGrayscaleImage depthCam;
 bool kinectLigado = false;
 
 ofShader blackAsAlpha, whiteAsAlpha, invertColor, fundoNegativo, frenteNegativo, dummyShader;
-ofFbo	fboDepthKinect, fboRGBKinect;
-
 
 ofShader shaderInteracao;
-ofFbo fboInteracao;
 
 //--------------------------------------------------------------
 void ofApp::setup(){
@@ -30,8 +27,6 @@ void ofApp::setup(){
 	for(int i = 0; i < 4; i++) {
 		fboLayer[i].allocate(vw,vh);
 	}
-	fboDepthKinect.allocate(vw,vh);
-	fboInteracao.allocate(vw,vh);
 
 	dummyShader.load( "shaders/vertexdummy.c", "shaders/fragdummy.c" );
 	blackAsAlpha.load( "shaders/vertexdummy.c", "shaders/blackAsAlpha.c" );
@@ -54,23 +49,23 @@ void ofApp::update(){
 		bVideo.setup();
 	}
 	bVideo.update();
+	bVideo.setShader(gui->shaderVideoSelected);
 
 	if(kinectLigado) {
-		fboDepthKinect.begin();
-			ofSetColor( 255, 255, 255 );
-			depthCam.draw(0,0);
-		fboDepthKinect.end();	
-
+		kinect.update();
 		if(depthCam.bAllocated) {
 			depthCam.setFromPixels(kinect.getDepthPixels());
 		}
+
 	}
 
-	kinect.update();
 
-	// useless
+	
 	if(bKinect.ativa) {
 		bKinect.update();
+		bKinect.setFiltro(gui->filtroKinectSelected);
+		bKinect.setShader(gui->shaderKinectSelected);
+		bKinect.setFonte(gui->fonteKinectSelected);
 	}
 
 	gl->background(bgColor);
@@ -78,29 +73,20 @@ void ofApp::update(){
 	fboLayer[0].begin();
 		ofBackground(0, 0, 0, 0);	
 
-		bVideo.draw();
 
 	fboLayer[0].end();
 
 	fboLayer[1].begin();
 		ofBackground(0, 0, 0, 0);
 
-		startShader(gui->shaderSelected);
-
 		bVideo.draw();
-
-		endShader(gui->shaderSelected);
 
 	fboLayer[1].end();
 
 	fboLayer[2].begin();
 		ofBackground(0, 0, 0, 0);
 
-		startShader(gui->shaderSelected);
-		
 		bKinect.draw();
-
-		endShader(gui->shaderSelected);
 
 	fboLayer[2].end();
 
@@ -191,44 +177,12 @@ void ofApp::dragEvent(ofDragInfo dragInfo){
 
 }
 
-
-//--------------------------------------------------------------
-void ofApp::startShader(int numShader){
-	if(numShader > 0) {		
-			
-		fboInteracao = fboDepthKinect;
-		switch(numShader) {
-			case 1:
-				shaderInteracao = blackAsAlpha;
-				break;
-			case 2:
-				shaderInteracao = whiteAsAlpha;
-				break;
-			case 3:
-				shaderInteracao = invertColor;
-				break;
-			case 4:
-				shaderInteracao = fundoNegativo;
-				break;
-			case 5:
-				shaderInteracao = frenteNegativo;
-				break;
-		}
-		shaderInteracao.begin();
-
-		shaderInteracao.setUniformTexture( "texture1", fboInteracao.getTextureReference(), 1 );
-	}
-}
-
-
 //--------------------------------------------------------------
 void ofApp::endShader(int numShader){
 	if(numShader > 0) {		
 		shaderInteracao.end();	
 	}
 }
-
-
 
 void GuiApp::startBrisaKinect(ofxDatGuiButtonEvent e)
 {
@@ -254,44 +208,168 @@ void GuiApp::startKinect(ofxDatGuiButtonEvent e)
 
 	kinectLigado = true;
 }
+
+void GuiApp::drawKinect()
+{
+	if(kinectLigado) {
+		kinect.draw(0,0,200,150);
+		depthCam.draw(0,150,200,150);
+	}
+}
+
 void BrisaVideo::setup() {
 	if(urlpath != "") {
 		video.load(urlpath);
 		video.play();
 		video.setVolume(0);
 
-		float videoH = video.getHeight();
-		float videoW = video.getWidth();
-		float videoProp = (float)videoW/videoH;
+		hOriginal = video.getHeight();
+		wOriginal = video.getWidth();
+
+		// background-size: cover;
+		float videoProp = (float)wOriginal/hOriginal;
 		if( videoProp > 4./3. ) {
 			hVideo = 768;
-			wVideo = videoW * (hVideo/videoH);
+			wVideo = wOriginal * (hVideo/hOriginal);
 		} else {
 			wVideo = 1024;
-			hVideo = videoH * (wVideo/videoW);
+			hVideo = hOriginal * (wVideo/wOriginal);
 		}
 	}
 }
+
 void BrisaVideo::update() {
 	if( video.isLoaded() )  {
 		video.update();
+
+		if(kinectLigado) {
+		// alloca um fbo com o tamanho original do video
+		// pra poder mesclar no shader
+			if( !fboKinect.isAllocated() ) {
+				fboKinect.allocate(wOriginal,hOriginal);
+			}
+			updateKinect(depthCam);
+		}
 	}
 }
+
+void BrisaVideo::updateKinect(ofxCvGrayscaleImage imgKinect) {
+		fboKinect.begin();
+			ofSetColor( 255, 255, 255 );
+
+			// acertar a proporção (cover do kinect com o tam do video argh)
+			imgKinect.draw(-wOriginal/10,-hOriginal/10,wOriginal*1.1,hOriginal*1.1);
+		fboKinect.end();	
+}
+
+void BrisaVideo::setShader(int shader) {
+	iShader = shader;
+}
+
 void BrisaVideo::draw() {
 	if( video.isLoaded() ) {
-		
+
+		shaderBrisaInteracao = retornaShader(iShader);
+
+		shaderBrisaInteracao.begin();
+
+		if(fboKinect.isAllocated()) {
+			shaderBrisaInteracao.setUniformTexture( "texture1", fboKinect.getTextureReference(), 1 );
+		}
+
 		video.draw(-(wVideo-1024)/2, -(hVideo-768)/2, wVideo, hVideo);
+
+
+		shaderBrisaInteracao.end();	
 	}
 }
+
+
+
+
 
 void BrisaKinect::setup() {
 	ativa = true;
 }
+
 void BrisaKinect::update() {
+
+	if( !fboFiltro.isAllocated() ) {
+		fboFiltro.allocate(1024, 768);
+	}
+	updateFiltro(depthCam);
+
+}
+
+void BrisaKinect::updateFiltro(ofxCvGrayscaleImage imgKinect) {
+		fboFiltro.begin();
+			ofSetColor( 255, 255, 255 );
+			switch(iFiltro) {
+				case 0: //RGB
+					kinect.draw(0,0);
+					break;
+
+				default: //profundidade
+					depthCam.draw(0,0);
+			}
+		fboFiltro.end();	
+}
+void BrisaKinect::setFiltro(int filtro) {
+	iFiltro = filtro;
+}
+void BrisaKinect::setFonte(int fonte) {
+	iFonte = fonte;
+}
+void BrisaKinect::setShader(int shader) {
+	iShader = shader;
 }
 void BrisaKinect::draw() {
 	if(depthCam.bAllocated && ativa) {
 
-		kinect.draw(600,450,400,300);
+		shaderKinectInteracao = retornaShader(iShader);
+	
+		shaderKinectInteracao.begin();
+
+		if(fboFiltro.isAllocated()) {
+			shaderKinectInteracao.setUniformTexture( "texture1", fboFiltro.getTextureReference(), 1 );
+		}
+
+		switch(iFonte) {
+			case 0: //RGB
+				kinect.draw(0,0,1024,768);
+				break;
+
+			default: //profundidade
+				depthCam.draw(0,0,1024,768);
+		}
+
+
+		shaderKinectInteracao.end();	
+
 	}
+}
+
+
+ofShader retornaShader(int iShader) {
+	switch(iShader) {
+		
+			case 1:
+				return blackAsAlpha;
+				break;
+			case 2:
+				return whiteAsAlpha;
+				break;
+			case 3:
+				return invertColor;
+				break;
+			case 4:
+				return fundoNegativo;
+				break;
+			case 5:
+				return frenteNegativo;
+				break;
+
+			default:
+				return dummyShader;
+		}
 }
