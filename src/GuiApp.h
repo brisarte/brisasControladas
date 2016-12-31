@@ -24,6 +24,7 @@ public:
 	void onDropdownShaderKinectEvent(ofxDatGuiDropdownEvent e);
 	void onDropdownFiltroKinectEvent(ofxDatGuiDropdownEvent e);
 
+	void onCoresColorPickerEvent(ofxDatGuiColorPickerEvent e);
 	void onBGColorPickerEvent(ofxDatGuiColorPickerEvent e);
 	void onVideoChange(ofxDatGuiTextInputEvent e);
 	
@@ -38,7 +39,7 @@ public:
 	ofxDatGuiColorPicker* colorPicker;
 
 	// variáveis lidas pelo App
-	ofColor bgColor;
+	ofColor bgColor, corPrimaria, corSecundaria;
 
 	string videoPath, pastaGif;
 	vector<string> videosDisponiveis, tiposBrisa;

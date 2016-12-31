@@ -29,8 +29,8 @@ void GuiApp::setup(){
 
 	}
 
-	tiposBrisa = {"SEM BRISA", "VIDEO", "KINECT", "GIF", "POLIGONOS"};
-	tipoBrisaFbo = { 0, 1, 0, 0};
+	tiposBrisa = {"SEM BRISA", "VIDEO", "KINECT", "GIF", "POLIGONOS", "OLHO", "GIRASSOL", "CONTORNO", "Sombras"};
+	tipoBrisaFbo = { 0, 0, 0, 0};
 
 
 	/*:::::::::::::::::::::::: 
@@ -49,12 +49,14 @@ void GuiApp::setup(){
 	btnKinect->onButtonEvent(this, &GuiApp::startKinect);
 	ofxDatGuiButton* btnCKinect = guiGeral->addButton("DESLIGAR Kinect");
 	btnCKinect->onButtonEvent(this, &GuiApp::closeKinect);
+
+
 	guiGeral->addFooter();
 	guiGeral->getFooter()->setLabelWhenCollapsed(":: CONTROLES GERAIS ::");
 	
 
 
-	int ybrisa = 170;
+	int ybrisa = 180;
 	int hbrisa = 56;
 
 	/*:::::::::::: 
@@ -202,6 +204,22 @@ void GuiApp::addControles(ofxDatGui* g, int iBrisa)
 			ddGifFull->onDropdownEvent(this, &GuiApp::onDropdownGifFullEvent);
 
 		}break;
+
+		// Polígonos
+		case 4: {
+			
+
+		}break;
+
+		// Olho Illu
+		case 5: {
+
+		}break;
+
+		// Girassol
+		case 6: {
+
+		}break;
 	}
 }
 
@@ -274,15 +292,19 @@ void GuiApp::onDropdownVideoEvent(ofxDatGuiDropdownEvent e)
 	if( videosDisponiveis.size() > e.child ) {
 		videoPath = "videos/" + videosDisponiveis[e.child];
 	    cout << "video (" << videoPath << ") selecionado " << endl;
-	}
-	
-    
+	}    
 }
 
 void GuiApp::onVideoChange(ofxDatGuiTextInputEvent e)
 {
     videoPath = e.text;
     cout << videoPath << " é o novo video"  << endl;
+}
+
+void GuiApp::onCoresColorPickerEvent(ofxDatGuiColorPickerEvent e)
+{
+	corPrimaria.set(e.color);
+    cout << " mudou de cor para " << e.color << endl;
 }
 
 void GuiApp::onBGColorPickerEvent(ofxDatGuiColorPickerEvent e)

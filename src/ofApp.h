@@ -17,6 +17,34 @@ public:
 	ofShader shaderBrisaInteracao;
 };
 
+class BrisaGira : public Brisa {
+
+public:
+	void setup();           	//Configura brisa
+	void update();   	//Recalcula brisa
+	void draw();
+	ofPoint lookAt;
+};
+class BrisaIllu : public Brisa {
+
+public:
+	void setup();           	//Configura brisa
+	void update();   	//Recalcula brisa
+	void draw();
+	ofPoint lookAt;
+};
+
+class BrisaPoligonos : public Brisa {
+
+public:
+	void setup();           	//Configura brisa
+	void update();   	//Recalcula brisa
+	void draw();
+	void desenhaPoligono(int vertices, int radius, bool rotate, bool fill);
+	ofColor cor1,cor2;
+	int vertices;
+};
+
 class BrisaGifFull : public Brisa {
 
 public:
@@ -36,7 +64,7 @@ public:
 	float hVideo, wVideo; //tamanhos novos
 	ofFbo fboKinect;
 	int iShader;
-	void setup();
+	void setup(string videoPath);
 	void update();
 	void setShader(int i);
 	void updateKinect(ofxCvGrayscaleImage depthCam);
@@ -57,6 +85,7 @@ public:
 	void setup();
 	void update();
 	void updateFiltro(ofxCvGrayscaleImage depthCam);
+	void desenhaContorno();
 	void draw();
 };
 
@@ -78,9 +107,11 @@ class ofApp : public ofBaseApp{
 		void windowResized(int w, int h);
 		void dragEvent(ofDragInfo dragInfo);
 		void gotMessage(ofMessage msg);
-		
+		void getBlurImage(ofxCvGrayscaleImage &imgBlur, int indiceBlur);
+		void setSombraMirror(ofxCvGrayscaleImage imgAtual, float iRastro);
 
 		void desenhaBrisa(int tipoBrisa);
+		void desenhaSombraMirror();
 
 		shared_ptr<GuiApp> gui;
 		shared_ptr<ofAppBaseWindow> window;
@@ -94,6 +125,9 @@ class ofApp : public ofBaseApp{
 		ofFbo  fboLayer[4];	//buffer para telas
 		int kinectAngle;
 
+		vector<int> tipoBrisaFbo;
 };
 
 ofShader retornaShader(int iShader);
+
+ofPoint olhaPraMim();

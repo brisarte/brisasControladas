@@ -7,14 +7,31 @@ ofxKinect kinect;
 BrisaVideo bVideo;
 BrisaKinect bKinect;
 BrisaGifFull bGifFull;
+BrisaPoligonos bPoligonos;
+BrisaIllu bIllu;
+BrisaGira bGira;
 
 // Variáveis globais pro kinect
 ofxCvGrayscaleImage depthCam;
+ofxCvGrayscaleImage depthBlur, sombra, sombraMirror;
 bool kinectLigado = false;
 
 ofShader blackAsAlpha, whiteAsAlpha, invertColor, fundoNegativo, frenteNegativo, dummyShader;
 
 ofShader shaderInteracao;
+ofColor coresRole[4];
+ofColor verdeCor(0,231,109), cianoCor(0,255,255), laranjaCor(254,165,1), rosaCor(255,82,110);
+
+ofImage olho, orbita, girassol, logoBrisa, msg;
+float time0, timeUltimaBrisa = 0;
+
+float tempoBrisa = 10;
+float tempoFade = 3;
+
+int whiteTotalSlow = 0;
+ofPoint baricentro(0,0);
+
+int experiencia = 0;
 
 //--------------------------------------------------------------
 void ofApp::setup(){
@@ -40,16 +57,124 @@ void ofApp::setup(){
 	// kinect
 	kinectAngle = 0;
 
+	coresRole[0] = verdeCor;
+	coresRole[1] = cianoCor;
+	coresRole[2] = laranjaCor;
+	coresRole[3] = rosaCor;
+
+	bPoligonos.setup();
+
+	girassol.load("../data/img/girassol.png");
+	olho.load("../data/img/olhoillu.png");
+	logoBrisa.load("../data/img/logobrisarte.png");
+	orbita.load("../data/img/orbitaillu.png");
+
+	tipoBrisaFbo = { 0, 0, 0, 0};
+
 }
 
 //--------------------------------------------------------------
 void ofApp::update(){
+	time0 = ofGetElapsedTimef();
+	if(time0 - timeUltimaBrisa > tempoBrisa) {
+		timeUltimaBrisa = time0;
+		experiencia = (int)ofRandom(0,4);
+		switch(experiencia) {
+			case 0: {
+				//video random
+				bVideo.setup(gui->videosDisponiveis[(int)ofRandom(0,gui->videosDisponiveis.size())]);
+
+				float probShader = ofRandom(0,1);
+				if(probShader > 0.95) {
+					gui->shaderVideoSelected = 4;
+				} else if(probShader > 0.9) {
+					gui->shaderVideoSelected = 1;
+				} else if(probShader > 0.85) {
+					gui->shaderVideoSelected = 2;
+				} else if(probShader > 0.75) {
+					gui->shaderVideoSelected = 3;
+				} else if(probShader > 0.55) {
+					gui->shaderVideoSelected = 0;
+				} else {
+					gui->shaderVideoSelected = 5;
+				}
+
+				int brisaKinect = 2;
+				float probKinect = ofRandom(0,1);
+				if (probKinect > 0.5) { // n mostra kinect
+					brisaKinect = 0;
+				}
+
+				float probFonteKinect = ofRandom(0,1);
+				gui->fonteKinectSelected = 0;
+				if (probFonteKinect > 0.5) { // n mostra kinect
+					gui->fonteKinectSelected = 1;
+				}
+
+				float probShaderKinect = (int)ofRandom(0,6);
+				gui->shaderKinectSelected = probShaderKinect;
+
+				float probFiltroKinect = ofRandom(0,1);
+				gui->filtroKinectSelected = 0;
+				if (probFiltroKinect > 0.5) { // n mostra kinect
+					gui->filtroKinectSelected = 1;
+				}
+
+				gui->tipoBrisaFbo = { 1, brisaKinect, 0, 0 };
+				}break;
+
+			case 1: {//random gif full
+				bGifFull.loadImg(gui->listaGifFull[(int)ofRandom(0,gui->listaGifFull.size())]);
+
+				int brisaKinect = 2;
+				float probKinect = ofRandom(0,1);
+				if (probKinect > 0.5) { // n mostra kinect
+					brisaKinect = 0;
+				}
+
+				float probFonteKinect = ofRandom(0,1);
+				gui->fonteKinectSelected = 0;
+				if (probFonteKinect > 0.5) { // n mostra kinect
+					gui->fonteKinectSelected = 1;
+				}
+
+				float probShaderKinect = (int)ofRandom(0,6);
+				gui->shaderKinectSelected = probShaderKinect;
+
+				float probFiltroKinect = ofRandom(0,1);
+				gui->filtroKinectSelected = 0;
+				if (probFiltroKinect > 0.5) { // n mostra kinect
+					gui->filtroKinectSelected = 1;
+				}
+
+				gui->tipoBrisaFbo = { 3, brisaKinect, 0, 0 };
+				}break;
+			case 2: { //poligonos
+
+				float probIlluGira = ofRandom(0,1);
+				int brisaLook = 5; //olho illu
+				if (probIlluGira > 0.5) { // girassol
+					brisaLook = 6;
+				}
+
+				gui->tipoBrisaFbo = { 0, 4, brisaLook, 0 };
+				}break;
+			case 3: { //sombras
+
+				gui->tipoBrisaFbo = { 0, 0, 0, 8};
+				}break;
+		}
+		float probContorno = ofRandom(0,1);
+		if (probContorno > 0.8) { // mostra contorno
+			gui->tipoBrisaFbo[3] = 7;
+		}
+	}
+
 	bgColor = gui->bgColor;
 
 	if(videoPath != gui->videoPath) {
 		videoPath = gui->videoPath;
-		bVideo.urlpath = videoPath;
-		bVideo.setup();
+		bVideo.setup(videoPath);
 	}
 	bVideo.update();
 	bVideo.setShader(gui->shaderVideoSelected);
@@ -63,41 +188,59 @@ void ofApp::update(){
 		kinect.update();
 		if(depthCam.bAllocated) {
 			depthCam.setFromPixels(kinect.getDepthPixels());
+			depthBlur = depthCam;
+			getBlurImage(depthBlur, 111);
+			setSombraMirror(depthCam, 0.95 );
 		}
+
+		bKinect.update();
+
 	}
 
+	bIllu.update();
+	bGira.update();
 
 	
 	if(bKinect.ativa) {
-		bKinect.update();
 		bKinect.setFiltro(gui->filtroKinectSelected);
 		bKinect.setContorno(gui->kinectContorno);
 		bKinect.setShader(gui->shaderKinectSelected);
 		bKinect.setFonte(gui->fonteKinectSelected);
 	}
 
+
+	//se trocou a brisa manualmente atualiza
+	for(int i = 0; i < 4; i++) {
+		if(gui->tipoBrisaFbo[i] != tipoBrisaFbo[i]) {
+			tipoBrisaFbo[i] = gui->tipoBrisaFbo[i];
+		}
+	}
+
+	bPoligonos.update();
+
 	gl->background(bgColor);
 
 	fboLayer[0].begin();
 		ofBackground(0, 0, 0, 0);	
-		desenhaBrisa(gui->tipoBrisaFbo[0]);
+		desenhaBrisa(tipoBrisaFbo[0]);
 
 	fboLayer[0].end();
 
 	fboLayer[1].begin();
 		ofBackground(0, 0, 0, 0);
-		desenhaBrisa(gui->tipoBrisaFbo[1]);
+		desenhaBrisa(tipoBrisaFbo[1]);
 	fboLayer[1].end();
 
 	fboLayer[2].begin();
 		ofBackground(0, 0, 0, 0);
-		desenhaBrisa(gui->tipoBrisaFbo[2]);
+		desenhaBrisa(tipoBrisaFbo[2]);
 
 	fboLayer[2].end();
 
 	fboLayer[3].begin();
 		ofBackground(0, 0, 0, 0);
-		desenhaBrisa(gui->tipoBrisaFbo[3]);
+		desenhaBrisa(tipoBrisaFbo[3]);
+
 	fboLayer[3].end();
 
 }
@@ -120,6 +263,28 @@ void ofApp::desenhaBrisa(int tipoBrisa){
 		case 3:
 			bGifFull.draw();
 			break;
+		//Poligonos
+		case 4:
+			bPoligonos.draw();
+			break;
+		//Olho illu
+		case 5:
+			bIllu.draw();
+			break;
+		//Gira
+		case 6:
+			bGira.draw();
+			break;
+			
+		//Contorno
+		case 7:
+			bKinect.desenhaContorno();
+			break;
+
+		//Contorno
+		case 8:
+			desenhaSombraMirror();
+			break;
 			
 		default:
 			break;
@@ -131,12 +296,39 @@ void ofApp::desenhaBrisa(int tipoBrisa){
 void ofApp::draw(){
 	gl->setColor(0);
 
-	gl->setColor(255);
-
 	// Desenha Brisas
 	for(int i = 0; i < 4; i++) {
+
+		//fade
+		if(time0 > timeUltimaBrisa) {
+			// Testa se ja passou tempo pra começar o fade && ainda nao acabou a brisa
+			if(time0 - timeUltimaBrisa > (tempoBrisa - tempoFade) && time0 - timeUltimaBrisa < tempoBrisa) {
+				ofSetColor(255, 255, 255, ofMap(time0,timeUltimaBrisa + tempoBrisa - tempoFade,timeUltimaBrisa + tempoBrisa,255,0));
+			}
+			//Testa se ta no comecinho da brisa
+			else if(time0 - timeUltimaBrisa < tempoFade) {
+				ofSetColor(255, 255, 255, ofMap(time0,timeUltimaBrisa,timeUltimaBrisa+tempoFade,0,255));
+			} else {
+				ofSetColor(255, 255, 255);
+			}
+		}
+
 		fboLayer[i].draw(0,0,vw,vh);
 	}
+
+	// Testa se ja passou tempo pra começar o fade && ainda nao acabou a brisa
+	if(time0 - timeUltimaBrisa > (tempoBrisa - tempoFade) && time0 - timeUltimaBrisa < tempoBrisa) {
+		ofSetColor(255, 255, 255, ofMap(time0,timeUltimaBrisa + tempoBrisa - tempoFade,timeUltimaBrisa + tempoBrisa,0,255));
+	}
+	//Testa se ta no comecinho da brisa
+	else if(time0 - timeUltimaBrisa < tempoFade) {
+		ofSetColor(255, 255, 255, ofMap(time0,timeUltimaBrisa,timeUltimaBrisa+tempoFade,255,0));
+	} else {
+		ofSetColor(255, 255, 255, 0);
+	}
+	logoBrisa.setAnchorPercent(0.5,0.5);
+	logoBrisa.draw(vw/2,vh/2);
+	ofSetColor(255, 255, 255, 255);
 }
 
 //--------------------------------------------------------------
@@ -228,6 +420,8 @@ void GuiApp::startKinect(ofxDatGuiButtonEvent e)
 	kinect.setCameraTiltAngle(0);
 
 	depthCam.allocate(kinect.width, kinect.height);
+	sombra.allocate(kinect.width, kinect.height);
+	sombraMirror.allocate(kinect.width, kinect.height);
 
 	kinectLigado = true;
 }
@@ -237,13 +431,19 @@ void GuiApp::drawKinect()
 	if(kinectLigado) {
 		kinect.draw(0,0,200,150);
 		depthCam.draw(0,150,200,150);
+		depthBlur.draw(0,300,200,150);
+		sombra.draw(0,450,200,150);
+		sombraMirror.draw(0,600,200,150);
 	}
 }
 
-void BrisaVideo::setup() {
+void BrisaVideo::setup(string videoPath) {
+	urlpath = "videos/" + videoPath;
+	cout << "Video load: " << urlpath;
 	if(urlpath != "") {
 		video.load(urlpath);
 		video.play();
+		video.setPosition(time0-(long)time0);
 		video.setVolume(0);
 
 		hOriginal = video.getHeight();
@@ -268,7 +468,8 @@ void BrisaVideo::update() {
 		if(kinectLigado) {
 		// alloca um fbo com o tamanho original do video
 		// pra poder mesclar no shader
-			if( !fboKinect.isAllocated() ) {
+			if( !fboKinect.isAllocated() || fboKinect.getWidth() != wOriginal ) {
+				fboKinect.clear();
 				fboKinect.allocate(wOriginal,hOriginal);
 			}
 			updateKinect(depthCam);
@@ -381,6 +582,12 @@ void BrisaKinect::draw() {
 	}
 }
 
+void BrisaKinect::desenhaContorno() {
+	if(depthCam.bAllocated) {
+		contourFinder.draw(0,0, 1024,768);
+	}
+}
+
 
 
 void BrisaGifFull::setup() {
@@ -414,8 +621,6 @@ void BrisaGifFull::loadImg(string gifPath) {
 void BrisaGifFull::draw() {
 	if(urlpasta !="" && listaImg.size() > 0) {
 
-		float time0 = ofGetElapsedTimef();
-
 		float i = fmodf( time0/10, listaImg.size() ); // [0..duration]
 
 		int ngif = listaImg.size();
@@ -440,34 +645,291 @@ void BrisaGifFull::draw() {
 		listaImg[j].draw( vw/2 , vh/2, imgNewWidth, imgNewHeight); 
 
 	}
+}
 
+
+
+void BrisaPoligonos::setup() {
+	ativa = true;
+	int indCor = fmodf( time0/8, 4); // [0..4]
+	cor1 = coresRole[indCor];
+	cor1.set(0,255,0);
+
+	cor2.set(cor1);
+	cor2.setHue( (int(time0*5)+200) %360);
+}
+
+void BrisaPoligonos::update() {
+	if(ativa) {
+
+		float time0 = ofGetElapsedTimef();
+		int indCor = fmodf( time0/8, 4); // [0..4]
+		cor1 = coresRole[indCor];
+
+		cor2.set(cor1);
+		cor2.setHue( (int(time0*5)+200) %360);
+	}
+}
+
+void BrisaPoligonos::draw() {
+
+	// Desenha poligono
+	ofSetColor(cor1);
+	desenhaPoligono( int(abs(sin(time0*0.1)*4)) + 4, abs(sin(time0*0.7-.3))*100 + 800 ,true,true);
+
+	// Desenha poligono
+	ofSetColor(cor2);
+	desenhaPoligono( int(abs(sin(time0*0.1)*4)) + 4, abs(sin(time0*0.7-.2))*100 + 700 ,true,true);
+
+	// Desenha poligono
+	ofSetColor(cor1);
+	desenhaPoligono( int(abs(sin(time0*0.1)*4)) + 4, abs(sin(time0*0.7-.1))*100 + 600 ,true,true);
+
+	// Desenha poligono
+	ofSetColor(cor2);
+	desenhaPoligono( int(abs(sin(time0*0.1)*4)) + 4, abs(sin(time0*0.7))*100 + 500 ,true,true);
+
+	// Desenha poligono
+	ofSetColor(cor1);
+	desenhaPoligono( int(abs(sin(time0*0.1)*4)) + 4, abs(sin(time0*0.7+.1))*100 + 400 ,true,true);
+
+	// Desenha poligono
+	ofSetColor(cor2);
+	desenhaPoligono( int(abs(sin(time0*0.1)*4)) + 4, abs(sin(time0*0.7+.2))*100 + 300 ,true,true);
+
+	// Desenha poligono
+	ofSetColor(cor1);
+	desenhaPoligono( int(abs(sin(time0*0.1)*4)) + 4, abs(sin(time0*0.7+.3))*100 + 200 ,true,true);
+
+	// Desenha poligono
+	ofSetColor(cor2);
+	desenhaPoligono( int(abs(sin(time0*0.1)*4)) + 4, abs(sin(time0*0.7)+.4)*100 + 100 ,true,true);
+}
+
+
+// Desenha poligono
+void BrisaPoligonos::desenhaPoligono(int vertices, int radius, bool rotate, bool fill) {
+	if(vertices < 3)
+		vertices = 3;
+	//corrigindo tamanho aparente
+	radius = radius - vertices*8;
+	if(fill) {
+		ofFill();
+	}else {
+		ofNoFill();
+	}
+	glPushMatrix();
+
+	//Gambizinha pra caso seja o triangulo com beat
+	if(vertices == 3 && !rotate){
+		glTranslatef(vw/2,vh/2+70, 0);
+	} else {
+		// o que aocntecia normalmente antes da gambi
+		glTranslatef(vw/2,vh/2, 0);
+	}
+
+	if (rotate) {
+		glRotatef( sin(time0*0.5)*50 + 	(360/vertices-1)-(360/vertices) + 100, 0, 0, 1); 
+	} else {
+		glRotatef( 180, 0, 0, 1); 
+	}
+
+	ofBeginShape();
+	for(int i = 0; i < vertices+1; i++) {
+		float theta = (TWO_PI/vertices) * i;
+		ofVertex( sin(theta)*radius , cos(theta)*radius ,0);
+	}
+	ofEndShape();
+
+	glPopMatrix();
 }
 
 
 
 
+void BrisaIllu::setup() {
+}
+
+void BrisaIllu::update() {
+	lookAt = olhaPraMim();
+}
+
+void BrisaIllu::draw() {
+	glPushMatrix();
+
+	glTranslatef(vw/2,vh/2, 0);
+
+	ofPoint moveOlho;
+	moveOlho.x = ofMap(lookAt.x,0,vw,-25,25);
+	moveOlho.y = ofMap(lookAt.y,0,vh,-15,15);
+
+	olho.setAnchorPercent(0.5, 0.5);
+	orbita.setAnchorPercent(0.5, 0.5);
+
+	olho.draw(moveOlho);
+	orbita.draw(0,0);
+
+	glPopMatrix();
+}
+
+
+
+void BrisaGira::setup() {
+}
+
+void BrisaGira::update() {
+	lookAt = olhaPraMim();
+	
+}
+
+void BrisaGira::draw() {
+	glPushMatrix();
+
+	glTranslatef(vw/2,vh/2 + 10, 0);
+
+	float anguloX = ofMap(lookAt.x,0,vw,-50,50);
+	glRotatef(anguloX, 0, 1, 0); 
+
+	float anguloY = ofMap(lookAt.y,0,vh,-50,50);
+	glRotatef(anguloY, -1, 0, 0); 
+	glRotatef(anguloY+anguloX, 0, 0, 0.2); 
+
+	ofSetColor(255, 255, 255);
+	girassol.setAnchorPercent(0.5, 0.5);
+	girassol.draw(0,0);
+
+	glPopMatrix();
+}
+
+
+void ofApp::getBlurImage(ofxCvGrayscaleImage &imgBlur, int indiceBlur) {
+	imgBlur.blur(11);
+	imgBlur.erode();
+	imgBlur.dilate();
+	imgBlur.blur(101);
+	imgBlur.erode();
+	imgBlur.dilate();
+	imgBlur.blur(101);
+
+	imgBlur.flagImageChanged();
+}	
+
+
+void ofApp::setSombraMirror(ofxCvGrayscaleImage imgAtual, float iRastro) {
+	
+	sombra.blur(11);
+	sombra.blur(11);
+	sombra.erode();
+	sombra.dilate();
+	sombra.erode();
+	ofPixels & pixF = sombra.getPixels();
+	ofPixels & pixA = imgAtual.getPixels();
+	int numPixels = pixF.size();
+	for (int i = 0; i < numPixels; i++) {
+		pixF[i] =ofClamp(pixF[i] * iRastro + pixA[i] * (1.2 - iRastro),0,255); // Aumenta contraste de distancia
+	}
+	sombra.flagImageChanged();
+	sombra.blur(11);
+
+	sombraMirror = sombra;
+	sombraMirror.mirror(false, true);
+}
 
 
 ofShader retornaShader(int iShader) {
 	switch(iShader) {
 		
-			case 1:
-				return blackAsAlpha;
-				break;
-			case 2:
-				return whiteAsAlpha;
-				break;
-			case 3:
-				return invertColor;
-				break;
-			case 4:
-				return fundoNegativo;
-				break;
-			case 5:
-				return frenteNegativo;
-				break;
+		case 1:
+			return blackAsAlpha;
+			break;
+		case 2:
+			return whiteAsAlpha;
+			break;
+		case 3:
+			return invertColor;
+			break;
+		case 4:
+			return fundoNegativo;
+			break;
+		case 5:
+			return frenteNegativo;
+			break;
 
-			default:
-				return dummyShader;
+		default:
+			return dummyShader;
+	}
+}
+
+ofPoint olhaPraMim() {
+	ofPoint lookAt;
+	if(kinectLigado) {
+		unsigned char * pix = depthBlur.getPixels();
+		int blurWidth = depthBlur.width;
+		int whiteTotal = 0; // quantidade de coisa na frente da tela
+		ofPoint centro( blurWidth/2, depthBlur.height/2 );
+
+		ofPoint baricentro0 = baricentro;
+
+		baricentro.set(0, 0);
+		for(int j = 0; j < 10; j++) {
+			ofVec2f vecDirecao(15 + j*30,0);
+			for(int i = 0; i < 8; i++) {
+				ofPoint pontoRef = centro+vecDirecao;
+				// Caso o ponto esteja dentro da imagem
+				if (pontoRef.x >= 0 && pontoRef.y >= 0 && 
+					pontoRef.x < blurWidth && pontoRef.y < depthBlur.height) 
+				{
+
+					int white = pix[int(pontoRef.y)*blurWidth + int(pontoRef.x)];
+					
+					whiteTotal += white;
+					baricentro += pontoRef*white;
+				}
+
+				vecDirecao.rotate(45);
+			}
 		}
+
+		if(whiteTotal>0) {
+			baricentro /= whiteTotal;
+		} else {
+			baricentro.set( depthBlur.width/2, depthBlur.height/2 );
+		}
+
+		baricentro = baricentro*0.04 + baricentro0*0.96;
+
+		lookAt.x = ofMap(baricentro.x, 0, depthBlur.width, 0, vw);
+		lookAt.y = ofMap(baricentro.y, 0, depthBlur.height, 0, vh);
+
+		whiteTotalSlow = whiteTotalSlow*0.9 + whiteTotal*0.1;
+	}
+
+	ofPoint perlinPoint;
+	perlinPoint.x = vw * ofNoise( time0 * 0.15 );
+	perlinPoint.y = vh * ofNoise( time0 * 0.2 );	
+
+	if( whiteTotalSlow < 1000 || whiteTotalSlow > 7000) {
+		lookAt = perlinPoint;
+	}
+	return lookAt;
+}
+
+
+void ofApp::desenhaSombraMirror() {
+
+
+	int c1 = fmodf( time0/7, 4); // [0..duration]
+	int c2 = fmodf( time0/8, 4); // [0..duration]
+	if(c1==c2) {
+		c1++;
+		c1 %= 4;
+	}
+
+	ofEnableBlendMode(OF_BLENDMODE_ADD);
+
+	ofSetColor(coresRole[c1]);
+	sombra.draw(-10,-10,vw+20,vh+20);
+	ofSetColor(coresRole[c2]);
+	sombraMirror.draw(-10,-10,vw+20,vh+20);
+	ofEnableBlendMode(OF_BLENDMODE_ALPHA);
 }
