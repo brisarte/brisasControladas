@@ -14,23 +14,35 @@ public:
 	void update( float dt );   	//Recalcula brisa
 	void draw();
 
+	ofShader shaderBrisaInteracao;
 };
 
 class BrisaVideo : public Brisa {
 public:
 	string urlpath;
 	ofVideoPlayer video;
+	float hOriginal, wOriginal; //tamanhos do arquivo
 	float hVideo, wVideo; //tamanhos novos
-	ofxCvGrayscaleImage depthCam;
+	ofFbo fboKinect;
+	int iShader;
 	void setup();
 	void update();
+	void setShader(int i);
+	void updateKinect(ofxCvGrayscaleImage depthCam);
 	void draw();
 };
 
 class BrisaKinect : public Brisa {
 public:
+	ofFbo fboFiltro;
+	int iFiltro, iFonte, iShader;
+	ofShader shaderKinectInteracao;
+	void setFiltro(int i);
+	void setFonte(int i);
+	void setShader(int i);
 	void setup();
 	void update();
+	void updateFiltro(ofxCvGrayscaleImage depthCam);
 	void draw();
 };
 
@@ -70,3 +82,5 @@ class ofApp : public ofBaseApp{
 		int vw,vh, kinectAngle;
 
 };
+
+ofShader retornaShader(int iShader);
