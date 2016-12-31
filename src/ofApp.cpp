@@ -1,10 +1,12 @@
 #include "ofApp.h"
 
+int vw, vh;
 ofxKinect kinect;
 
 
 BrisaVideo bVideo;
 BrisaKinect bKinect;
+BrisaGifFull bGifFull;
 
 // Variáveis globais pro kinect
 ofxCvGrayscaleImage depthCam;
@@ -19,9 +21,9 @@ void ofApp::setup(){
 	// Aloca memoria com tamanho da viewport
 	vh = 768;
 	vw = 1024;
-
 	gl->background(bgColor);
 	videoPath = "";
+	pathGif = "";
 
 	//alloc de fbo
 	for(int i = 0; i < 4; i++) {
@@ -43,6 +45,7 @@ void ofApp::setup(){
 //--------------------------------------------------------------
 void ofApp::update(){
 	bgColor = gui->bgColor;
+
 	if(videoPath != gui->videoPath) {
 		videoPath = gui->videoPath;
 		bVideo.urlpath = videoPath;
@@ -51,12 +54,16 @@ void ofApp::update(){
 	bVideo.update();
 	bVideo.setShader(gui->shaderVideoSelected);
 
+	if(pathGif != gui->pastaGif) {
+		pathGif = gui->pastaGif;
+		bGifFull.loadImg(pathGif);
+	}
+
 	if(kinectLigado) {
 		kinect.update();
 		if(depthCam.bAllocated) {
 			depthCam.setFromPixels(kinect.getDepthPixels());
 		}
-
 	}
 
 
@@ -64,6 +71,7 @@ void ofApp::update(){
 	if(bKinect.ativa) {
 		bKinect.update();
 		bKinect.setFiltro(gui->filtroKinectSelected);
+		bKinect.setContorno(gui->kinectContorno);
 		bKinect.setShader(gui->shaderKinectSelected);
 		bKinect.setFonte(gui->fonteKinectSelected);
 	}
@@ -72,29 +80,52 @@ void ofApp::update(){
 
 	fboLayer[0].begin();
 		ofBackground(0, 0, 0, 0);	
-
+		desenhaBrisa(gui->tipoBrisaFbo[0]);
 
 	fboLayer[0].end();
 
 	fboLayer[1].begin();
 		ofBackground(0, 0, 0, 0);
-
-		bVideo.draw();
-
+		desenhaBrisa(gui->tipoBrisaFbo[1]);
 	fboLayer[1].end();
 
 	fboLayer[2].begin();
 		ofBackground(0, 0, 0, 0);
-
-		bKinect.draw();
+		desenhaBrisa(gui->tipoBrisaFbo[2]);
 
 	fboLayer[2].end();
 
 	fboLayer[3].begin();
 		ofBackground(0, 0, 0, 0);
+		desenhaBrisa(gui->tipoBrisaFbo[3]);
 	fboLayer[3].end();
 
 }
+
+//--------------------------------------------------------------
+void ofApp::desenhaBrisa(int tipoBrisa){
+	switch(tipoBrisa){
+		//No Breeza
+		case 0:
+			break;
+		//Video
+		case 1:
+			bVideo.draw();
+			break;
+		//Video
+		case 2:
+			bKinect.draw();
+			break;
+		//GifFull
+		case 3:
+			bGifFull.draw();
+			break;
+			
+		default:
+			break;
+	}
+}
+
 
 //--------------------------------------------------------------
 void ofApp::draw(){
@@ -174,14 +205,6 @@ void ofApp::gotMessage(ofMessage msg){
 
 //--------------------------------------------------------------
 void ofApp::dragEvent(ofDragInfo dragInfo){ 
-
-}
-
-//--------------------------------------------------------------
-void ofApp::endShader(int numShader){
-	if(numShader > 0) {		
-		shaderInteracao.end();	
-	}
 }
 
 void GuiApp::startBrisaKinect(ofxDatGuiButtonEvent e)
@@ -299,6 +322,9 @@ void BrisaKinect::update() {
 	}
 	updateFiltro(depthCam);
 
+	// Encontra contornos
+	contourFinder.findContours(depthCam, 10, (kinect.width*kinect.height)/2, 20, false);
+
 }
 
 void BrisaKinect::updateFiltro(ofxCvGrayscaleImage imgKinect) {
@@ -316,6 +342,9 @@ void BrisaKinect::updateFiltro(ofxCvGrayscaleImage imgKinect) {
 }
 void BrisaKinect::setFiltro(int filtro) {
 	iFiltro = filtro;
+}
+void BrisaKinect::setContorno(bool kinectContorno) {
+	mostraContorno = kinectContorno;
 }
 void BrisaKinect::setFonte(int fonte) {
 	iFonte = fonte;
@@ -343,11 +372,80 @@ void BrisaKinect::draw() {
 				depthCam.draw(0,0,1024,768);
 		}
 
-
 		shaderKinectInteracao.end();	
 
+
+		if(mostraContorno) {
+			contourFinder.draw(0,0, 1024,768);
+		}
 	}
 }
+
+
+
+void BrisaGifFull::setup() {
+	
+}
+
+void BrisaGifFull::update() {
+
+}
+
+void BrisaGifFull::loadImg(string gifPath) {
+	//5. Carrega numero de img da sequencia
+	ofDirectory dirgif;
+	urlpasta = gifPath;
+	int nimg = dirgif.listDir(urlpasta);
+
+	cout << urlpasta << ": ";
+	//6. Set array img size 
+	listaImg.resize( nimg );
+	//7. Load images
+	for (int j=0; j<nimg; j++) {
+		//Getting i-th file name
+		string fileName = dirgif.getPath( j );
+		//Load i-th image
+		ofLoadImage( listaImg[j], fileName );
+		cout << "|";
+	}
+	cout << nimg <<" imgs loaded"<< endl;
+}
+
+void BrisaGifFull::draw() {
+	if(urlpasta !="" && listaImg.size() > 0) {
+
+		float time0 = ofGetElapsedTimef();
+
+		float i = fmodf( time0/10, listaImg.size() ); // [0..duration]
+
+		int ngif = listaImg.size();
+		float duration = ngif / 12.0; //25fps		
+		float pos = fmodf( time0, duration ); // [0..duration]
+		//5. Convert pos in the frame number
+		int j = int( pos / duration * ngif );
+
+		listaImg[j].setAnchorPercent( 0.5, 0.5 );
+
+		 // Encontra proporção para redimensionar p fullscreen
+		int imgOldH = listaImg[j].getHeight();
+		int imgOldW = listaImg[j].getWidth();
+		float imgProp = imgOldW/imgOldH;
+		int imgNewWidth = vw;
+		int imgNewHeight = vh;
+		if( imgProp < (4.0/3.0) ) {
+			imgNewHeight = (vw*imgOldH)/imgOldW;
+		} else {
+			imgNewWidth = (vh*imgOldW)/imgOldH;
+		}
+		listaImg[j].draw( vw/2 , vh/2, imgNewWidth, imgNewHeight); 
+
+	}
+
+}
+
+
+
+
 
 
 ofShader retornaShader(int iShader) {

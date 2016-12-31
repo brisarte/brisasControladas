@@ -17,6 +17,17 @@ public:
 	ofShader shaderBrisaInteracao;
 };
 
+class BrisaGifFull : public Brisa {
+
+public:
+	void setup();           	//Configura brisa
+	void update();   	//Recalcula brisa
+	void draw();
+	void loadImg(string gifPath);
+	string urlpasta;
+	vector<ofTexture> listaImg;
+};
+
 class BrisaVideo : public Brisa {
 public:
 	string urlpath;
@@ -35,8 +46,11 @@ public:
 class BrisaKinect : public Brisa {
 public:
 	ofFbo fboFiltro;
+	ofxCvContourFinder contourFinder;
+	bool mostraContorno;
 	int iFiltro, iFonte, iShader;
 	ofShader shaderKinectInteracao;
+	void setContorno(bool kinectContorno);
 	void setFiltro(int i);
 	void setFonte(int i);
 	void setShader(int i);
@@ -66,8 +80,7 @@ class ofApp : public ofBaseApp{
 		void gotMessage(ofMessage msg);
 		
 
-		void startShader(int numShader);
-		void endShader(int numShader);
+		void desenhaBrisa(int tipoBrisa);
 
 		shared_ptr<GuiApp> gui;
 		shared_ptr<ofAppBaseWindow> window;
@@ -75,11 +88,11 @@ class ofApp : public ofBaseApp{
 
 		ofColor bgColor;
 
-		string videoPath;
+		string videoPath, pathGif;
 		ofVideoPlayer video;
 	
 		ofFbo  fboLayer[4];	//buffer para telas
-		int vw,vh, kinectAngle;
+		int kinectAngle;
 
 };
 

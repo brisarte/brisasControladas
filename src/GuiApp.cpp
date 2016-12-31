@@ -11,7 +11,33 @@ void GuiApp::setup(){
 	ofBackground(0);
 	ofSetVerticalSync(false);
 	
-	ofxDatGui* guiGeral = new ofxDatGui( 10,420 );
+	bgColor.set(0,0,0);
+
+
+	//1. Pasta de gifs
+	ofDirectory dirGifsFull;
+	//2. Carrega numero de pastas de sequencias
+	int nGifsFull = dirGifsFull.listDir("gifs/fullscreen");
+	//3. Set array size 
+	listaGifFull.resize( nGifsFull );
+
+	//4. Abre pastas
+	for (int i=0; i<nGifsFull; i++) {	
+		//Pega caminho da pasta
+		string folderName = dirGifsFull.getPath( i );	
+		listaGifFull[i] = folderName;
+
+	}
+
+	tiposBrisa = {"SEM BRISA", "VIDEO", "KINECT", "GIF", "POLIGONOS"};
+	tipoBrisaFbo = { 0, 1, 0, 0};
+
+
+	/*:::::::::::::::::::::::: 
+	:: :: CONTROLES GERAIS  ::
+	::::::::::::::::::::::::*/  	
+
+	ofxDatGui* guiGeral = new ofxDatGui( 210, 0 );
 	guiGeral->addHeader(":: CONTROLES GERAIS::");
 	guiGeral->addFRM(1.0f);
 	colorPicker = guiGeral->addColorPicker("BG");
@@ -26,50 +52,114 @@ void GuiApp::setup(){
 	guiGeral->addFooter();
 	guiGeral->getFooter()->setLabelWhenCollapsed(":: CONTROLES GERAIS ::");
 	
-	ofxDatGui* gui = new ofxDatGui( 310,0 );
+
+
+	int ybrisa = 170;
+	int hbrisa = 56;
+
+	/*:::::::::::: 
+	:: Brisa 1  ::
+	::::::::::::*/
+
+	ofxDatGui* gui = new ofxDatGui( 210, ybrisa );
 	gui->addHeader(":: BRISA 1 ::");
-	
 
-	gui->addFooter();
-	gui->getFooter()->setLabelWhenCollapsed(":: BRISA 1 ::");
+	ofxDatGuiDropdown* tipoBrisa1 = gui->addDropdown("TIPO BRISA", tiposBrisa);
+	tipoBrisa1->onDropdownEvent(this, &GuiApp::onChangeTipoBrisa1);
+	//gui->addFooter();
+	//gui->getFooter()->setLabelWhenCollapsed(":: BRISA 1 ::");
 
 
+	/*:::::::::::: 
+	:: Brisa 2  ::
+	::::::::::::*/   
 
-	ofxDatGui* guiB2 = new ofxDatGui( 310,300);
+	ofxDatGui* guiB2 = new ofxDatGui( 210, ybrisa+hbrisa);
 	guiB2->addHeader(":: BRISA 2 ::");
 
-	addControles(guiB2, 0);
+	ofxDatGuiDropdown* tipoBrisa2 = guiB2->addDropdown("TIPO BRISA", tiposBrisa);
+	tipoBrisa2->onDropdownEvent(this, &GuiApp::onChangeTipoBrisa2);
+	//guiB2->addFooter();
+	//guiB2->getFooter()->setLabelWhenCollapsed(":: BRISA 2 ::");
 
-	guiB2->addFooter();
-	guiB2->getFooter()->setLabelWhenCollapsed(":: BRISA 2 ::");
 
+	/*:::::::::::: 
+	:: Brisa 3  ::
+	::::::::::::*/    
 
-	
-	ofxDatGui* guiB3 = new ofxDatGui( 600, 0 );
+	ofxDatGui* guiB3 = new ofxDatGui( 210,  ybrisa+hbrisa*2 );
 	guiB3->addHeader(":: BRISA 3 ::");
 
-	
-	addControles(guiB3, 1);
-
-
-	guiB3->addFooter();
-	guiB3->getFooter()->setLabelWhenCollapsed(":: BRISA 3 ::");
+	ofxDatGuiDropdown* tipoBrisa3 = guiB3->addDropdown("TIPO BRISA", tiposBrisa);
+	tipoBrisa3->onDropdownEvent(this, &GuiApp::onChangeTipoBrisa3);
+	//guiB3->addFooter();
+	//guiB3->getFooter()->setLabelWhenCollapsed(":: BRISA 3 ::");
 
 	
-	ofxDatGui* guiB4 = new ofxDatGui( 600, 300 );
+	/*:::::::::::: 
+	:: Brisa 4  ::
+	::::::::::::*/
+
+	ofxDatGui* guiB4 = new ofxDatGui( 210,  ybrisa+hbrisa*3 );
 	guiB4->addHeader(":: BRISA 4 ::");
 
-	guiB4->addFooter();
-	guiB4->getFooter()->setLabelWhenCollapsed(":: BRISA 4 ::");
+	ofxDatGuiDropdown* tipoBrisa4 = guiB4->addDropdown("TIPO BRISA", tiposBrisa);
+	tipoBrisa4->onDropdownEvent(this, &GuiApp::onChangeTipoBrisa4);
+	//guiB4->addFooter();
+	//guiB4->getFooter()->setLabelWhenCollapsed(":: BRISA 4 ::");
+
+	/*:::::::::::::: 
+	::~ Gif Full  ::
+	::::::::::::::*/  
+
+
+	ofxDatGui* guiGifFull = new ofxDatGui( 500, 0 );
+	guiGifFull->addHeader(":: Gif full ::");
+
+	addControles(guiGifFull, 3);
+
+	guiGifFull->addFooter();
+	guiGifFull->getFooter()->setLabelWhenCollapsed(":: Gif full ::");
+
+
+	/*:::::::::: 
+	::~ Video ::
+	::::::::::*/    
+
+	ofxDatGui* guiVideo = new ofxDatGui( 500, 100 );
+	guiVideo->addHeader(":: Vídeo ::");
+
+	addControles(guiVideo, 1);
+
+	guiVideo->addFooter();
+	guiVideo->getFooter()->setLabelWhenCollapsed(":: VIDEO ::");
+
+
+	/*:::::::::::: 
+	::~ Kinect  ::
+	::::::::::::*/    
+
+	ofxDatGui* guiKinect = new ofxDatGui( 500, 230 );
+	guiKinect->addHeader(":: Kinect ::");
+
+	addControles(guiKinect, 2);
+
+	guiKinect->addFooter();
+	guiKinect->getFooter()->setLabelWhenCollapsed(":: Kinect ::");
 
 }
 
 void GuiApp::addControles(ofxDatGui* g, int iBrisa)
 {
+
 	switch(iBrisa) {
-		// Controles de video
+		// No Breeza
 		case 0: {
-			videosDisponiveis = {"cg.mp4", "tas.mp4", "testerau.mp4", "claricefalcao.mp4"};
+		}break;
+
+		// Controles de video
+		case 1: {
+			videosDisponiveis = {"verduras.mp4", "vegetais.mp4", "preda.mp4", "conchas.mp4"};
 			ofxDatGuiDropdown* ddVideos = g->addDropdown("SELECIONAR VIDEO", videosDisponiveis);
 			ddVideos->onDropdownEvent(this, &GuiApp::onDropdownVideoEvent);
 
@@ -83,10 +173,13 @@ void GuiApp::addControles(ofxDatGui* g, int iBrisa)
 		}break;
 
 		// Controles de kinect
-		case 1: {
+		case 2: {
 			// Botão brisa kinect
 			ofxDatGuiButton* btnBKinect = g->addButton("BRISAR Kinect");
 			btnBKinect->onButtonEvent(this, &GuiApp::startBrisaKinect);
+
+			ofxDatGuiToggle* contornoKinectToggle = g->addToggle("CONTORNO");
+			contornoKinectToggle->onToggleEvent(this, &GuiApp::onContornoKinectToggle);
 
 			vector<string> optionsFonte = {"RGB", "PROFUNDIDADE"};
 			ofxDatGuiDropdown* ddFonteKinect = g->addDropdown("FONTE", optionsFonte);
@@ -101,9 +194,52 @@ void GuiApp::addControles(ofxDatGui* g, int iBrisa)
 			ofxDatGuiDropdown* ddFiltroKinect = g->addDropdown("FILTRO", optionsFiltro);
 			ddFiltroKinect->onDropdownEvent(this, &GuiApp::onDropdownFiltroKinectEvent);
 		}break;
+
+		// Gif fullscreen
+		case 3: {
+			
+			ofxDatGuiDropdown* ddGifFull = g->addDropdown("GIF", listaGifFull);
+			ddGifFull->onDropdownEvent(this, &GuiApp::onDropdownGifFullEvent);
+
+		}break;
 	}
 }
 
+void GuiApp::onChangeTipoBrisa1(ofxDatGuiDropdownEvent e)
+{
+	tipoBrisaFbo[0] = e.child;
+    cout << "tipo  #" << e.child << " selecionado para a brisa 1";
+}
+void GuiApp::onChangeTipoBrisa2(ofxDatGuiDropdownEvent e)
+{
+	tipoBrisaFbo[1] = e.child;
+    cout << "tipo  #" << e.child << " selecionado para a brisa 2";
+}
+void GuiApp::onChangeTipoBrisa3(ofxDatGuiDropdownEvent e)
+{
+	tipoBrisaFbo[2] = e.child;
+    cout << "tipo  #" << e.child << " selecionado para a brisa 3";
+}
+void GuiApp::onChangeTipoBrisa4(ofxDatGuiDropdownEvent e)
+{
+	tipoBrisaFbo[3] = e.child;
+    cout << "tipo  #" << e.child << " selecionado para a brisa 4";
+}
+
+void GuiApp::onContornoKinectToggle(ofxDatGuiToggleEvent e)
+{
+    cout << e.target->getLabel() << " checked = " << e.checked << endl;
+    kinectContorno = e.checked;
+}
+
+
+void GuiApp::onDropdownGifFullEvent(ofxDatGuiDropdownEvent e)
+{	
+	if( listaGifFull.size() > e.child ) {
+		pastaGif = listaGifFull[e.child];
+	    cout << "gif #" << pastaGif << " selecionado " << endl;
+	}
+}
 void GuiApp::onDropdownFonteKinectEvent(ofxDatGuiDropdownEvent e)
 {	
 	fonteKinectSelected = e.child;
