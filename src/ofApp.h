@@ -5,88 +5,24 @@
 #include "ofxKinect.h"
 #include "GuiApp.h"
 
+
 //classe da Brisa
 class Brisa {
 
 public:
-	bool ativa = false;
+	bool ativa = false; // Controle de render
 	void setup();           	//Configura brisa
 	void update( float dt );   	//Recalcula brisa
 	void draw();
 
-	ofShader shaderBrisaInteracao;
-};
-
-class BrisaGira : public Brisa {
-
-public:
-	void setup();           	//Configura brisa
-	void update();   	//Recalcula brisa
-	void draw();
-	ofPoint lookAt;
-};
-class BrisaIllu : public Brisa {
-
-public:
-	void setup();           	//Configura brisa
-	void update();   	//Recalcula brisa
-	void draw();
-	ofPoint lookAt;
-};
-
-class BrisaPoligonos : public Brisa {
-
-public:
-	void setup();           	//Configura brisa
-	void update();   	//Recalcula brisa
-	void draw();
-	void desenhaPoligono(int vertices, int radius, bool rotate, bool fill);
-	ofColor cor1,cor2;
-	int vertices;
-};
-
-class BrisaGifFull : public Brisa {
-
-public:
-	void setup();           	//Configura brisa
-	void update();   	//Recalcula brisa
-	void draw();
-	void loadImg(string gifPath);
-	string urlpasta;
-	vector<ofTexture> listaImg;
-};
-
-class BrisaVideo : public Brisa {
-public:
+	// Brisa Video
+	void setupVideo(string videoPath);
+	void updateKinect(ofxCvGrayscaleImage imgKinect);
 	string urlpath;
 	ofVideoPlayer video;
 	float hOriginal, wOriginal; //tamanhos do arquivo
 	float hVideo, wVideo; //tamanhos novos
 	ofFbo fboKinect;
-	int iShader;
-	void setup(string videoPath);
-	void update();
-	void setShader(int i);
-	void updateKinect(ofxCvGrayscaleImage depthCam);
-	void draw();
-};
-
-class BrisaKinect : public Brisa {
-public:
-	ofFbo fboFiltro;
-	ofxCvContourFinder contourFinder;
-	bool mostraContorno;
-	int iFiltro, iFonte, iShader;
-	ofShader shaderKinectInteracao;
-	void setContorno(bool kinectContorno);
-	void setFiltro(int i);
-	void setFonte(int i);
-	void setShader(int i);
-	void setup();
-	void update();
-	void updateFiltro(ofxCvGrayscaleImage depthCam);
-	void desenhaContorno();
-	void draw();
 };
 
 class ofApp : public ofBaseApp{
@@ -107,27 +43,12 @@ class ofApp : public ofBaseApp{
 		void windowResized(int w, int h);
 		void dragEvent(ofDragInfo dragInfo);
 		void gotMessage(ofMessage msg);
-		void getBlurImage(ofxCvGrayscaleImage &imgBlur, int indiceBlur);
-		void setSombraMirror(ofxCvGrayscaleImage imgAtual, float iRastro);
-
-		void desenhaBrisa(int tipoBrisa);
-		void desenhaSombraMirror();
-
+		
+		
 		shared_ptr<GuiApp> gui;
 		shared_ptr<ofAppBaseWindow> window;
 		shared_ptr<ofBaseGLRenderer> gl;
 
-		ofColor bgColor;
-
-		string videoPath, pathGif;
-		ofVideoPlayer video;
-	
-		ofFbo  fboLayer[4];	//buffer para telas
-		int kinectAngle;
-
-		vector<int> tipoBrisaFbo;
+		Brisa brisa1;
+		bool ativaBrisa1;
 };
-
-ofShader retornaShader(int iShader);
-
-ofPoint olhaPraMim();
