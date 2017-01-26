@@ -53,6 +53,18 @@ void GuiApp::draw(){
         {
         	ativaBrisa1 = !ativaBrisa1;
         }
+        if(ImGui::Button("Brisa 2"))
+        {
+        	ativaBrisa2 = !ativaBrisa2;
+        }
+        if(ImGui::Button("Brisa 3"))
+        {
+        	ativaBrisa3 = !ativaBrisa3;
+        }
+        if(ImGui::Button("Brisa 4"))
+        {
+        	ativaBrisa4 = !ativaBrisa4;
+        }
 
         if(ImGui::Button("Câmeras Kinect"))
         {

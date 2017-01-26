@@ -7,13 +7,13 @@
 
 class GuiApp: public ofBaseApp {
 public:
-	void setup();
-	void update();
-	void draw();
+    void setup();
+    void update();
+    void draw();
 
-	ofxKinect kinect;
-	void startKinect();
-	
+    ofxKinect kinect;
+    void startKinect();
+    
     ofxImGui::Gui gui;
 
     GLuint kinectGLuintRGB;
@@ -24,6 +24,6 @@ public:
     ofxCvColorImage kinectRGB;
     ofxCvGrayscaleImage kinectDepth;
 
-    bool ativaBrisa1;
+    bool ativaBrisa1,ativaBrisa2,ativaBrisa3,ativaBrisa4;
 
 };
