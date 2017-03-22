@@ -13,6 +13,40 @@ void GuiApp::setup(){
 	kinectDepth.allocate(640,480);
 
 	ativaBrisa1 = false;
+
+	tempoBrisa = 115;
+
+	//1. Pasta de gifs
+	ofDirectory dirGifsFull;
+	//2. Carrega numero de pastas de sequencias
+	nGifsFull = dirGifsFull.listDir("gifs/fullscreen");
+	//3. Set array size 
+	listaGifFull.resize( nGifsFull );
+
+	//4. Abre pastas
+	for (int i=0; i<nGifsFull; i++) {	
+		//Pega caminho da pasta
+		string folderName = dirGifsFull.getPath( i );	
+		listaGifFull[i] = folderName;
+
+	}
+
+	//1. Pasta de videos
+	ofDirectory dirVideo;
+	//2. Carrega numero de pastas de sequencias
+	nVideos = dirVideo.listDir("videos");
+	//3. Set array size 
+	listaVideos.resize( nVideos );
+
+	//4. Abre pastas
+	for (int i=0; i<nVideos; i++) {	
+		//Pega caminho da pasta
+		string folderName = dirVideo.getPath( i );	
+		listaVideos[i] = folderName;
+		cout << "listaVideos[" << i << "] : " << listaVideos[i];
+	}
+
+
 }
 
 void GuiApp::update(){
@@ -36,6 +70,7 @@ void GuiApp::update(){
     	kinectGLuintDepth = gui.loadPixels(kinectDepth.getPixels());
 
 	}
+
 }
 
 void GuiApp::draw(){
@@ -64,6 +99,25 @@ void GuiApp::draw(){
         if(ImGui::Button("Brisa 4"))
         {
         	ativaBrisa4 = !ativaBrisa4;
+        }
+
+        if(ImGui::Button("Configura Proxima"))
+        {
+        	
+			configsBrisa1.tipoBrisa = 1; //Video
+			configsBrisa1.iShader = 4;
+			int randomVideo = ofRandom(0,nVideos-1);
+			configsBrisa1.urlpath = listaVideos[randomVideo]; 
+			cout << "\nlistaVideos[" << randomVideo << "] = " << listaVideos[randomVideo];
+
+			configsBrisa2.tipoBrisa = 1;
+
+			configsBrisa3.tipoBrisa = 2; //giffull
+			int randomGif = ofRandom(0,nGifsFull-1);
+			configsBrisa3.gifPath = listaGifFull[randomGif]; 
+			cout << "\nlistaGifFull[" << randomGif << "] = " << listaGifFull[randomGif];
+
+			configsBrisa4.tipoBrisa = 4;
         }
 
         if(ImGui::Button("Câmeras Kinect"))

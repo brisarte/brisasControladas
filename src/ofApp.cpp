@@ -7,6 +7,9 @@ ofxCvGrayscaleImage kinectDepth, kinectDepthBlur;
 
 float prevTime, actualTime;
 
+ofImage logoBrisa;
+ofShader shaders[6];
+
 int vw = 1024;
 int vh = 768;
 //--------------------------------------------------------------
@@ -16,10 +19,30 @@ void ofApp::setup(){
 	kinectDepth.allocate(640,480);
 	fboLayer.allocate(1024,768);
 
+	timeUltimaBrisa = 0;
+	tempoFade = 2; 
+
+
+	logoBrisa.load("../data/img/logobrisarte.png");
+
+	
+
+
+
+
+	shaders[0].load( "shaders/vertexdummy.c", "shaders/fragdummy.c" ); // dummyShader
+	shaders[1].load( "shaders/vertexdummy.c", "shaders/blackAsAlpha.c" ); // blackAsAlpha
+	shaders[2].load( "shaders/vertexdummy.c", "shaders/whiteAsAlpha.c" ); // whiteAsAlpha
+	shaders[3].load( "shaders/vertexdummy.c", "shaders/invertColor.c" ); // invertColor
+	shaders[4].load( "shaders/vertexdummy.c", "shaders/frenteNegativo.c" ); // frenteNegativo
+	shaders[5].load( "shaders/vertexdummy.c", "shaders/fundoNegativo.c" ); // fundoNegativo
 }
 
 //--------------------------------------------------------------
 void ofApp::update(){
+
+	ofBackground(0,0,0);
+
 	prevTime = actualTime;
 	actualTime = ofGetElapsedTimef();
 
@@ -29,11 +52,31 @@ void ofApp::update(){
 	kinectRGB = gui->kinectRGB;
 	kinectDepth = gui->kinectDepth;
 
+	tempoBrisa = gui->tempoBrisa;
 
 	ativaBrisa1 = gui->ativaBrisa1;
 	ativaBrisa2 = gui->ativaBrisa2;
 	ativaBrisa3 = gui->ativaBrisa3;
 	ativaBrisa4 = gui->ativaBrisa4;
+
+	configsBrisa1 = gui->configsBrisa1;
+	configsBrisa2 = gui->configsBrisa2;
+	configsBrisa3 = gui->configsBrisa3;
+	configsBrisa4 = gui->configsBrisa4;
+
+	// Troca Brisa
+	if(actualTime - timeUltimaBrisa > tempoBrisa) {
+		timeUltimaBrisa = actualTime;
+
+		brisa1.setConfig(configsBrisa1);
+		brisa1.setup();
+		brisa2.setConfig(configsBrisa2);
+		brisa2.setup();
+		brisa3.setConfig(configsBrisa3);
+		brisa3.setup();
+		brisa4.setConfig(configsBrisa4);
+		brisa4.setup();
+	}
 
 	if(ativaBrisa1 && !brisa1.ativa) {
 		brisa1.tipoBrisa = 3; //video
@@ -88,8 +131,20 @@ void ofApp::update(){
 
 //--------------------------------------------------------------
 void ofApp::draw(){
-
-
+	
+	//fade
+	if(actualTime >= timeUltimaBrisa) {
+		// Testa se ja passou tempo pra começar o fade && ainda nao acabou a brisa
+		if(actualTime - timeUltimaBrisa >= (tempoBrisa - tempoFade) && actualTime - timeUltimaBrisa < tempoBrisa) {
+			ofSetColor(255, 255, 255, ofMap(actualTime,timeUltimaBrisa + tempoBrisa - tempoFade,timeUltimaBrisa + tempoBrisa,255,0));
+		}
+		//Testa se ta no comecinho da brisa
+		else if(actualTime - timeUltimaBrisa <= tempoFade) {
+			ofSetColor(255, 255, 255, ofMap(actualTime,timeUltimaBrisa,timeUltimaBrisa+tempoFade,0,255));
+		} else {
+			ofSetColor(255, 255, 255);
+		}
+	}
 
 	fboLayer.draw(0,0,vw,vh);
 	
@@ -99,6 +154,22 @@ void ofApp::draw(){
 	fboLayer.draw(0,0,vw,vh);
 
 	ofPopMatrix();
+
+	// Testa se ja passou tempo pra começar o fade && ainda nao acabou a brisa
+	if(actualTime - timeUltimaBrisa > (tempoBrisa - tempoFade) && actualTime - timeUltimaBrisa < tempoBrisa) {
+		ofSetColor(255, 255, 255, ofMap(actualTime,timeUltimaBrisa + tempoBrisa - tempoFade,timeUltimaBrisa + tempoBrisa,0,255));
+	}
+	//Testa se ta no comecinho da brisa
+	else if(actualTime - timeUltimaBrisa < tempoFade) {
+		ofSetColor(255, 255, 255, ofMap(actualTime,timeUltimaBrisa,timeUltimaBrisa+tempoFade,255,0));
+	} else {
+		ofSetColor(255, 255, 255, 0);
+	}
+
+	logoBrisa.setAnchorPercent(0.5,0.5);
+	logoBrisa.draw(vw/2,vh/2);
+	ofSetColor(255, 255, 255, 255);
+
 }
 
 //--------------------------------------------------------------
@@ -162,7 +233,11 @@ void Brisa::setup() {
 
 	switch (tipoBrisa) {
 		case 0 : // video
-			setupVideo("claricefalcao.mp4");
+			if(iShader < 0 || iShader > 5) iShader = 0;
+			if(urlpath == "") {
+				urlpath = "claricefalcao.mp4";
+			}
+			setupVideo(urlpath);
 			break;
 
 		case 1 : // contorno
@@ -170,7 +245,10 @@ void Brisa::setup() {
 			break;
 
 		case 2 : // gifFull
-			loadGif("fullscreen/blackboca");
+			if(gifPath == "") {
+				gifPath = "fullscreen/blackboca";
+			}
+			loadGif(gifPath);
 			break;
 
 		case 3 : // poligonos
@@ -211,6 +289,7 @@ void Brisa::update(float dt) {
 					}
 					updateKinect(kinectDepth);
 				}
+				// shaderBrisaInteracao = shaders[iShader];
 			}
 			break;
 		
@@ -252,17 +331,16 @@ void Brisa::draw() {
 		case 0 : // video
 			if( video.isLoaded() ) {
 
-				/*shaderBrisaInteracao = retornaShader(iShader);
-
+/*
 				shaderBrisaInteracao.begin();
 
-				if(fboKinect.isAllocated()) {
+				if(kinectLigado && fboKinect.isAllocated()) {
 					shaderBrisaInteracao.setUniformTexture( "texture1", fboKinect.getTextureReference(), 1 );
 				}
 				*/
 				video.draw(-(wVideo-1024)/2, -(hVideo-768)/2, wVideo, hVideo);
-
-				// shaderBrisaInteracao.end();	
+/*
+				shaderBrisaInteracao.end();	*/
 			}
 			break;
 
@@ -273,14 +351,13 @@ void Brisa::draw() {
 		case 2 : // gifFull
 			if(urlpasta !="" && listaImg.size() > 0) {
 
-				float i = fmodf( prevTime/10, listaImg.size() ); // [0..duration]
+				float i = fmodf( actualTime/10, listaImg.size() ); // [0..duration]
 
 				int ngif = listaImg.size();
 				float duration = ngif / 12.0; //25fps		
-				float pos = fmodf( prevTime, duration ); // [0..duration]
+				float pos = fmodf( actualTime, duration ); // [0..duration]
 				//5. Convert pos in the frame number
 				int j = int( pos / duration * ngif );
-
 				listaImg[j].setAnchorPercent( 0.5, 0.5 );
 
 				 // Encontra proporção para redimensionar p fullscreen
@@ -300,21 +377,22 @@ void Brisa::draw() {
 			break;
 		case 3: // poligonos
 			// Desenha poligono
-			ofSetColor(cor1);
+		ofSetColor(0,0,0);
+			// ofSetColor(cor1);
 			desenhaPoligono( int(abs(sin(prevTime*0.1)*4)) + 4, abs(sin(prevTime*0.7-.3))*100 + 800 ,true,true);
-			ofSetColor(cor2);
+			// ofSetColor(cor2);
 			desenhaPoligono( int(abs(sin(prevTime*0.1)*4)) + 4, abs(sin(prevTime*0.7-.2))*100 + 700 ,true,true);
-			ofSetColor(cor1);
+			// ofSetColor(cor1);
 			desenhaPoligono( int(abs(sin(prevTime*0.1)*4)) + 4, abs(sin(prevTime*0.7-.1))*100 + 600 ,true,true);
-			ofSetColor(cor2);
+			// ofSetColor(cor2);
 			desenhaPoligono( int(abs(sin(prevTime*0.1)*4)) + 4, abs(sin(prevTime*0.7))*100 + 500 ,true,true);
-			ofSetColor(cor1);
+			// ofSetColor(cor1);
 			desenhaPoligono( int(abs(sin(prevTime*0.1)*4)) + 4, abs(sin(prevTime*0.7+.1))*100 + 400 ,true,true);
-			ofSetColor(cor2);
+			// ofSetColor(cor2);
 			desenhaPoligono( int(abs(sin(prevTime*0.1)*4)) + 4, abs(sin(prevTime*0.7+.2))*100 + 300 ,true,true);
-			ofSetColor(cor1);
+			// ofSetColor(cor1);
 			desenhaPoligono( int(abs(sin(prevTime*0.1)*4)) + 4, abs(sin(prevTime*0.7+.3))*100 + 200 ,true,true);
-			ofSetColor(cor2);
+			// ofSetColor(cor2);
 			desenhaPoligono( int(abs(sin(prevTime*0.1)*4)) + 4, abs(sin(prevTime*0.7)+.4)*100 + 100 ,true,true);
 			break;
 
@@ -363,7 +441,7 @@ void Brisa::draw() {
 }
 
 void Brisa::setupVideo(string videoPath) {
-	urlpath = "videos/" + videoPath;
+	urlpath =  videoPath;
 	cout << "Video load: " << urlpath;
 	if(urlpath != "") {
 		video.load(urlpath);
@@ -385,6 +463,7 @@ void Brisa::setupVideo(string videoPath) {
 		}
 		cout << "\nredimensionado: " << wOriginal << "x" << hOriginal << " => " << wVideo << "x" << hVideo;
 	}
+	shaderBrisaInteracao = shaders[3];
 }
 void Brisa::updateKinect(ofxCvGrayscaleImage imgKinect) {
 		fboKinect.begin();
@@ -395,10 +474,10 @@ void Brisa::updateKinect(ofxCvGrayscaleImage imgKinect) {
 		fboKinect.end();	
 }
 
-void Brisa::loadGif(string gifPath) {
+void Brisa::loadGif(string gPath) {
 	// Carrega numero de img da sequencia
 	ofDirectory dirgif;
-	urlpasta = "gifs/"+gifPath;
+	urlpasta = gPath;
 	int nimg = dirgif.listDir(urlpasta);
 
 	cout << urlpasta << ": ";
@@ -451,6 +530,32 @@ void Brisa::desenhaPoligono(int vertices, int radius, bool rotate, bool fill) {
 	ofEndShape();
 
 	glPopMatrix();
+}
+
+// Nova config
+void Brisa::setConfig(configsBrisa c) {
+	tipoBrisa = c.tipoBrisa;
+	switch (tipoBrisa) {
+		case 0 : // video
+			urlpath = c.urlpath;
+			iShader = c.iShader;
+			break;
+		
+		case 1 : // contorno
+			break;
+
+		case 2 : // gifFull
+
+			gifPath = c.gifPath;
+			break;
+
+		case 3 : 
+		break;
+
+		case 4 : // illu
+		case 5 : // girassol
+			break;
+	}
 }
 
 ofxCvGrayscaleImage Brisa::blurImage(ofxCvGrayscaleImage imgOriginal) {

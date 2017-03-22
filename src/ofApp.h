@@ -15,9 +15,13 @@ public:
 	void update( float dt );   	//Recalcula brisa
 	void draw();
 
+	void setConfig(configsBrisa c);
+
 	int tipoBrisa;
 
 	// Brisa Video
+	int iShader;
+	ofShader shaderBrisaInteracao;
 	void setupVideo(string videoPath);
 	void updateKinect(ofxCvGrayscaleImage imgKinect);
 	string urlpath;
@@ -30,6 +34,7 @@ public:
 	ofxCvContourFinder contourFinder;
 
 	// Brisa Gif
+	string gifPath;
 	void loadGif(string gifPath);
 	string urlpasta;
 	vector<ofTexture> listaImg;
@@ -73,7 +78,12 @@ class ofApp : public ofBaseApp{
 		shared_ptr<ofAppBaseWindow> window;
 		shared_ptr<ofBaseGLRenderer> gl;
 
+		configsBrisa configsBrisa1,configsBrisa2,configsBrisa3,configsBrisa4;
+
 		Brisa brisa1,brisa2,brisa3,brisa4;
     	bool ativaBrisa1,ativaBrisa2,ativaBrisa3,ativaBrisa4;
     	ofFbo fboLayer;
+
+    	float tempoBrisa, timeUltimaBrisa, tempoFade;
+
 };
