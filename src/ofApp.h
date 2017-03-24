@@ -13,6 +13,7 @@ class ofApp : public ofBaseApp{
 		void setup();
 		void update();
 		void draw();
+		void exit();
 
 		void keyPressed(int key);
 		void keyReleased(int key);
@@ -31,6 +32,4 @@ class ofApp : public ofBaseApp{
 		shared_ptr<ofAppBaseWindow> window;
 		shared_ptr<ofBaseGLRenderer> gl;
 
-    	bool ativaBrisa1,ativaBrisa2,ativaBrisa3,ativaBrisa4;
-    	ofFbo fboLayer;
 };

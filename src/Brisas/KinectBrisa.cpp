@@ -11,11 +11,10 @@ void KinectBrisa::setup() {
 }
 void KinectBrisa::draw() {
 
+	ofSetColor(255,255,255);
 	if (ativa) {
 		kinecto.update();
 		kinecto.draw(0,0);
 	}
 
-	ofSetColor(255,255,0);
-	ofDrawTriangle(700,100,500,300,900,300);
 }

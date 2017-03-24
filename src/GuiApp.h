@@ -12,19 +12,11 @@ public:
     void update();
     void draw();
 
-    //ofxKinect kinect;
     void startKinect();
     
     ofxImGui::Gui gui;
 
-    GLuint kinectGLuintRGB;
-    GLuint kinectGLuintDepth;
+    vector<Brisa*> brisas;
 
-    bool kinectLigado;
-    bool mirrorKinect;
-    ofxCvColorImage kinectRGB;
-    ofxCvGrayscaleImage kinectDepth;
-
-    bool ativaBrisa1,ativaBrisa2,ativaBrisa3,ativaBrisa4;
-
+    GLuint btnCriaVideo,btnCriaPoligono,btnCriaKinect;
 };

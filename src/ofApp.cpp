@@ -1,114 +1,57 @@
 #include "ofApp.h"
 
-bool kinectLigado;
-ofxCvColorImage kinectRGB;
-ofxCvGrayscaleImage kinectDepth, kinectDepthBlur;
+float t0, t1;
 
-
-float prevTime, actualTime;
-
-int vw = 1024;
-int vh = 768;
-
-VideoBrisa video1;
-PoligonoBrisa poligono1;
-KinectBrisa kinect1;
-
-Brisa *brisas[] = { &video1, &poligono1, &kinect1 };
-
+vector<Brisa*> brisas;
 
 //--------------------------------------------------------------
 void ofApp::setup(){
-
-	kinectRGB.allocate(640,480);
-	kinectDepth.allocate(640,480);
-	fboLayer.allocate(1024,768);
-
 
 }
 
 //--------------------------------------------------------------
 void ofApp::update(){
-	prevTime = actualTime;
-	actualTime = ofGetElapsedTimef();
 
-	// Pega configurações do kinect da Janela de GUI
-	kinectLigado = gui->kinectLigado;
+	// Atualiza as brisas configuradas
+	brisas = gui->brisas;
 
-	kinectRGB = gui->kinectRGB;
-	kinectDepth = gui->kinectDepth;
+	// Quanto tempo passou desde o ultimo update?
+	// Resp = t1 - t0
+	t0 = t1;
+	t1 = ofGetElapsedTimef();
 
-
-	ativaBrisa1 = gui->ativaBrisa1;
-	ativaBrisa2 = gui->ativaBrisa2;
-	ativaBrisa3 = gui->ativaBrisa3;
-	ativaBrisa4 = gui->ativaBrisa4;
 
 	if (!brisas[2]->ativa) {
 		brisas[2]->setup();
-		cout << "kinect ligou?";
+		cout << "kinect ligou";
 	}
 
-/*
-	if(ativaBrisa1 && !brisa1.ativa) {
-		brisa1.tipoBrisa = 3; //video
-		brisa1.setup();
-		brisa1.ativa = true;
-	}
-	if(ativaBrisa2 && !brisa2.ativa) {
-		brisa2.tipoBrisa = 4; //gifFull
-		brisa2.setup();
-		brisa2.ativa = true;
-	}
-	if(ativaBrisa3 && !brisa3.ativa) {
-		brisa3.tipoBrisa = 5; //contorno
-		brisa3.setup();
-		brisa3.ativa = true;
-	}
-	if(ativaBrisa4 && !brisa4.ativa) {
-		brisa4.tipoBrisa = 1; //contorno
-		brisa4.setup();
-		brisa4.ativa = true;
-	}
-
-	if(brisa1.ativa) {
-		brisa1.update(actualTime - prevTime);
-	}
-	if(brisa2.ativa) {
-		brisa2.update(actualTime - prevTime);
-	}
-	if(brisa3.ativa) {
-		brisa3.update(actualTime - prevTime);
-	}
-	if(brisa4.ativa) {
-		brisa4.update(actualTime - prevTime);
-	}
-
-
-	fboLayer.begin();
-	if(brisa1.ativa) {
-		brisa1.draw();
-	}
-	if(brisa2.ativa) {
-		brisa2.draw();
-	}
-	if(brisa3.ativa) {
-		brisa3.draw();
-	}
-	if(brisa4.ativa) {
-		brisa4.draw();
-	}
-	fboLayer.end();
-	*/
 
 }
 
 //--------------------------------------------------------------
 void ofApp::draw(){
 
-	brisas[0]->draw();
-	brisas[1]->draw();
-	brisas[2]->draw();
+	// Me mostra essas brisa
+	for( int i = 0; i < brisas.size(); i++ )
+    {
+        brisas[i]->draw();
+    }
+}
+
+//--------------------------------------------------------------
+void ofApp::exit(){
+
+	// Libera a memória das brisas
+	// Brisa vivida é brisa passada
+	/*
+    for( vector<Brisa*>::iterator i = brisas.begin(); i != brisas.end(); ++i )
+    {
+        delete *i;
+    }
+    // empty the container
+    brisas.clear();
+    */
 }
 
 //--------------------------------------------------------------
