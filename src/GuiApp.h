@@ -4,6 +4,7 @@
 #include "ofMain.h"
 #include "ofxOpenCv.h"
 #include "ofxKinect.h"
+#include "Brisas/Brisa.h"
 
 class GuiApp: public ofBaseApp {
 public:
@@ -11,7 +12,7 @@ public:
     void update();
     void draw();
 
-    ofxKinect kinect;
+    //ofxKinect kinect;
     void startKinect();
     
     ofxImGui::Gui gui;

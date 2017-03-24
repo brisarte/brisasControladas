@@ -14,12 +14,16 @@ VideoBrisa video1;
 PoligonoBrisa poligono1;
 KinectBrisa kinect1;
 
+Brisa *brisas[] = { &video1, &poligono1, &kinect1 };
+
+
 //--------------------------------------------------------------
 void ofApp::setup(){
 
 	kinectRGB.allocate(640,480);
 	kinectDepth.allocate(640,480);
 	fboLayer.allocate(1024,768);
+
 
 }
 
@@ -39,6 +43,11 @@ void ofApp::update(){
 	ativaBrisa2 = gui->ativaBrisa2;
 	ativaBrisa3 = gui->ativaBrisa3;
 	ativaBrisa4 = gui->ativaBrisa4;
+
+	if (!brisas[2]->ativa) {
+		brisas[2]->setup();
+		cout << "kinect ligou?";
+	}
 
 /*
 	if(ativaBrisa1 && !brisa1.ativa) {
@@ -97,10 +106,9 @@ void ofApp::update(){
 //--------------------------------------------------------------
 void ofApp::draw(){
 
-	fboLayer.draw(0,0,vw,vh);
-	video1.draw();
-	kinect1.draw();
-	poligono1.draw();
+	brisas[0]->draw();
+	brisas[1]->draw();
+	brisas[2]->draw();
 }
 
 //--------------------------------------------------------------

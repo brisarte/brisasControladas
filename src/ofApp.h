@@ -4,7 +4,7 @@
 #include "ofxOpenCv.h"
 #include "ofxKinect.h"
 #include "GuiApp.h"
-#include "Brisa.h"
+#include "Brisas/Brisa.h"
 
 
 class ofApp : public ofBaseApp{
