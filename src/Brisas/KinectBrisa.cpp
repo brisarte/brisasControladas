@@ -1,5 +1,8 @@
 #include "Brisa.h"
 
+KinectBrisa::KinectBrisa() {
+	iconPath = "../data/img/icon/kinect.png";
+}
 
 void KinectBrisa::setup() {
 	kinecto.setRegistration(true);

@@ -2,7 +2,7 @@
 
 float t0, t1;
 
-vector<Brisa*> brisas;
+vector<Brisa*> brisasAtivas;
 
 //--------------------------------------------------------------
 void ofApp::setup(){
@@ -13,29 +13,21 @@ void ofApp::setup(){
 void ofApp::update(){
 
 	// Atualiza as brisas configuradas
-	brisas = gui->brisas;
+	brisasAtivas = gui->brisasAtivas;
 
 	// Quanto tempo passou desde o ultimo update?
 	// Resp = t1 - t0
 	t0 = t1;
 	t1 = ofGetElapsedTimef();
-
-
-	if (!brisas[2]->ativa) {
-		brisas[2]->setup();
-		cout << "kinect ligou";
-	}
-
-
 }
 
 //--------------------------------------------------------------
 void ofApp::draw(){
 
 	// Me mostra essas brisa
-	for( int i = 0; i < brisas.size(); i++ )
+	for( int i = 0; i < brisasAtivas.size(); i++ )
     {
-        brisas[i]->draw();
+        brisasAtivas[i]->draw();
     }
 }
 
@@ -47,11 +39,9 @@ void ofApp::exit(){
 	/*
     for( vector<Brisa*>::iterator i = brisas.begin(); i != brisas.end(); ++i )
     {
-        delete *i;
-    }
-    // empty the container
-    brisas.clear();
-    */
+        
+        brisas.erase(i);
+    }*/
 }
 
 //--------------------------------------------------------------

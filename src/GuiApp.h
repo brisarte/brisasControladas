@@ -17,6 +17,8 @@ public:
     ofxImGui::Gui gui;
 
     vector<Brisa*> brisas;
+    vector<Brisa*> brisasAtivas;
 
     GLuint btnCriaVideo,btnCriaPoligono,btnCriaKinect;
+
 };
