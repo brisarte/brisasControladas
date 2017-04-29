@@ -7,15 +7,19 @@
 
 class Brisa {
 
+
 public:
-	bool ativa = false; // Controle de render
+
 	string iconPath;
 	GLuint btnConfigBrisa; // Botão pra mostrar as configs
+	bool configBrisa;
 
 	virtual void setup();           	//Configura brisa
 	virtual void update( float dt );   	//Recalcula brisa
 	virtual void draw();
-	void drawButton(ofxImGui::Gui *gui);
+
+	virtual void drawControles();
+	void drawButton(ofxImGui::Gui *gui, int i);
 };
 
 
@@ -23,15 +27,21 @@ class VideoBrisa : public Brisa {
 public:
 	VideoBrisa();
 	void draw();
+
+	void drawControles();
 };
 
 class KinectBrisa : public Brisa {
 	
+	ofxKinect kinecto;
 public:
 	KinectBrisa();
-	ofxKinect kinecto;
-	void setup();
+
+	void ligaKinect();
+
 	void draw();
+
+	void drawControles();
 };
 
 class PoligonoBrisa : public Brisa {
@@ -39,6 +49,8 @@ class PoligonoBrisa : public Brisa {
 public:
 	PoligonoBrisa();
 	void draw();
+
+	void drawControles();
 };
 
 #endif

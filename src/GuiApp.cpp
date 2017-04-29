@@ -53,7 +53,7 @@ void GuiApp::draw(){
 	// Me mostra essas brisa
 	for( int i = 0; i < brisasAtivas.size(); i++ )
     {
-        brisasAtivas[i]->drawButton(&gui);
+        brisasAtivas[i]->drawButton(&gui, i);
     }
 
     ImGui::End();

@@ -1,23 +1,29 @@
 #include "Brisa.h"
 
 KinectBrisa::KinectBrisa() {
+	setup();
 	iconPath = "../data/img/icon/kinect.png";
 }
 
-void KinectBrisa::setup() {
+void KinectBrisa::ligaKinect() {
+	/*
 	kinecto.setRegistration(true);
 	kinecto.init();
 	kinecto.open();
 	kinecto.setCameraTiltAngle(0);
-
-	ativa = true;
+	*/
 }
+
 void KinectBrisa::draw() {
 
 	ofSetColor(255,255,255);
-	if (ativa) {
+	if (false) {
 		kinecto.update();
 		kinecto.draw(0,0);
 	}
 
+}
+
+void KinectBrisa::drawControles() {
+	ImGui::Text("kinect");
 }
