@@ -52,7 +52,7 @@ void GuiApp::draw(){
 	}
 	if(criaKinect) {
 		cout << "btn pressionado: criaKinect";
-		brisasAtivas.push_back( new KinectBrisa() );
+		brisasAtivas.push_back( new KinectBrisa(&kinectGlobal) );
 	}
 
 

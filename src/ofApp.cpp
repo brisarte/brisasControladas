@@ -31,17 +31,15 @@ void ofApp::exit(){
 
 	// Libera a memória das brisas
 	// Brisa vivida é brisa passada
-	/*
-    for( vector<Brisa*>::iterator i = brisas.begin(); i != brisas.end(); ++i )
+	for( vector<Brisa*>::iterator i = brisasAtivas.begin(); i != brisasAtivas.end(); ++i )
     {
         
-        brisas.erase(i);
-    }*/
+        brisasAtivas.erase(i);
+    }
 }
 
 //--------------------------------------------------------------
 void ofApp::keyPressed(int key){
-
 }
 
 //--------------------------------------------------------------

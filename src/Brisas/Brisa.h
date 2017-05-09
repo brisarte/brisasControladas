@@ -5,8 +5,8 @@
 #include "ofxOpenCv.h"
 #include "ofxKinect.h"
 
-class Brisa {
 
+class Brisa {
 
 public:
 
@@ -41,13 +41,14 @@ public:
 
 class KinectBrisa : public Brisa {
 	
-	ofxKinect kinecto;
+	ofxKinect *kinecto;
 public:
-	KinectBrisa();
+	KinectBrisa(ofxKinect *kinectGlobal);
 	void draw();
 	void update( float dt );
 
 	void ligaKinect();
+	void desligaKinect();
 
 	void drawControles();
 };
