@@ -3,12 +3,9 @@
 using namespace std;
 	
 
+float t0, t1;
+
 void GuiApp::setup(){
-
-	brisas.push_back( new VideoBrisa() );
-	brisas.push_back( new PoligonoBrisa() );
-	brisas.push_back( new KinectBrisa() );
-
     gui.setup();
     
 	btnCriaVideo = gui.loadTexture("../data/img/icon/video.png");
@@ -19,7 +16,19 @@ void GuiApp::setup(){
 }
 
 void GuiApp::update(){
+	
+	// Quanto tempo passou desde o ultimo update?
+	// Resp = t1 - t0
+	t0 = t1;
+	t1 = ofGetElapsedTimef();
+	float dt = t1 - t0;
 
+	// Atualiza as brisa tudo
+	for( int i = 0; i < brisasAtivas.size(); i++ )
+    {
+        brisasAtivas[i]->update(dt);
+    }
+    
 }
 
 void GuiApp::draw(){

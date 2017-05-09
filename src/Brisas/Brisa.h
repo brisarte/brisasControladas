@@ -13,8 +13,13 @@ public:
 	string iconPath;
 	GLuint btnConfigBrisa; // Botão pra mostrar as configs
 	bool configBrisa;
+	ofFbo fboBrisa;
+	GLuint textureSourceID;
+	ofPixels pixelsButtonSource;
 
-	virtual void setup();           	//Configura brisa
+    ImVec4 corBrisa;
+
+	virtual void setup();        	//Configura brisa
 	virtual void update( float dt );   	//Recalcula brisa
 	virtual void draw();
 
@@ -27,28 +32,33 @@ class VideoBrisa : public Brisa {
 public:
 	VideoBrisa();
 	void draw();
+	void update( float dt );
+	ofFbo fboVideo;
 
 	void drawControles();
 };
+
 
 class KinectBrisa : public Brisa {
 	
 	ofxKinect kinecto;
 public:
 	KinectBrisa();
+	void draw();
+	void update( float dt );
 
 	void ligaKinect();
 
-	void draw();
-
 	void drawControles();
 };
+
 
 class PoligonoBrisa : public Brisa {
 	
 public:
 	PoligonoBrisa();
 	void draw();
+	void update( float dt );
 
 	void drawControles();
 };

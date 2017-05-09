@@ -1,6 +1,5 @@
 #include "ofApp.h"
 
-float t0, t1;
 
 vector<Brisa*> brisasAtivas;
 
@@ -15,10 +14,6 @@ void ofApp::update(){
 	// Atualiza as brisas configuradas
 	brisasAtivas = gui->brisasAtivas;
 
-	// Quanto tempo passou desde o ultimo update?
-	// Resp = t1 - t0
-	t0 = t1;
-	t1 = ofGetElapsedTimef();
 }
 
 //--------------------------------------------------------------

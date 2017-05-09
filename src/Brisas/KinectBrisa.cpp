@@ -1,8 +1,9 @@
 #include "Brisa.h"
 
 KinectBrisa::KinectBrisa() {
-	setup();
+	// Configura a brisa e defini o ícone
 	iconPath = "../data/img/icon/kinect.png";
+	setup();
 }
 
 void KinectBrisa::ligaKinect() {
@@ -14,16 +15,24 @@ void KinectBrisa::ligaKinect() {
 	*/
 }
 
-void KinectBrisa::draw() {
+void KinectBrisa::update( float dt ) {
+	fboBrisa.begin();
+    ofClear(255,255,255, 0);
 
-	ofSetColor(255,255,255);
+	ofSetColor(corBrisa);
 	if (false) {
 		kinecto.update();
 		kinecto.draw(0,0);
 	}
 
+    fboBrisa.end();
+}
+
+void KinectBrisa::draw() {
+	fboBrisa.draw(0,0);
 }
 
 void KinectBrisa::drawControles() {
 	ImGui::Text("kinect");
+	ImGui::ColorEdit3("Cor da Brisa ", (float*)&corBrisa);
 }
