@@ -29,13 +29,21 @@ public:
 
 
 class VideoBrisa : public Brisa {
+	int heightDraw, widthDraw, heightOrig, widthOrig;
+
+
 public:
 	VideoBrisa();
 	void draw();
 	void update( float dt );
-	ofFbo fboVideo;
+
+	ofVideoPlayer video;
+	string caminhoVideo;
+	ofFbo fboKinect;
 
 	void drawControles();
+
+	void setupVideo(string videoPath);
 };
 
 
