@@ -5,6 +5,7 @@ KinectBrisa::KinectBrisa(ofxKinect *kinectGlobal) {
 	iconPath = "../data/img/icon/kinect.png";
 	setup();
 	kinecto = kinectGlobal;
+	camera = 0; // 0 = camera RGB (default) | 1 = camera Depth
 }
 
 void KinectBrisa::ligaKinect() {
@@ -29,10 +30,15 @@ void KinectBrisa::update( float dt ) {
 
 	if ( kinecto->isConnected() ) {
 		kinecto->update();
-		kinecto->draw(0,0);
+		if (camera == 0) {
+			kinecto->draw(0,0,1024,768);
+		} else {
+			kinecto->drawDepth(0,0,1024,768);
+		}
 	}
 
     fboBrisa.end();
+	fboBrisa.readToPixels(pixelsButtonSource);
 }
 
 void KinectBrisa::draw() {
@@ -44,6 +50,15 @@ void KinectBrisa::drawControles() {
 	ImGui::ColorEdit3("Cor da Brisa ", (float*)&corBrisa);
 
 
-	if (ImGui::Button("Liga Kinect")) { ligaKinect(); } 
-	if (ImGui::Button("Desliga Kinect")) { desligaKinect(); } 
+	// Botões de liga e desliga do kinect
+	if ( kinecto->isConnected() ) {
+		if (ImGui::Button("Desliga Kinect")) { desligaKinect(); } 
+	} else {
+		if (ImGui::Button("Liga Kinect")) { ligaKinect(); } 
+	}
+
+	// Camêra fonte
+	ImGui::Text("Camêra selecionada:");
+	ImGui::RadioButton("RGB", &camera, 0); ImGui::SameLine();
+	ImGui::RadioButton("Profundidade", &camera, 1);
 }

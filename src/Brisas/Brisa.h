@@ -42,6 +42,7 @@ public:
 class KinectBrisa : public Brisa {
 	
 	ofxKinect *kinecto;
+	int camera;
 public:
 	KinectBrisa(ofxKinect *kinectGlobal);
 	void draw();

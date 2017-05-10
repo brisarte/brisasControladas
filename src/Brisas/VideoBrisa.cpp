@@ -14,7 +14,9 @@ void VideoBrisa::update( float dt ) {
 	fboVideo.begin();
     ofClear(255,255,255, 0);
 	ofSetColor(corBrisa);
+
 	ofDrawCircle(200,200,200);
+	
     fboVideo.end();
 	fboVideo.readToPixels(pixelsButtonSource);
 }
