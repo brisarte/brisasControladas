@@ -19,6 +19,7 @@ void ofApp::update(){
 //--------------------------------------------------------------
 void ofApp::draw(){
 
+	ofBackground(0, 0, 0);
 	// Me mostra essas brisa
 	for( int i = 0; i < brisasAtivas.size(); i++ )
     {

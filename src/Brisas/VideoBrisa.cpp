@@ -1,6 +1,8 @@
 #include "Brisa.h"
 
-VideoBrisa::VideoBrisa() {
+VideoBrisa::VideoBrisa(vector<Brisa*> *brisasParent) {
+	brisasAtivas = brisasParent;
+	cout << brisasAtivas->size();
 	// Configura a brisa e defini o ícone
 	iconPath = "../data/img/icon/video.png";
 	setup();
@@ -9,23 +11,32 @@ VideoBrisa::VideoBrisa() {
     ofClear(255,255,255, 0);
     fboBrisa.end();
 
-    setupVideo("../data/videos/claricefalcao.mp4");
+    setupVideo("../data/videos/alflorescer.mp4");
+	shaderKinect.load("../data/shaders/vertexdummy.c", "../data/shaders/whiteAsAlpha.c");
 }
 
 void VideoBrisa::update( float dt ) {
 	if( video.isLoaded() )  {
 		video.update();
 
-		if(false) {
-		// alloca um fbo com o tamanho original do video
-		// pra poder mesclar no shader
-			if( !fboKinect.isAllocated() || fboKinect.getWidth() != widthOrig ) {
-				fboKinect.clear();
-				fboKinect.allocate(widthOrig,heightOrig);
+		if (true) {
+			// alloca um fbo com o tamanho original do video
+			// pra poder mesclar no shader 
+			if (!fboKinect.isAllocated()) {
+				
+				fboKinect.allocate(1024, 768);
 			}
+			
 			//desenha img do kinect dentro do fboKinect
+			fboKinect.begin();
+
+			brisasAtivas->at(0)->draw();
+
+			fboKinect.end();
+	
 		}
 	}
+
 	fboBrisa.begin();
     ofClear(255,255,255, 0);
 	ofSetColor(corBrisa);
@@ -39,8 +50,17 @@ void VideoBrisa::update( float dt ) {
 }
 
 void VideoBrisa::draw() {
+	shaderKinect.begin();
 
-	fboBrisa.draw(0,0);
+	if (fboKinect.isAllocated()) {
+		shaderKinect.setUniformTexture("texture1", fboKinect.getTextureReference(), 1); //"1" means that it is texture 1
+	}
+
+	ofSetColor(255, 255, 255);
+	fboBrisa.draw(0, 0);
+
+	shaderKinect.end();
+
 }
 
 void VideoBrisa::drawControles() {

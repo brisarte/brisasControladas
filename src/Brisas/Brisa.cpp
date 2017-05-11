@@ -12,7 +12,11 @@ void Brisa::setup() {
     corBrisa = ofColor(255, 255, 255);
 }
 
-void Brisa::update( float dt ) {
+void Brisa::update(float dt) {
+}
+
+void Brisa::mostraBrisas() {
+
 }
 
 void Brisa::draw() {

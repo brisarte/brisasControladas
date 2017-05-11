@@ -29,7 +29,7 @@ void main(){
   vec4 color;
 
   color = color0;  
-  color.a = 1 - corDepth.b;  
+  color.a = (corDepth.r + corDepth.g + corDepth.b) / 3;
 
   if(color.a > 0) {
     color.a = color.a*2;

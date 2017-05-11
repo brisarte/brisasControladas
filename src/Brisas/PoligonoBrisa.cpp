@@ -1,6 +1,6 @@
 #include "Brisa.h"
 
-PoligonoBrisa::PoligonoBrisa() {
+PoligonoBrisa::PoligonoBrisa(vector<Brisa*> *brisasParent) {
 	// Configura a brisa e defini o ícone
 	iconPath = "../data/img/icon/poligon.png";
 	setup();

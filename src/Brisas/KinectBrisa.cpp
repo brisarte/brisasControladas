@@ -1,11 +1,12 @@
 #include "Brisa.h"
 
-KinectBrisa::KinectBrisa(ofxKinect *kinectGlobal) {
+KinectBrisa::KinectBrisa(ofxKinect *kinectGlobal, vector<Brisa*> *brisasParent) {
 	// Configura a brisa e defini o ícone
+	brisasAtivas = brisasParent;
 	iconPath = "../data/img/icon/kinect.png";
-	setup();
 	kinecto = kinectGlobal;
 	camera = 0; // 0 = camera RGB (default) | 1 = camera Depth
+	setup();
 }
 
 void KinectBrisa::ligaKinect() {

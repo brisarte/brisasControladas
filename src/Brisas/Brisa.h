@@ -9,18 +9,19 @@
 class Brisa {
 
 public:
-
+	
+    vector<Brisa*> *brisasAtivas;
 	string iconPath;
 	GLuint btnConfigBrisa; // Botão pra mostrar as configs
 	bool configBrisa;
 	ofFbo fboBrisa;
 	GLuint textureSourceID;
 	ofPixels pixelsButtonSource;
-
+	void mostraBrisas();
     ImVec4 corBrisa;
 
 	virtual void setup();        	//Configura brisa
-	virtual void update( float dt );   	//Recalcula brisa
+	virtual void update( float dt);   	//Recalcula brisa
 	virtual void draw();
 
 	virtual void drawControles();
@@ -29,17 +30,18 @@ public:
 
 
 class VideoBrisa : public Brisa {
-	int heightDraw, widthDraw, heightOrig, widthOrig;
+	float heightDraw, widthDraw, heightOrig, widthOrig;
 
 
 public:
-	VideoBrisa();
+	VideoBrisa(vector<Brisa*> *brisasParent);
 	void draw();
 	void update( float dt );
 
 	ofVideoPlayer video;
 	string caminhoVideo;
 	ofFbo fboKinect;
+	ofShader shaderKinect;
 
 	void drawControles();
 
@@ -52,7 +54,7 @@ class KinectBrisa : public Brisa {
 	ofxKinect *kinecto;
 	int camera;
 public:
-	KinectBrisa(ofxKinect *kinectGlobal);
+	KinectBrisa(ofxKinect *kinectGlobal, vector<Brisa*> *brisasParent);
 	void draw();
 	void update( float dt );
 
@@ -66,7 +68,7 @@ public:
 class PoligonoBrisa : public Brisa {
 	
 public:
-	PoligonoBrisa();
+	PoligonoBrisa(vector<Brisa*> *brisasParent);
 	void draw();
 	void update( float dt );
 

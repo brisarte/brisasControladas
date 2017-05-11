@@ -44,15 +44,15 @@ void GuiApp::draw(){
 
 	if(criaVideo) {
 		cout << "btn pressionado: criaVideo";
-		brisasAtivas.push_back( new VideoBrisa() );
+		brisasAtivas.push_back( new VideoBrisa( &brisasAtivas ) );
 	}
 	if(criaPoligono) {
 		cout << "btn pressionado: criaPoligono";
-		brisasAtivas.push_back( new PoligonoBrisa() );
+		brisasAtivas.push_back( new PoligonoBrisa(&brisasAtivas) );
 	}
 	if(criaKinect) {
 		cout << "btn pressionado: criaKinect";
-		brisasAtivas.push_back( new KinectBrisa(&kinectGlobal) );
+		brisasAtivas.push_back( new KinectBrisa(&kinectGlobal, &brisasAtivas) );
 	}
 
 
