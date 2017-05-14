@@ -39,14 +39,14 @@ void KinectBrisa::update( float dt ) {
 	}
 
     fboBrisa.end();
-	fboBrisa.readToPixels(pixelsButtonSource);
+	fboBrisa.readToPixels(pixelsBrisa);
 }
 
 void KinectBrisa::draw() {
 	fboBrisa.draw(0,0);
 }
 
-void KinectBrisa::drawControles() {
+void KinectBrisa::drawControles(int iBrisa) {
 	ImGui::Text("kinect");
 	ImGui::ColorEdit3("Cor da Brisa ", (float*)&corBrisa);
 
@@ -62,4 +62,7 @@ void KinectBrisa::drawControles() {
 	ImGui::Text("Camêra selecionada:");
 	ImGui::RadioButton("RGB", &camera, 0); ImGui::SameLine();
 	ImGui::RadioButton("Profundidade", &camera, 1);
+
+
+	if (ImGui::Button("Excluir Brisa")) { excluiBrisa(iBrisa); } 
 }

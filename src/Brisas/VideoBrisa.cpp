@@ -11,30 +11,13 @@ VideoBrisa::VideoBrisa(vector<Brisa*> *brisasParent) {
     ofClear(255,255,255, 0);
     fboBrisa.end();
 
-    setupVideo("../data/videos/alflorescer.mp4");
+    setupVideo("../data/videos/claricefalcao.mp4");
 	shaderKinect.load("../data/shaders/vertexdummy.c", "../data/shaders/whiteAsAlpha.c");
 }
 
 void VideoBrisa::update( float dt ) {
 	if( video.isLoaded() )  {
 		video.update();
-
-		if (true) {
-			// alloca um fbo com o tamanho original do video
-			// pra poder mesclar no shader 
-			if (!fboKinect.isAllocated()) {
-				
-				fboKinect.allocate(1024, 768);
-			}
-			
-			//desenha img do kinect dentro do fboKinect
-			fboKinect.begin();
-
-			brisasAtivas->at(0)->draw();
-
-			fboKinect.end();
-	
-		}
 	}
 
 	fboBrisa.begin();
@@ -46,14 +29,14 @@ void VideoBrisa::update( float dt ) {
 	}
 
     fboBrisa.end();
-	fboBrisa.readToPixels(pixelsButtonSource);
+	fboBrisa.readToPixels(pixelsBrisa);
 }
 
 void VideoBrisa::draw() {
 	shaderKinect.begin();
 
 	if (fboKinect.isAllocated()) {
-		shaderKinect.setUniformTexture("texture1", fboKinect.getTextureReference(), 1); //"1" means that it is texture 1
+		shaderKinect.setUniformTexture("texture1", brisasAtivas->at(0)->fboBrisa.getTextureReference(), 1); //"1" means that it is texture 1
 	}
 
 	ofSetColor(255, 255, 255);
@@ -63,9 +46,35 @@ void VideoBrisa::draw() {
 
 }
 
-void VideoBrisa::drawControles() {
+void VideoBrisa::drawControles(int iBrisa) {
 	ImGui::Text("video");
 	ImGui::ColorEdit3("Cor da Brisa ", (float*)&corBrisa);
+
+	if (ImGui::Button("Carregar Vídeo")) { 
+		ImGui::OpenPopup("loadVideo");
+	}
+	if (ImGui::BeginPopup("loadVideo")) {
+		listaVideos(); 
+		ImGui::EndPopup();
+	} 
+
+	if (ImGui::Button("Excluir Brisa")) { excluiBrisa(iBrisa); } 
+}
+
+void VideoBrisa::listaVideos() {
+
+	ofDirectory dirVideos;
+	//2. Carrega numero de pastas de sequencias
+	int nVideos = dirVideos.listDir("../data/videos/");
+
+	//4. Abre pastas
+	for (int i=0; i<nVideos; i++) {	
+		string video = dirVideos.getPath( i );
+		if (ImGui::Selectable(video.c_str())) {
+			setupVideo(video);
+		}
+
+	}
 }
 
 void VideoBrisa::setupVideo(string videoPath) {

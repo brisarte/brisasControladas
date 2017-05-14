@@ -11,12 +11,13 @@ class Brisa {
 public:
 	
     vector<Brisa*> *brisasAtivas;
+
 	string iconPath;
 	GLuint btnConfigBrisa; // Botão pra mostrar as configs
 	bool configBrisa;
 	ofFbo fboBrisa;
 	GLuint textureSourceID;
-	ofPixels pixelsButtonSource;
+	ofPixels pixelsBrisa;
 	void mostraBrisas();
     ImVec4 corBrisa;
 
@@ -24,7 +25,8 @@ public:
 	virtual void update( float dt);   	//Recalcula brisa
 	virtual void draw();
 
-	virtual void drawControles();
+	virtual void drawControles(int iBrisa);
+	void excluiBrisa(int iBrisa);
 	void drawButton(ofxImGui::Gui *gui, int i);
 };
 
@@ -43,8 +45,9 @@ public:
 	ofFbo fboKinect;
 	ofShader shaderKinect;
 
-	void drawControles();
+	void drawControles(int iBrisa);
 
+	void listaVideos();
 	void setupVideo(string videoPath);
 };
 
@@ -61,7 +64,7 @@ public:
 	void ligaKinect();
 	void desligaKinect();
 
-	void drawControles();
+	void drawControles(int iBrisa);
 };
 
 
@@ -72,7 +75,16 @@ public:
 	void draw();
 	void update( float dt );
 
-	void drawControles();
+	void drawControles(int iBrisa);
+
+	void desenhaPoligono(int radius);
+	ImVec4 corComplementar;
+	int vertices;
+	int quantidade;
+	int distancia;
+	bool preencher;
+	bool trocaVertices;
+	bool rotacionar; 
 };
 
 #endif
