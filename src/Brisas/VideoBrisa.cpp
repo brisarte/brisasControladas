@@ -1,18 +1,16 @@
 #include "Brisa.h"
 
 VideoBrisa::VideoBrisa(vector<Brisa*> *brisasParent) {
+	setup();
 	brisasAtivas = brisasParent;
 	cout << brisasAtivas->size();
 	// Configura a brisa e defini o ícone
 	iconPath = "../data/img/icon/video.png";
-	setup();
 	fboBrisa.allocate(1024, 768);
 	fboBrisa.begin();
-    ofClear(255,255,255, 0);
+    ofClear(0,0,0, 0);
     fboBrisa.end();
 
-    setupVideo("../data/videos/claricefalcao.mp4");
-	shaderKinect.load("../data/shaders/vertexdummy.c", "../data/shaders/whiteAsAlpha.c");
 }
 
 void VideoBrisa::update( float dt ) {
@@ -21,7 +19,7 @@ void VideoBrisa::update( float dt ) {
 	}
 
 	fboBrisa.begin();
-    ofClear(255,255,255, 0);
+    ofClear(0,0,0, 0);
 	ofSetColor(corBrisa);
 
 	if( video.isLoaded() ) {
@@ -33,16 +31,19 @@ void VideoBrisa::update( float dt ) {
 }
 
 void VideoBrisa::draw() {
-	shaderKinect.begin();
+	if (ligaShader) {
+		shaderBrisa.begin();
+		if (iBrisaShader > -1 && brisasAtivas->at(iBrisaShader)->fboBrisa.isAllocated() ) {
+			shaderBrisa.setUniformTexture("texture1", brisasAtivas->at(iBrisaShader)->fboBrisa.getTextureReference(), 1); //"1" means that it is texture 1
+		}
 
-	if (fboKinect.isAllocated()) {
-		shaderKinect.setUniformTexture("texture1", brisasAtivas->at(0)->fboBrisa.getTextureReference(), 1); //"1" means that it is texture 1
+		ofSetColor(255, 255, 255);
+		fboBrisa.draw(0, 0);
+
+		shaderBrisa.end();
+	} else {
+		fboBrisa.draw(0, 0);
 	}
-
-	ofSetColor(255, 255, 255);
-	fboBrisa.draw(0, 0);
-
-	shaderKinect.end();
 
 }
 
@@ -58,8 +59,26 @@ void VideoBrisa::drawControles(int iBrisa) {
 		ImGui::EndPopup();
 	} 
 
+	ImGui::Checkbox("Ligar Shader", &ligaShader);
+	if (ImGui::Button("Carregar Shader")) { 
+		ImGui::OpenPopup("loadShader");
+	}
+	if (ImGui::BeginPopup("loadShader")) {
+		listaShaders(); 
+		ImGui::EndPopup();
+	} 
+	if (ImGui::Button("Brisa Shader")) { 
+		ImGui::OpenPopup("selectBrisa");
+	}
+	if (ImGui::BeginPopup("selectBrisa")) {
+		listaBrisas(); 
+		ImGui::EndPopup();
+	} 
+
 	if (ImGui::Button("Excluir Brisa")) { excluiBrisa(iBrisa); } 
 }
+
+
 
 void VideoBrisa::listaVideos() {
 

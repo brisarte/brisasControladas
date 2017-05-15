@@ -1,9 +1,10 @@
 #include "Brisa.h"
 
 PoligonoBrisa::PoligonoBrisa(vector<Brisa*> *brisasParent) {
-	// Configura a brisa e defini o ícone
-	iconPath = "../data/img/icon/poligon.png";
 	setup();
+	// Configura a brisa e defini o ícone
+	brisasAtivas = brisasParent;
+	iconPath = "../data/img/icon/poligon.png";
 	
     corBrisa = ofColor(255, 0, 0);
     corComplementar = ofColor(0, 255, 255);
@@ -60,6 +61,8 @@ void PoligonoBrisa::drawControles(int iBrisa) {
 
 	ImGui::Checkbox("Rotacionar", &rotacionar);
 	ImGui::Checkbox("Preencher", &preencher);
+
+	ImGui::Checkbox("Ligar Shader", &ligaShader);
 
 	if (ImGui::Button("Excluir Brisa")) { excluiBrisa(iBrisa); } 
 }

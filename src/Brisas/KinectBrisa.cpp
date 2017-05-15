@@ -26,15 +26,21 @@ void KinectBrisa::desligaKinect() {
 void KinectBrisa::update( float dt ) {
 	fboBrisa.begin();
     
-    ofClear(255,255,255, 0);
+	if (clearFrames) {
+		ofClear(255,255,255, 0);
+	}
+
 	ofSetColor(corBrisa);
 
 	if ( kinecto->isConnected() ) {
 		kinecto->update();
-		if (camera == 0) {
+		if (camera == 1) {
 			kinecto->draw(0,0,1024,768);
-		} else {
+		} else if (camera == 2) {
 			kinecto->drawDepth(0,0,1024,768);
+		}
+
+		if (ligaContornos) {
 		}
 	}
 
@@ -60,9 +66,12 @@ void KinectBrisa::drawControles(int iBrisa) {
 
 	// Camêra fonte
 	ImGui::Text("Camêra selecionada:");
-	ImGui::RadioButton("RGB", &camera, 0); ImGui::SameLine();
-	ImGui::RadioButton("Profundidade", &camera, 1);
+	ImGui::RadioButton("Nenhuma", &camera, 0); ImGui::SameLine();
+	ImGui::RadioButton("RGB", &camera, 1); ImGui::SameLine();
+	ImGui::RadioButton("Profundidade", &camera, 2);
 
+	ImGui::Checkbox("Contornos", &ligaContornos);
+	ImGui::Checkbox("Limpa Frames", &clearFrames);
 
 	if (ImGui::Button("Excluir Brisa")) { excluiBrisa(iBrisa); } 
 }

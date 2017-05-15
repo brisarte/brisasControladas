@@ -10,6 +10,9 @@ void Brisa::setup() {
     fboBrisa.end();
 
     corBrisa = ofColor(255, 255, 255);
+
+    ligaShader = false;
+    clearFrames = true;
 }
 
 void Brisa::update(float dt) {
@@ -53,4 +56,39 @@ void Brisa::drawButton(ofxImGui::Gui *gui, int i) {
 
 void Brisa::excluiBrisa(int iBrisa) {
 	brisasAtivas->erase(brisasAtivas->begin()+iBrisa);
+}
+
+void Brisa::loadShader(string shader) {
+	shaderBrisa.load("../data/shaders/vertexdummy.c", shader);
+}
+
+void Brisa::listaBrisas() {
+
+	int nBrisas = brisasAtivas->size();
+	if (ImGui::Selectable("Nenhuma")) {
+		iBrisaShader = -1;
+	}
+	for (int i=0; i<nBrisas; i++) {	
+		string numBrisa = "Brisa[" + to_string(i) + "]";
+		if (ImGui::Selectable(numBrisa.c_str())) {
+			iBrisaShader = i;
+		}
+
+	}
+}
+
+void Brisa::listaShaders() {
+
+	ofDirectory dirShaders;
+	//2. Carrega numero de pastas de sequencias
+	int nShaders = dirShaders.listDir("../data/shaders/");
+
+	//4. Abre pastas
+	for (int i=0; i<nShaders; i++) {	
+		string shader = dirShaders.getPath( i );
+		if (ImGui::Selectable(shader.c_str())) {
+			loadShader(shader);
+		}
+
+	}
 }

@@ -21,6 +21,11 @@ public:
 	void mostraBrisas();
     ImVec4 corBrisa;
 
+	ofShader shaderBrisa;
+	int iBrisaShader;
+    bool ligaShader;
+    bool clearFrames;
+
 	virtual void setup();        	//Configura brisa
 	virtual void update( float dt);   	//Recalcula brisa
 	virtual void draw();
@@ -28,6 +33,9 @@ public:
 	virtual void drawControles(int iBrisa);
 	void excluiBrisa(int iBrisa);
 	void drawButton(ofxImGui::Gui *gui, int i);
+	void listaShaders();
+	void loadShader(string shader);
+	void listaBrisas();
 };
 
 
@@ -43,7 +51,6 @@ public:
 	ofVideoPlayer video;
 	string caminhoVideo;
 	ofFbo fboKinect;
-	ofShader shaderKinect;
 
 	void drawControles(int iBrisa);
 
@@ -65,6 +72,8 @@ public:
 	void desligaKinect();
 
 	void drawControles(int iBrisa);
+
+	bool ligaContornos;
 };
 
 
