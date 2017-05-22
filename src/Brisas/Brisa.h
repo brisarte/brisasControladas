@@ -46,7 +46,7 @@ class VideoBrisa : public Brisa {
 public:
 	VideoBrisa(vector<Brisa*> *brisasParent);
 	void draw();
-	void update( float dt );
+	void update(float dt);
 
 	ofVideoPlayer video;
 	string caminhoVideo;
@@ -56,6 +56,47 @@ public:
 
 	void listaVideos();
 	void setupVideo(string videoPath);
+};
+
+class GifBrisa : public Brisa {
+	float heightDraw, widthDraw, heightOrig, widthOrig;
+
+
+public:
+	GifBrisa(vector<Brisa*> *brisasParent);
+	void draw();
+	void update(float dt);
+
+	ofVideoPlayer video;
+	string caminhoVideo;
+	float proporcao, rotacao;
+	int deslocX, deslocY;
+
+	void drawControles(int iBrisa);
+
+	void listaVideos();
+	void setupVideo(string videoPath);
+};
+
+
+
+class ImagemBrisa : public Brisa {
+
+
+public:
+	ImagemBrisa(vector<Brisa*> *brisasParent);
+	void draw();
+	void update(float dt);
+
+	ofImage img;
+	string caminhoImagem;
+	float proporcao, rotacao;
+	int deslocX, deslocY;
+
+	void drawControles(int iBrisa);
+
+	void listaImagens();
+	void setupImagem(string imgPath);
 };
 
 

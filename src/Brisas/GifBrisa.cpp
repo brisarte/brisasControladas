@@ -1,19 +1,22 @@
 #include "Brisa.h"
 
-VideoBrisa::VideoBrisa(vector<Brisa*> *brisasParent) {
+GifBrisa::GifBrisa(vector<Brisa*> *brisasParent) {
 	setup();
 	brisasAtivas = brisasParent;
 	cout << brisasAtivas->size();
 	// Configura a brisa e defini o ícone
-	iconPath = "../data/img/icon/video.png";
+	iconPath = "../data/img/icon/gif.png";
 	fboBrisa.allocate(1024, 768);
 	fboBrisa.begin();
     ofClear(0,0,0, 0);
     fboBrisa.end();
 
+	rotacao = 0;
+	proporcao = 1;
+	deslocX = deslocY = 0;
 }
 
-void VideoBrisa::update( float dt ) {
+void GifBrisa::update( float dt ) {
 	if( video.isLoaded() )  {
 		video.update();
 	}
@@ -22,15 +25,23 @@ void VideoBrisa::update( float dt ) {
     ofClear(0,0,0, 0);
 	ofSetColor(corBrisa);
 
+
 	if( video.isLoaded() ) {
-		video.draw(-(widthDraw-1024)/2, -(heightDraw-768)/2, widthDraw, heightDraw);
+		ofPushMatrix();
+		ofTranslate(512 + deslocX, 384 + deslocY, 0);
+		video.setAnchorPercent(0.5, 0.5);
+		ofRotate(rotacao);
+
+		ofScale(proporcao, proporcao, 1);
+		video.draw(-(widthDraw - 1024) / 2, -(heightDraw - 768) / 2, widthDraw, heightDraw);
+		ofPopMatrix();
 	}
 
     fboBrisa.end();
 	fboBrisa.readToPixels(pixelsBrisa);
 }
 
-void VideoBrisa::draw() {
+void GifBrisa::draw() {
 	if (ligaShader) {
 		shaderBrisa.begin();
 		if (iBrisaShader > -1 && brisasAtivas->at(iBrisaShader)->fboBrisa.isAllocated() ) {
@@ -47,16 +58,21 @@ void VideoBrisa::draw() {
 
 }
 
-void VideoBrisa::drawControles(int iBrisa) {
+void GifBrisa::drawControles(int iBrisa) {
 	ImGui::ColorEdit3("Cor da Brisa ", (float*)&corBrisa);
 
-	if (ImGui::Button("Carregar Vídeo")) { 
+	if (ImGui::Button("Carregar Gif")) { 
 		ImGui::OpenPopup("loadVideo");
 	}
 	if (ImGui::BeginPopup("loadVideo")) {
 		listaVideos(); 
 		ImGui::EndPopup();
-	}
+	} 
+
+	ImGui::SliderInt("desloca X", &deslocX, -600, 600);
+	ImGui::SliderInt("desloca Y", &deslocY, -600, 600);
+	ImGui::SliderFloat("Proporcao", &proporcao, 0.2, 10);
+	ImGui::SliderFloat("Rotação", &rotacao, 0, 360);
 
 	if (shaderBrisa.isLoaded()) {
 		ImGui::Checkbox("Ligar Shader", &ligaShader);
@@ -81,23 +97,23 @@ void VideoBrisa::drawControles(int iBrisa) {
 
 
 
-void VideoBrisa::listaVideos() {
+void GifBrisa::listaVideos() {
 
 	ofDirectory dirVideos;
 	//2. Carrega numero de pastas de sequencias
-	int nVideos = dirVideos.listDir("../data/videos/");
+	int nVideos = dirVideos.listDir("../data/gifs/mp4/");
 
 	//4. Abre pastas
 	for (int i=0; i<nVideos; i++) {	
 		string video = dirVideos.getPath( i );
-		if (ImGui::Selectable(video.c_str())) {
+		if (ImGui::Selectable(video.substr(16).c_str())) {
 			setupVideo(video);
 		}
 
 	}
 }
 
-void VideoBrisa::setupVideo(string videoPath) {
+void GifBrisa::setupVideo(string videoPath) {
 	caminhoVideo = videoPath;
 	if(caminhoVideo != "") {
 		video.load(caminhoVideo);

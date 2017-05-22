@@ -78,17 +78,46 @@ void Brisa::listaBrisas() {
 }
 
 void Brisa::listaShaders() {
+	if (ImGui::CollapsingHeader("Alpha"))
+	{
+		ofDirectory dirShaders;
+		//2. Carrega numero de pastas de sequencias
+		int nShaders = dirShaders.listDir("../data/shaders/alpha");
 
-	ofDirectory dirShaders;
-	//2. Carrega numero de pastas de sequencias
-	int nShaders = dirShaders.listDir("../data/shaders/");
-
-	//4. Abre pastas
-	for (int i=0; i<nShaders; i++) {	
-		string shader = dirShaders.getPath( i );
-		if (ImGui::Selectable(shader.c_str())) {
-			loadShader(shader);
+		//4. Abre pastas
+		for (int i = 0; i < nShaders; i++) {
+			string shader = dirShaders.getPath(i);
+			if (ImGui::Selectable(shader.substr(21).c_str())) {
+				loadShader(shader);
+			}
 		}
+	}
+	if (ImGui::CollapsingHeader("Kinect"))
+	{
+		ofDirectory dirShaders;
+		//2. Carrega numero de pastas de sequencias
+		int nShaders = dirShaders.listDir("../data/shaders/kinect");
 
+		//4. Abre pastas
+		for (int i = 0; i < nShaders; i++) {
+			string shader = dirShaders.getPath(i);
+			if (ImGui::Selectable(shader.substr(21).c_str())) {
+				loadShader(shader);
+			}
+		}
+	}
+	if (ImGui::CollapsingHeader("Outros"))
+	{
+		ofDirectory dirShaders;
+		//2. Carrega numero de pastas de sequencias
+		int nShaders = dirShaders.listDir("../data/shaders/outros");
+
+		//4. Abre pastas
+		for (int i = 0; i < nShaders; i++) {
+			string shader = dirShaders.getPath(i);
+			if (ImGui::Selectable(shader.substr(21).c_str())) {
+				loadShader(shader);
+			}
+		}
 	}
 }

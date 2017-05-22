@@ -20,6 +20,6 @@ public:
     vector<Brisa*> brisasAtivas;
     ofxKinect kinectGlobal;
 
-    GLuint btnCriaVideo,btnCriaPoligono,btnCriaKinect;
+    GLuint btnCriaVideo,btnCriaPoligono, btnCriaKinect, btnCriaImg, btnCriaGif;
 
 };
