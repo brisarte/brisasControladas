@@ -115,6 +115,8 @@ public:
 	void drawControles(int iBrisa);
 
 	bool ligaContornos;
+	ofxCvContourFinder contourFinder;
+	ofxCvGrayscaleImage grayImage;
 };
 
 

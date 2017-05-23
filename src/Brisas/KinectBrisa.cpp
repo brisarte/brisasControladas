@@ -39,8 +39,11 @@ void KinectBrisa::update( float dt ) {
 		} else if (camera == 2) {
 			kinecto->drawDepth(0,0,1024,768);
 		}
+		grayImage.setFromPixels(kinecto->getDepthPixels());
 
 		if (ligaContornos) {
+			contourFinder.findContours(grayImage, 10, (kinecto->width*kinecto->height)/2, 20, false);
+			contourFinder.draw(0,0,1024,768);
 		}
 	}
 
