@@ -22,4 +22,5 @@ public:
 
     GLuint btnCriaVideo,btnCriaPoligono, btnCriaKinect, btnCriaImg, btnCriaGif;
 
+    bool desenhaMiniaturas;
 };

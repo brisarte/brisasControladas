@@ -28,11 +28,13 @@ void Brisa::draw() {
 void Brisa::drawControles(int iBrisa) {
 }
 
-void Brisa::drawButton(ofxImGui::Gui *gui, int i) {
+void Brisa::drawButton(bool desenhaMiniaturas, int i) {
 
-	ofImage imgBtn;
-	imgBtn.setFromPixels(pixelsBrisa);
-	imgBtn.draw(0,i*150,200,150);
+	if(desenhaMiniaturas) {
+		ofImage imgBtn;
+		imgBtn.setFromPixels(pixelsBrisa);
+		imgBtn.draw(0,i*150,200,150);
+	}
 
 	std::ostringstream oss;
 	std::string text = "Brisa ";

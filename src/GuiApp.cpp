@@ -15,6 +15,7 @@ void GuiApp::setup(){
 	btnCriaGif = gui.loadTexture("../data/img/icon/gif.png");
 
     ImGui::GetIO().MouseDrawCursor = false;
+    desenhaMiniaturas = true;
 }
 
 void GuiApp::update(){
@@ -38,7 +39,11 @@ void GuiApp::draw(){
 
 	gui.begin();
 	
-	ImGui::Text("Média de %.3f ms/frame (%.1f FPS)", 1000.0f / ImGui::GetIO().Framerate, ImGui::GetIO().Framerate);
+
+	if (ImGui::CollapsingHeader("Controles Gerais")) {
+		ImGui::Text("Média :%.1f FPS (%.3f ms/frame) ",  ImGui::GetIO().Framerate, 1000.0f / ImGui::GetIO().Framerate);
+		ImGui::Checkbox("Desenha miniaturas", &desenhaMiniaturas);
+	}
 
 	ImGui::Text("Adicione uma Brisa Nova:");
 	bool criaVideo = ImGui::ImageButton((ImTextureID)(uintptr_t)btnCriaVideo, ImVec2(120, 90)); ImGui::SameLine();
@@ -75,7 +80,7 @@ void GuiApp::draw(){
 	// Me mostra essas brisa
 	for( int i = 0; i < brisasAtivas.size(); i++ )
     {
-        brisasAtivas[i]->drawButton(&gui, i);
+        brisasAtivas[i]->drawButton(desenhaMiniaturas, i);
     }
 
     ImGui::End();

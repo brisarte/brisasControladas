@@ -32,7 +32,8 @@ public:
 
 	virtual void drawControles(int iBrisa);
 	void excluiBrisa(int iBrisa);
-	void drawButton(ofxImGui::Gui *gui, int i);
+	void drawButton(bool desenhaMiniaturas, int i);
+
 	void listaShaders();
 	void loadShader(string shader);
 	void listaBrisas();
