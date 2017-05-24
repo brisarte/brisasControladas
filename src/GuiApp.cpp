@@ -74,6 +74,7 @@ void GuiApp::draw(){
 	}
 
 
+
 	ImGui::SetNextWindowSize(ofVec2f(20,10), ImGuiSetCond_FirstUseEver);
 	ImGui::Begin("Brisas Ativas");
 
