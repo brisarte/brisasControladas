@@ -13,6 +13,7 @@ void GuiApp::setup(){
 	btnCriaKinect = gui.loadTexture("../data/img/icon/kinect.png");
 	btnCriaImg = gui.loadTexture("../data/img/icon/img.png");
 	btnCriaGif = gui.loadTexture("../data/img/icon/gif.png");
+	btnCriaMatriz = gui.loadTexture("../data/img/icon/matriz.png");
 
     ImGui::GetIO().MouseDrawCursor = false;
     desenhaMiniaturas = true;
@@ -50,7 +51,8 @@ void GuiApp::draw(){
 	bool criaPoligono = ImGui::ImageButton((ImTextureID)(uintptr_t)btnCriaPoligono, ImVec2(120, 90));
 	bool criaKinect = ImGui::ImageButton((ImTextureID)(uintptr_t)btnCriaKinect, ImVec2(120, 90)); ImGui::SameLine();
 	bool criaImg = ImGui::ImageButton((ImTextureID)(uintptr_t)btnCriaImg, ImVec2(120, 90));
-	bool criaGif = ImGui::ImageButton((ImTextureID)(uintptr_t)btnCriaGif, ImVec2(120, 90));
+	bool criaGif = ImGui::ImageButton((ImTextureID)(uintptr_t)btnCriaGif, ImVec2(120, 90));ImGui::SameLine();
+	bool criaMatriz = ImGui::ImageButton((ImTextureID)(uintptr_t)btnCriaMatriz, ImVec2(120, 90));
 
 	if(criaVideo) {
 		cout << "btn pressionado: criaVideo";
@@ -71,6 +73,10 @@ void GuiApp::draw(){
 	if (criaGif) {
 		cout << "btn pressionado: criaGif";
 		brisasAtivas.push_back(new GifBrisa(&brisasAtivas));
+	}
+	if (criaMatriz) {
+		cout << "btn pressionado: criaMatriz";
+		brisasAtivas.push_back(new MatrizBrisa(&kinectGlobal, &brisasAtivas));
 	}
 
 

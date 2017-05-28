@@ -6,8 +6,6 @@ PoligonoBrisa::PoligonoBrisa(vector<Brisa*> *brisasParent) {
 	brisasAtivas = brisasParent;
 	iconPath = "../data/img/icon/poligon.png";
 	
-    corBrisa = ofColor(255, 0, 0);
-    corComplementar = ofColor(0, 255, 255);
 
     vertices = 6;
     trocaVertices = true;
@@ -16,6 +14,24 @@ PoligonoBrisa::PoligonoBrisa(vector<Brisa*> *brisasParent) {
     preencher = true;
     rotacionar = false;
 
+
+	coresBrisa[0] = ofColor::fromHex(0x00126D);
+	coresBrisa[1] = ofColor::fromHex(0xF8D03F);
+	coresBrisa[2] = ofColor::fromHex(0xF8A63C);
+	coresBrisa[3] = ofColor::fromHex(0xE82130);
+	coresBrisa[4] = ofColor::fromHex(0xED6134);
+	coresBrisa[5] = ofColor::fromHex(0xD12585);
+	coresBrisa[6] = ofColor::fromHex(0x531577);
+
+
+	int iCor1 = ofRandom(0, 6);
+	int iCor2 = ofRandom(0, 6);
+	// Caso as cores sejam iguais troca a segunda	
+	if (iCor1 == iCor2) {
+		iCor2 = iCor2+1 > 6 ? iCor2-1 : iCor2+1;
+	}
+	corBrisa = coresBrisa[iCor1];
+	corComplementar = coresBrisa[iCor2];
 }
 
 void PoligonoBrisa::update( float dt ) {

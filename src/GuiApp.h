@@ -47,7 +47,7 @@ public:
     vector<Brisa*> brisasAtivas;
     ofxKinect kinectGlobal;
 
-    GLuint btnCriaVideo,btnCriaPoligono, btnCriaKinect, btnCriaImg, btnCriaGif;
+    GLuint btnCriaVideo,btnCriaPoligono, btnCriaKinect, btnCriaImg, btnCriaGif, btnCriaMatriz;
 
     bool desenhaMiniaturas;
 

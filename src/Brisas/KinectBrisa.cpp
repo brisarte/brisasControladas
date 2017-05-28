@@ -6,6 +6,7 @@ KinectBrisa::KinectBrisa(ofxKinect *kinectGlobal, vector<Brisa*> *brisasParent) 
 	iconPath = "../data/img/icon/kinect.png";
 	kinecto = kinectGlobal;
 	camera = 0; // 0 = camera RGB (default) | 1 = camera Depth
+	mirrorHorizontal = mirrorVertical = false;
 	setup();
 }
 
@@ -34,13 +35,13 @@ void KinectBrisa::update( float dt ) {
 
 	if ( kinecto->isConnected() ) {
 		kinecto->update();
+		grayImage.setFromPixels(kinecto->getDepthPixels());
+		grayImage.mirror(mirrorVertical, mirrorHorizontal);
 		if (camera == 1) {
 			kinecto->draw(0,0,1024,768);
 		} else if (camera == 2) {
-			kinecto->drawDepth(0,0,1024,768);
+			grayImage.draw(0,0,1024,768);
 		}
-		grayImage.setFromPixels(kinecto->getDepthPixels());
-
 		if (ligaContornos) {
 			contourFinder.findContours(grayImage, 10, (kinecto->width*kinecto->height)/2, 20, false);
 			contourFinder.draw(0,0,1024,768);
@@ -73,8 +74,13 @@ void KinectBrisa::drawControles(int iBrisa) {
 	ImGui::RadioButton("RGB", &camera, 1); ImGui::SameLine();
 	ImGui::RadioButton("Profundidade", &camera, 2);
 
+	ImGui::Checkbox("mirror <->", &mirrorHorizontal);
+	ImGui::Checkbox("mirror V", &mirrorVertical);
+
 	ImGui::Checkbox("Contornos", &ligaContornos);
 	ImGui::Checkbox("Limpa Frames", &clearFrames);
 
+	desenharControlesShader();
+		
 	if (ImGui::Button("Excluir Brisa")) { excluiBrisa(iBrisa); } 
 }

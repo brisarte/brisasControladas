@@ -13,6 +13,8 @@ void Brisa::setup() {
 
     ligaShader = false;
     clearFrames = true;
+
+	iBrisaShader = 0;
 }
 
 void Brisa::update(float dt) {
@@ -47,7 +49,7 @@ void Brisa::drawButton(bool desenhaMiniaturas, int i) {
 	
 	if(configBrisa) {
 		ImGui::SetNextWindowSize(ofVec2f(300,200), ImGuiSetCond_FirstUseEver);
-		string titulo = "Configurações Brisa[" + to_string(i) + "]";
+		string titulo = "Configurações Brisa #" + to_string(i+1);
 		ImGui::Begin(titulo.c_str(), &configBrisa);
 
 		drawControles(i);
@@ -61,7 +63,8 @@ void Brisa::excluiBrisa(int iBrisa) {
 }
 
 void Brisa::loadShader(string shader) {
-	shaderBrisa.load("../data/shaders/vertexdummy.c", shader);
+	fragShaderPath = shader;
+	shaderBrisa.load("../data/shaders/vertexdummy.c", fragShaderPath);
 }
 
 void Brisa::listaBrisas() {
@@ -71,12 +74,34 @@ void Brisa::listaBrisas() {
 		iBrisaShader = -1;
 	}
 	for (int i=0; i<nBrisas; i++) {	
-		string numBrisa = "Brisa[" + to_string(i) + "]";
+		string numBrisa = "Brisa #" + to_string(i+1);
 		if (ImGui::Selectable(numBrisa.c_str())) {
 			iBrisaShader = i;
 		}
 
 	}
+}
+
+void Brisa::desenharControlesShader() {
+	if (shaderBrisa.isLoaded()) {
+		ImGui::Text(fragShaderPath.substr(25).c_str());
+		ImGui::Checkbox("Ligar Shader", &ligaShader);
+	}
+	if (ImGui::Button("Carregar Shader")) { 
+		ImGui::OpenPopup("loadShader");
+	}
+	if (ImGui::BeginPopup("loadShader")) {
+		listaShaders(); 
+		ImGui::EndPopup();
+	} 
+	string numBrisa = "Brisa Shader: #" + to_string(iBrisaShader + 1);
+	if (ImGui::Button(numBrisa.c_str())) { 
+		ImGui::OpenPopup("selectBrisa");
+	}
+	if (ImGui::BeginPopup("selectBrisa")) {
+		listaBrisas(); 
+		ImGui::EndPopup();
+	} 
 }
 
 void Brisa::listaShaders() {
@@ -94,16 +119,16 @@ void Brisa::listaShaders() {
 			}
 		}
 	}
-	if (ImGui::CollapsingHeader("Kinect"))
+	if (ImGui::CollapsingHeader("Mix Brisa"))
 	{
 		ofDirectory dirShaders;
 		//2. Carrega numero de pastas de sequencias
-		int nShaders = dirShaders.listDir("../data/shaders/kinect");
+		int nShaders = dirShaders.listDir("../data/shaders/mixbrisa");
 
 		//4. Abre pastas
 		for (int i = 0; i < nShaders; i++) {
 			string shader = dirShaders.getPath(i);
-			if (ImGui::Selectable(shader.substr(21).c_str())) {
+			if (ImGui::Selectable(shader.substr(25).c_str())) {
 				loadShader(shader);
 			}
 		}

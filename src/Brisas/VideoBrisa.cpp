@@ -58,23 +58,7 @@ void VideoBrisa::drawControles(int iBrisa) {
 		ImGui::EndPopup();
 	}
 
-	if (shaderBrisa.isLoaded()) {
-		ImGui::Checkbox("Ligar Shader", &ligaShader);
-	}
-	if (ImGui::Button("Carregar Shader")) { 
-		ImGui::OpenPopup("loadShader");
-	}
-	if (ImGui::BeginPopup("loadShader")) {
-		listaShaders(); 
-		ImGui::EndPopup();
-	} 
-	if (ImGui::Button("Brisa Shader")) { 
-		ImGui::OpenPopup("selectBrisa");
-	}
-	if (ImGui::BeginPopup("selectBrisa")) {
-		listaBrisas(); 
-		ImGui::EndPopup();
-	} 
+	desenharControlesShader();
 
 	if (ImGui::Button("Excluir Brisa")) { excluiBrisa(iBrisa); } 
 }
@@ -84,6 +68,21 @@ void VideoBrisa::drawControles(int iBrisa) {
 void VideoBrisa::listaVideos() {
 
 	ofDirectory dirVideos;
+
+	if (ImGui::CollapsingHeader("Videos Old")) {
+
+		//2. Carrega numero de pastas de sequencias
+		int nVideos = dirVideos.listDir("../data/videos/naovaiusar/");
+
+		//4. Abre pastas
+		for (int i = 0; i < nVideos; i++) {
+			string video = dirVideos.getPath(i);
+			if (ImGui::Selectable(video.c_str())) {
+				setupVideo(video);
+			}
+
+		}
+	}
 	//2. Carrega numero de pastas de sequencias
 	int nVideos = dirVideos.listDir("../data/videos/");
 

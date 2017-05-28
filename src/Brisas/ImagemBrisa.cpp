@@ -13,6 +13,8 @@ ImagemBrisa::ImagemBrisa(vector<Brisa*> *brisasParent) {
 	rotacao = 0;
 	proporcao = 1;
 	deslocX = deslocY = 0;
+	rotacionaSozinho = true;
+	torceSozinho = false;
 }
 
 void ImagemBrisa::update( float dt ) {
@@ -25,6 +27,10 @@ void ImagemBrisa::update( float dt ) {
 		ofPushMatrix();
 		ofTranslate(512 + deslocX, 384 + deslocY, 0);
 		img.setAnchorPercent(0.5, 0.5);
+		if (rotacionaSozinho) {
+			rotacao += ofNoise(ofGetElapsedTimef());
+			if (rotacao > 360) rotacao = 0;
+		}
 		ofRotate(rotacao);
 
 		ofScale(proporcao, proporcao, 1);
@@ -67,26 +73,11 @@ void ImagemBrisa::drawControles(int iBrisa) {
 	ImGui::SliderInt("desloca X", &deslocX, -600, 600);
 	ImGui::SliderInt("desloca Y", &deslocY, -600, 600);
 	ImGui::SliderFloat("Proporcao", &proporcao, 0.2, 10);
-	ImGui::SliderFloat("Rotação", &rotacao, 0, 360);
+	ImGui::SliderFloat("Rotação", &rotacao, 0, 360);ImGui::SameLine();
+	ImGui::Checkbox("Automático", &rotacionaSozinho); 
+	ImGui::Checkbox("Torcer automático", &torceSozinho);
 
-
-	if (shaderBrisa.isLoaded()) {
-		ImGui::Checkbox("Ligar Shader", &ligaShader);
-	}
-	if (ImGui::Button("Carregar Shader")) { 
-		ImGui::OpenPopup("loadShader");
-	}
-	if (ImGui::BeginPopup("loadShader")) {
-		listaShaders(); 
-		ImGui::EndPopup();
-	} 
-	if (ImGui::Button("Brisa Shader")) { 
-		ImGui::OpenPopup("selectBrisa");
-	}
-	if (ImGui::BeginPopup("selectBrisa")) {
-		listaBrisas(); 
-		ImGui::EndPopup();
-	} 
+	desenharControlesShader();
 
 	if (ImGui::Button("Excluir Brisa")) { excluiBrisa(iBrisa); } 
 }

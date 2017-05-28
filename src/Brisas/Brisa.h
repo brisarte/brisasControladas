@@ -22,6 +22,7 @@ public:
     ImVec4 corBrisa;
 
 	ofShader shaderBrisa;
+	string fragShaderPath;
 	int iBrisaShader;
     bool ligaShader;
     bool clearFrames;
@@ -37,8 +38,32 @@ public:
 	void listaShaders();
 	void loadShader(string shader);
 	void listaBrisas();
+	void desenharControlesShader();
 };
 
+class MatrizBrisa : public Brisa {
+
+	ofxKinect *kinecto;
+	int camera;
+
+public:
+	MatrizBrisa(ofxKinect *kinectGlobal, vector<Brisa*> *brisasParent);
+	void draw();
+	void update(float dt);
+
+	void ligaKinect();
+	void desligaKinect();
+
+	void drawControles(int iBrisa);
+	bool blurKinect, desenhaBlur, mirrorHorizontal, mirrorVertical;
+	float brightnessGray, contrastGray;
+	ofPixels grayPixels;
+	int intervaloX, intervaloY;
+
+    ImVec4 coresBrisa[7];
+
+	ofxCvGrayscaleImage grayImage, blurGray;
+};
 
 class VideoBrisa : public Brisa {
 	float heightDraw, widthDraw, heightOrig, widthOrig;
@@ -91,6 +116,7 @@ public:
 
 	ofImage img;
 	string caminhoImagem;
+	bool rotacionaSozinho, torceSozinho;
 	float proporcao, rotacao;
 	int deslocX, deslocY;
 
@@ -115,6 +141,7 @@ public:
 
 	void drawControles(int iBrisa);
 
+	bool mirrorHorizontal, mirrorVertical;
 	bool ligaContornos;
 	ofxCvContourFinder contourFinder;
 	ofxCvGrayscaleImage grayImage;
@@ -138,6 +165,9 @@ public:
 	bool preencher;
 	bool trocaVertices;
 	bool rotacionar; 
+
+
+	ImVec4 coresBrisa[7];
 };
 
 #endif
