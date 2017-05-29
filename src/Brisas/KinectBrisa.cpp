@@ -25,6 +25,8 @@ void KinectBrisa::desligaKinect() {
 }
 
 void KinectBrisa::update( float dt ) {
+	kinecto->setCameraTiltAngle(angKinect);
+
 	fboBrisa.begin();
     
 	if (clearFrames) {
@@ -37,6 +39,7 @@ void KinectBrisa::update( float dt ) {
 		kinecto->update();
 		grayImage.setFromPixels(kinecto->getDepthPixels());
 		grayImage.mirror(mirrorVertical, mirrorHorizontal);
+		grayImage.brightnessContrast(brilhoBrisa, contrasteBrisa);
 		if (camera == 1) {
 			kinecto->draw(0,0,1024,768);
 		} else if (camera == 2) {
@@ -79,6 +82,11 @@ void KinectBrisa::drawControles(int iBrisa) {
 
 	ImGui::Checkbox("Contornos", &ligaContornos);
 	ImGui::Checkbox("Limpa Frames", &clearFrames);
+
+
+	ImGui::SliderFloat("Posição kinect", &angKinect, -30, 30);
+
+	desenharControlesDistorcao();
 
 	desenharControlesShader();
 		

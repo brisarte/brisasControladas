@@ -12,16 +12,16 @@ int main(){
 	settings.width = 1024;
 	settings.height = 768;
 	// settings.setPosition(ofVec2f( (monitores-1)*1024 ,0));
-	settings.setPosition(ofVec2f( 0,0));
+	settings.setPosition(ofVec2f( 1366,0));
 	settings.resizable = false;
 	settings.decorated = false;
 	settings.multiMonitorFullScreen = true;
 	settings.numSamples = 8;
 	shared_ptr<ofAppBaseWindow> mainWindow = ofCreateWindow(settings);
 
-	settings.width = 1160;
-	settings.height = 650;
-	settings.setPosition(ofVec2f( (monitores-1)*1024 + 100,100));
+	settings.width = 1363;
+	settings.height = 750;
+	settings.setPosition(ofVec2f( 0,0));
 	settings.resizable = true;
 	settings.decorated = true;
 	settings.multiMonitorFullScreen = false;

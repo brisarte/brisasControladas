@@ -23,6 +23,8 @@ void ImagemBrisa::update( float dt ) {
     ofClear(0,0,0, 0);
 	ofSetColor(corBrisa);
 
+
+	// Distorce a imagem e aplica filtros
 	if (img.isAllocated()) {
 		ofPushMatrix();
 		ofTranslate(512 + deslocX, 384 + deslocY, 0);
@@ -34,7 +36,16 @@ void ImagemBrisa::update( float dt ) {
 		ofRotate(rotacao);
 
 		ofScale(proporcao, proporcao, 1);
-		img.draw(0, 0);
+
+		if (converterGray) {
+			imagemGray = img;
+			imagemGray.brightnessContrast(brilhoBrisa, contrasteBrisa);
+			imagemGray.setAnchorPercent(0.5, 0.5);
+			imagemGray.draw(0, 0);
+		}
+		else {
+			img.draw(0, 0);
+		}
 		ofPopMatrix();
 	}
 
@@ -70,12 +81,8 @@ void ImagemBrisa::drawControles(int iBrisa) {
 		ImGui::EndPopup();
 	} 
 
-	ImGui::SliderInt("desloca X", &deslocX, -600, 600);
-	ImGui::SliderInt("desloca Y", &deslocY, -600, 600);
-	ImGui::SliderFloat("Proporcao", &proporcao, 0.2, 10);
-	ImGui::SliderFloat("Rotação", &rotacao, 0, 360);ImGui::SameLine();
-	ImGui::Checkbox("Automático", &rotacionaSozinho); 
-	ImGui::Checkbox("Torcer automático", &torceSozinho);
+	ImGui::Checkbox("Converter pra p&b", &converterGray);
+	desenharControlesDistorcao();
 
 	desenharControlesShader();
 

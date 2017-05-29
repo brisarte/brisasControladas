@@ -39,6 +39,12 @@ public:
 	void loadShader(string shader);
 	void listaBrisas();
 	void desenharControlesShader();
+
+	float brilhoBrisa, contrasteBrisa;
+	bool rotacionaSozinho, torceSozinho;
+	float proporcao, rotacao;
+	int deslocX, deslocY;
+	void desenharControlesDistorcao();
 };
 
 class MatrizBrisa : public Brisa {
@@ -116,14 +122,15 @@ public:
 
 	ofImage img;
 	string caminhoImagem;
-	bool rotacionaSozinho, torceSozinho;
-	float proporcao, rotacao;
-	int deslocX, deslocY;
 
 	void drawControles(int iBrisa);
 
 	void listaImagens();
 	void setupImagem(string imgPath);
+
+	bool converterGray;
+	ofxCvGrayscaleImage imagemGray;
+
 };
 
 
@@ -131,6 +138,7 @@ class KinectBrisa : public Brisa {
 	
 	ofxKinect *kinecto;
 	int camera;
+	float angKinect;
 public:
 	KinectBrisa(ofxKinect *kinectGlobal, vector<Brisa*> *brisasParent);
 	void draw();

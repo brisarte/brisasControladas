@@ -15,6 +15,10 @@ void Brisa::setup() {
     clearFrames = true;
 
 	iBrisaShader = 0;
+
+	// Inicializa variaveis de distorções
+	brilhoBrisa = contrasteBrisa = 0.5;
+	deslocX = deslocY = 0;
 }
 
 void Brisa::update(float dt) {
@@ -83,25 +87,27 @@ void Brisa::listaBrisas() {
 }
 
 void Brisa::desenharControlesShader() {
-	if (shaderBrisa.isLoaded()) {
-		ImGui::Text(fragShaderPath.substr(25).c_str());
-		ImGui::Checkbox("Ligar Shader", &ligaShader);
+	if (ImGui::CollapsingHeader("Shader")) {
+		if (shaderBrisa.isLoaded()) {
+			ImGui::Text(fragShaderPath.substr(25).c_str());
+			ImGui::Checkbox("Ligar Shader", &ligaShader);
+		}
+		if (ImGui::Button("Carregar Shader")) {
+			ImGui::OpenPopup("loadShader");
+		}
+		if (ImGui::BeginPopup("loadShader")) {
+			listaShaders();
+			ImGui::EndPopup();
+		}
+		string numBrisa = "Brisa Shader: #" + to_string(iBrisaShader + 1);
+		if (ImGui::Button(numBrisa.c_str())) {
+			ImGui::OpenPopup("selectBrisa");
+		}
+		if (ImGui::BeginPopup("selectBrisa")) {
+			listaBrisas();
+			ImGui::EndPopup();
+		}
 	}
-	if (ImGui::Button("Carregar Shader")) { 
-		ImGui::OpenPopup("loadShader");
-	}
-	if (ImGui::BeginPopup("loadShader")) {
-		listaShaders(); 
-		ImGui::EndPopup();
-	} 
-	string numBrisa = "Brisa Shader: #" + to_string(iBrisaShader + 1);
-	if (ImGui::Button(numBrisa.c_str())) { 
-		ImGui::OpenPopup("selectBrisa");
-	}
-	if (ImGui::BeginPopup("selectBrisa")) {
-		listaBrisas(); 
-		ImGui::EndPopup();
-	} 
 }
 
 void Brisa::listaShaders() {
@@ -146,5 +152,18 @@ void Brisa::listaShaders() {
 				loadShader(shader);
 			}
 		}
+	}
+}
+
+void Brisa::desenharControlesDistorcao() {
+	if (ImGui::CollapsingHeader("Distorções")) {
+		ImGui::SliderFloat("brilho", &brilhoBrisa, 0, 1); ImGui::SameLine(); ImGui::Text("n funciona");
+		ImGui::SliderFloat("contraste", &contrasteBrisa, 0, 1);ImGui::SameLine(); ImGui::Text("n funciona");
+		ImGui::SliderInt("desloca X", &deslocX, -600, 600);
+		ImGui::SliderInt("desloca Y", &deslocY, -600, 600);
+		ImGui::SliderFloat("Proporcao", &proporcao, 0.2, 10);
+		ImGui::SliderFloat("Rotação", &rotacao, 0, 360); ImGui::SameLine();
+		ImGui::Checkbox("Automático", &rotacionaSozinho);
+		ImGui::Checkbox("Torcer automático", &torceSozinho);
 	}
 }
