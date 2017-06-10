@@ -9,6 +9,7 @@ bin/*
 *.dll
 brisasControladas.VC.db
 brisasControladas.sln
+*.qbs
 brisasControladas.vcxproj
 brisasControladas.vcxproj.filters
 brisasControladas.vcxproj.user
