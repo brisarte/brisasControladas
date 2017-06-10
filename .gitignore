@@ -14,4 +14,8 @@ brisasControladas.vcxproj
 brisasControladas.vcxproj.filters
 brisasControladas.vcxproj.user
 icon.rc
-
+kinectExample.VC.db
+kinectExample.sln
+kinectExample.vcxproj
+kinectExample.vcxproj.filters
+kinectExample.vcxproj.user
