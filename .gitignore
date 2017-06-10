@@ -6,6 +6,10 @@ timelinedebrisa.qbs
 *.mp4
 .vs/
 bin/*
+!bin/data
+bin/data/*
+!bin/data/shaders
+!bin/data/img
 *.dll
 brisasControladas.VC.db
 brisasControladas.sln
