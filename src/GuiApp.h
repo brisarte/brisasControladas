@@ -4,6 +4,7 @@
 #include "ofMain.h"
 #include "ofxOpenCv.h"
 #include "ofxKinect.h"
+#include "ofxPhoto.h"
 #include "Brisas/Brisa.h"
 
 

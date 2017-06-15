@@ -12,6 +12,16 @@ Project{
         name: { return FileInfo.baseName(path) }
 
         files: [
+            'src/Brisas/Brisa.cpp',
+            'src/Brisas/Brisa.h',
+            'src/Brisas/GifBrisa.cpp',
+            'src/Brisas/ImagemBrisa.cpp',
+            'src/Brisas/KinectBrisa.cpp',
+            'src/Brisas/MatrizBrisa.cpp',
+            'src/Brisas/PoligonoBrisa.cpp',
+            'src/Brisas/VideoBrisa.cpp',
+            'src/GuiApp.cpp',
+            'src/GuiApp.h',
             'src/main.cpp',
             'src/ofApp.cpp',
             'src/ofApp.h',
