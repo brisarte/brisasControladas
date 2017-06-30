@@ -42,20 +42,7 @@ void GifBrisa::update( float dt ) {
 }
 
 void GifBrisa::draw() {
-	if (ligaShader) {
-		shaderBrisa.begin();
-		if (iBrisaShader > -1 && brisasAtivas->at(iBrisaShader)->fboBrisa.isAllocated() ) {
-			shaderBrisa.setUniformTexture("texture1", brisasAtivas->at(iBrisaShader)->fboBrisa.getTextureReference(), 1); //"1" means that it is texture 1
-		}
-
-		ofSetColor(255, 255, 255);
-		fboBrisa.draw(0, 0);
-
-		shaderBrisa.end();
-	} else {
-		fboBrisa.draw(0, 0);
-	}
-
+	aplicarShader();
 }
 
 void GifBrisa::drawControles(int iBrisa) {
@@ -74,23 +61,7 @@ void GifBrisa::drawControles(int iBrisa) {
 	ImGui::SliderFloat("Proporcao", &proporcao, 0.2, 10);
 	ImGui::SliderFloat("Rotação", &rotacao, 0, 360);
 
-	if (shaderBrisa.isLoaded()) {
-		ImGui::Checkbox("Ligar Shader", &ligaShader);
-	}
-	if (ImGui::Button("Carregar Shader")) { 
-		ImGui::OpenPopup("loadShader");
-	}
-	if (ImGui::BeginPopup("loadShader")) {
-		listaShaders(); 
-		ImGui::EndPopup();
-	} 
-	if (ImGui::Button("Brisa Shader")) { 
-		ImGui::OpenPopup("selectBrisa");
-	}
-	if (ImGui::BeginPopup("selectBrisa")) {
-		listaBrisas(); 
-		ImGui::EndPopup();
-	} 
+	desenharControlesShader();
 
 	if (ImGui::Button("Excluir Brisa")) { excluiBrisa(iBrisa); } 
 }

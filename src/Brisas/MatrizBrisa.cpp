@@ -118,7 +118,7 @@ void MatrizBrisa::update( float dt ) {
 }
 
 void MatrizBrisa::draw() {
-	fboBrisa.draw(0,0);
+	aplicarShader();
 }
 
 void MatrizBrisa::drawControles(int iBrisa) {

@@ -38,6 +38,7 @@ public:
 	void listaShaders();
 	void loadShader(string shader);
 	void listaBrisas();
+	void aplicarShader();
 	void desenharControlesShader();
 
 	float brilhoBrisa, contrasteBrisa;

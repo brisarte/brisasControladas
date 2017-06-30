@@ -31,20 +31,7 @@ void VideoBrisa::update( float dt ) {
 }
 
 void VideoBrisa::draw() {
-	if (ligaShader) {
-		shaderBrisa.begin();
-		if (iBrisaShader > -1 && brisasAtivas->at(iBrisaShader)->fboBrisa.isAllocated() ) {
-			shaderBrisa.setUniformTexture("texture1", brisasAtivas->at(iBrisaShader)->fboBrisa.getTextureReference(), 1); //"1" means that it is texture 1
-		}
-
-		ofSetColor(255, 255, 255);
-		fboBrisa.draw(0, 0);
-
-		shaderBrisa.end();
-	} else {
-		fboBrisa.draw(0, 0);
-	}
-
+	aplicarShader();
 }
 
 void VideoBrisa::drawControles(int iBrisa) {

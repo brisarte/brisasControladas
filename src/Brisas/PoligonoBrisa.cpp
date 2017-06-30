@@ -61,7 +61,7 @@ void PoligonoBrisa::update( float dt ) {
 }
 
 void PoligonoBrisa::draw() {
-	fboBrisa.draw(0,0);
+	aplicarShader();
 }
 
 void PoligonoBrisa::drawControles(int iBrisa) {

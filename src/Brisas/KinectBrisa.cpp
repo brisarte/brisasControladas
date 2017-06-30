@@ -56,7 +56,7 @@ void KinectBrisa::update( float dt ) {
 }
 
 void KinectBrisa::draw() {
-	fboBrisa.draw(0,0);
+	aplicarShader();
 }
 
 void KinectBrisa::drawControles(int iBrisa) {
