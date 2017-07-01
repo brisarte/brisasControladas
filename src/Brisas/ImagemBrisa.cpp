@@ -13,8 +13,9 @@ ImagemBrisa::ImagemBrisa(vector<Brisa*> *brisasParent) {
 	rotacao = 0;
 	proporcao = 1;
 	deslocX = deslocY = 0;
-	rotacionaSozinho = true;
+	rotacionaSozinho = false;
 	torceSozinho = false;
+	converterGray = false;
 }
 
 void ImagemBrisa::update( float dt ) {
@@ -22,7 +23,6 @@ void ImagemBrisa::update( float dt ) {
 	fboBrisa.begin();
     ofClear(0,0,0, 0);
 	ofSetColor(corBrisa);
-
 
 	// Distorce a imagem e aplica filtros
 	if (img.isAllocated()) {

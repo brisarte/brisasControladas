@@ -39,7 +39,6 @@ public:
     void update();
     void draw();
 
-    void startKinect();
     
     ofxImGui::Gui gui;
 
@@ -47,8 +46,10 @@ public:
     vector<Brisa*> brisasAtivas;
     ofxKinect kinectGlobal;
 
-    GLuint btnCriaVideo,btnCriaPoligono, btnCriaKinect, btnCriaImg, btnCriaGif, btnCriaMatriz;
+    GLuint btnCriaVideo,btnCriaPoligono, btnCriaKinect, btnCriaImg, 
+		btnCriaGif, btnCriaMatriz, btnCriaSombras, btnCriaMandala, btnCriaBorda;
 
+	vector<ImVec4> coresPaleta;
     bool desenhaMiniaturas;
 
 };

@@ -48,6 +48,30 @@ public:
 	void desenharControlesDistorcao();
 };
 
+class SombraBrisa : public Brisa {
+
+	ofxKinect *kinecto;
+	int camera;
+
+public:
+	SombraBrisa(ofxKinect *kinectGlobal, vector<Brisa*> *brisasParent);
+	void draw();
+	void update(float dt);
+
+	void ligaKinect();
+	void desligaKinect();
+
+	void drawControles(int iBrisa);
+	bool blurKinect, desenhaBlur, mirrorHorizontal, mirrorVertical;
+	float brightnessGray, contrastGray;
+	ofPixels grayPixels;
+	int intervaloX, intervaloY;
+
+	ImVec4 coresBrisa[7];
+
+	ofxCvGrayscaleImage grayImage, blurGray;
+};
+
 class MatrizBrisa : public Brisa {
 
 	ofxKinect *kinecto;
@@ -67,7 +91,7 @@ public:
 	ofPixels grayPixels;
 	int intervaloX, intervaloY;
 
-    ImVec4 coresBrisa[7];
+	ImVec4 coresBrisa[7];
 
 	ofxCvGrayscaleImage grayImage, blurGray;
 };
@@ -160,7 +184,7 @@ public:
 class PoligonoBrisa : public Brisa {
 	
 public:
-	PoligonoBrisa(vector<Brisa*> *brisasParent);
+	PoligonoBrisa(vector<Brisa*> *brisasParent, vector<ImVec4> *coresPaleta);
 	void draw();
 	void update( float dt );
 
@@ -175,8 +199,6 @@ public:
 	bool trocaVertices;
 	bool rotacionar; 
 
-
-	ImVec4 coresBrisa[7];
 };
 
 #endif

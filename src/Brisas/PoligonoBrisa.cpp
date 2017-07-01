@@ -1,6 +1,6 @@
 #include "Brisa.h"
 
-PoligonoBrisa::PoligonoBrisa(vector<Brisa*> *brisasParent) {
+PoligonoBrisa::PoligonoBrisa(vector<Brisa*> *brisasParent, vector<ImVec4> *coresPaleta) {
 	setup();
 	// Configura a brisa e defini o ícone
 	brisasAtivas = brisasParent;
@@ -14,24 +14,15 @@ PoligonoBrisa::PoligonoBrisa(vector<Brisa*> *brisasParent) {
     preencher = true;
     rotacionar = false;
 
-
-	coresBrisa[0] = ofColor::fromHex(0x00126D);
-	coresBrisa[1] = ofColor::fromHex(0xF8D03F);
-	coresBrisa[2] = ofColor::fromHex(0xF8A63C);
-	coresBrisa[3] = ofColor::fromHex(0xE82130);
-	coresBrisa[4] = ofColor::fromHex(0xED6134);
-	coresBrisa[5] = ofColor::fromHex(0xD12585);
-	coresBrisa[6] = ofColor::fromHex(0x531577);
-
-
-	int iCor1 = ofRandom(0, 6);
-	int iCor2 = ofRandom(0, 6);
+	int sizePaleta = coresPaleta->size();
+	int iCor1 = ofRandom(0, sizePaleta);
+	int iCor2 = ofRandom(0, sizePaleta);
 	// Caso as cores sejam iguais troca a segunda	
 	if (iCor1 == iCor2) {
-		iCor2 = iCor2+1 > 6 ? iCor2-1 : iCor2+1;
+		iCor2 = iCor2+1 > sizePaleta ? iCor2-1 : iCor2+1;
 	}
-	corBrisa = coresBrisa[iCor1];
-	corComplementar = coresBrisa[iCor2];
+	corBrisa = coresPaleta->at(iCor1);
+	corComplementar = coresPaleta->at(iCor2);
 }
 
 void PoligonoBrisa::update( float dt ) {
