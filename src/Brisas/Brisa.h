@@ -109,6 +109,8 @@ public:
 	string caminhoVideo;
 	ofFbo fboKinect;
 
+	float posVideo;
+
 	void drawControles(int iBrisa);
 
 	void listaVideos();

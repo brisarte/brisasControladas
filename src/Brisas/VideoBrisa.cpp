@@ -10,17 +10,17 @@ VideoBrisa::VideoBrisa(vector<Brisa*> *brisasParent) {
 	fboBrisa.begin();
     ofClear(0,0,0, 0);
     fboBrisa.end();
-
+	posVideo = 0;
 }
 
 void VideoBrisa::update( float dt ) {
 	if( video.isLoaded() )  {
+		posVideo = video.getPosition();
 		video.update();
 	}
 
 	fboBrisa.begin();
     ofClear(0,0,0, 0);
-	ofSetColor(corBrisa);
 
 	if( video.isLoaded() ) {
 		video.draw(-(widthDraw-1024)/2, -(heightDraw-768)/2, widthDraw, heightDraw);
@@ -35,7 +35,21 @@ void VideoBrisa::draw() {
 }
 
 void VideoBrisa::drawControles(int iBrisa) {
-	ImGui::ColorEdit3("Cor da Brisa ", (float*)&corBrisa);
+	if (video.isLoaded()) {
+		// play e pause
+		if (video.isPaused()) {
+			if (ImGui::Button("Play")) {
+				video.setPaused(false);
+			}
+		}
+		else {
+			if (ImGui::Button("Pause")) {
+				video.setPaused(true);
+			}
+		}
+		// Timeline
+		//ImGui::SliderFloat("Tempo", &posVideo, 0, 1);
+	}
 
 	if (ImGui::Button("Carregar Vídeo")) { 
 		ImGui::OpenPopup("loadVideo");
@@ -86,7 +100,7 @@ void VideoBrisa::listaVideos() {
 void VideoBrisa::setupVideo(string videoPath) {
 	caminhoVideo = videoPath;
 	if(caminhoVideo != "") {
-		video.load(caminhoVideo);
+		video.loadAsync(caminhoVideo);
 		cout << "\nVideo loaded: " << caminhoVideo;
 		video.play();
 		cout << "\nVideo played: " << caminhoVideo;

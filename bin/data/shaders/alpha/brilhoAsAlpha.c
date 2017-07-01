@@ -22,16 +22,15 @@ void main(){
   // Imagem da camera
   vec4 color0 = texture2DRect(texture0, pos);
 
+
   vec4 color;
 
   color = color0;  
-  if(color.r > 0.8 && color.g > 0.8 && color.b > 0.8) {
-    color.a = ((color.r + color.g + color.b)/3) - 0.7;
-  } 
-  if(color.r > 0.9 && color.g > 0.9 && color.b > 0.9) {
-    color.a = 0;
-  }  
-	
+  color.a = (color.r + color.g + color.b) / 3;
+
+
+  if(color.a > 1)
+    color.a = 1;
 
 
   gl_FragColor = color;
