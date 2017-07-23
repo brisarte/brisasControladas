@@ -14,20 +14,20 @@ VideoBrisa::VideoBrisa(vector<Brisa*> *brisasParent) {
 }
 
 void VideoBrisa::update( float dt ) {
-	if( video.isLoaded() )  {
-		posVideo = video.getPosition();
-		video.update();
-	}
+    if( video.isLoaded() )  {
+        posVideo = video.getPosition();
+        video.update();
+    }
 
-	fboBrisa.begin();
+    fboBrisa.begin();
     ofClear(0,0,0, 0);
 
-	if( video.isLoaded() ) {
-		video.draw(-(widthDraw-1024)/2, -(heightDraw-768)/2, widthDraw, heightDraw);
-	}
+    if( video.isLoaded() ) {
+        video.draw(-(widthDraw-1024)/2, -(heightDraw-768)/2, widthDraw, heightDraw);
+    }
 
     fboBrisa.end();
-	fboBrisa.readToPixels(pixelsBrisa);
+    fboBrisa.readToPixels(pixelsBrisa);
 }
 
 void VideoBrisa::draw() {
@@ -100,8 +100,8 @@ void VideoBrisa::listaVideos() {
 void VideoBrisa::setupVideo(string videoPath) {
 	caminhoVideo = videoPath;
 	if(caminhoVideo != "") {
-		video.loadAsync(caminhoVideo);
-		cout << "\nVideo loaded: " << caminhoVideo;
+		video.load(caminhoVideo);
+		cout << "\nVideo carregado: " << caminhoVideo;
 		video.play();
 		cout << "\nVideo played: " << caminhoVideo;
 		video.setVolume(0);
@@ -111,8 +111,9 @@ void VideoBrisa::setupVideo(string videoPath) {
 
 		// Caso tenha dado algo errado no codec/video/etc
 		if(heightOrig == 0 || widthOrig == 0) {
-			video.close();
-			return;
+                    cout << "\nVideo deu ruim:" << caminhoVideo;
+                    video.close();
+                    return;
 		}
 		
 		// background-size: cover;

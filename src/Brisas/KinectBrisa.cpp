@@ -7,7 +7,10 @@ KinectBrisa::KinectBrisa(ofxKinect *kinectGlobal, vector<Brisa*> *brisasParent) 
 	kinecto = kinectGlobal;
 	camera = 0; // 0 = camera RGB (default) | 1 = camera Depth
 	mirrorHorizontal = mirrorVertical = false;
+        clearFrames = true;
+        nivelFade = 20;
 	setup();
+        ofSetBackgroundAuto(false);
 }
 
 void KinectBrisa::ligaKinect() {
@@ -26,14 +29,15 @@ void KinectBrisa::desligaKinect() {
 
 void KinectBrisa::update( float dt ) {
 	kinecto->setCameraTiltAngle(angKinect);
-
+        
 	fboBrisa.begin();
     
 	if (clearFrames) {
-		ofClear(255,255,255, 0);
-	}
-
-	ofSetColor(corBrisa);
+            // Defini um alpha de acordo com o nivel Fade
+            ofSetColor( ofFloatColor(1.0, 1.0, 1.0, 0.05*(nivelFade/100) ) );
+	} else {
+            ofSetColor(255,255,255,255);
+        }
 
 	if ( kinecto->isConnected() ) {
 		kinecto->update();
@@ -61,8 +65,10 @@ void KinectBrisa::draw() {
 
 void KinectBrisa::drawControles(int iBrisa) {
 	ImGui::Text("kinect");
-	ImGui::ColorEdit3("Cor da Brisa ", (float*)&corBrisa);
-
+	ImGui::Checkbox("Liga Fade", &clearFrames);
+        if(clearFrames){
+	    ImGui::SliderFloat("Fade", &nivelFade, 0, 100);
+        }
 
 	// Botões de liga e desliga do kinect
 	if ( kinecto->isConnected() ) {
@@ -81,7 +87,6 @@ void KinectBrisa::drawControles(int iBrisa) {
 	ImGui::Checkbox("mirror V", &mirrorVertical);
 
 	ImGui::Checkbox("Contornos", &ligaContornos);
-	ImGui::Checkbox("Limpa Frames", &clearFrames);
 
 
 	ImGui::SliderFloat("Posição kinect", &angKinect, -30, 30);
