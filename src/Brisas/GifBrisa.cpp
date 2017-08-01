@@ -9,22 +9,21 @@ GifBrisa::GifBrisa(vector<Brisa*> *brisasParent) {
     ofClear(0,0,0, 0);
     fboBrisa.end();
 
-	rotacao = 0;
-	proporcao = 1;
-	deslocX = deslocY = 0;
+    rotacao = 0;
+    proporcao = 1;
+    deslocX = deslocY = 0;
 }
 
 void GifBrisa::update( float dt ) {
-	if( video.isLoaded() )  {
-		video.update();
-	}
+    if( video.isLoaded() )  {
+        video.update();
+    }
 
-	fboBrisa.begin();
+    fboBrisa.begin();
     ofClear(0,0,0, 0);
-	ofSetColor(corBrisa);
+    ofSetColor(corBrisa);
 
-
-	if( video.isLoaded() ) {
+    if( video.isLoaded() ) {
 		ofPushMatrix();
 		ofTranslate(WIDTH/2 +deslocX, HEIGHT / 2 + deslocY, 0);
 		video.setAnchorPercent(0.5, 0.5);
@@ -36,17 +35,17 @@ void GifBrisa::update( float dt ) {
 	}
 
     fboBrisa.end();
-	fboBrisa.readToPixels(pixelsBrisa);
+    fboBrisa.readToPixels(pixelsBrisa);
 }
 
 void GifBrisa::draw() {
-	aplicarShader();
+    aplicarShader();
 }
 
 void GifBrisa::drawControles(int iBrisa) {
-	ImGui::ColorEdit3("Cor da Brisa ", (float*)&corBrisa);
-
-	if (ImGui::Button("Carregar Gif")) { 
+    ImGui::ColorEdit3("Cor da Brisa ", (float*)&corBrisa);
+    
+    if (ImGui::Button("Carregar Gif")) { 
 		ImGui::OpenPopup("loadVideo");
 	}
 	if (ImGui::BeginPopup("loadVideo")) {
@@ -59,9 +58,9 @@ void GifBrisa::drawControles(int iBrisa) {
 	ImGui::SliderFloat("Proporcao", &proporcao, 0.2, 4);
 	ImGui::SliderFloat("Rotação", &rotacao, -180, 180);
 
-	desenharControlesShader();
+    desenharControlesShader();
 
-	if (ImGui::Button("Excluir Brisa")) { excluiBrisa(iBrisa); } 
+    if (ImGui::Button("Excluir Brisa")) { excluiBrisa(iBrisa); } 
 }
 
 
@@ -91,8 +90,7 @@ void GifBrisa::listaGifs() {
 
 			}
 		}
-
-	}
+    }
 }
 
 void GifBrisa::setupVideo(string videoPath) {

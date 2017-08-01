@@ -171,6 +171,7 @@ class KinectBrisa : public Brisa {
 	ofxKinect *kinecto;
 	int camera;
 	float angKinect;
+        float nivelFade;
 public:
 	KinectBrisa(ofxKinect *kinectGlobal, vector<Brisa*> *brisasParent);
 	void draw();
