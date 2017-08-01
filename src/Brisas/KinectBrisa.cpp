@@ -41,13 +41,13 @@ void KinectBrisa::update( float dt ) {
 		grayImage.mirror(mirrorVertical, mirrorHorizontal);
 		grayImage.brightnessContrast(brilhoBrisa, contrasteBrisa);
 		if (camera == 1) {
-			kinecto->draw(0,0,1024,768);
+			kinecto->draw(0,0,WIDTH,HEIGHT);
 		} else if (camera == 2) {
-			grayImage.draw(0,0,1024,768);
+			grayImage.draw(0,0,WIDTH,HEIGHT);
 		}
 		if (ligaContornos) {
 			contourFinder.findContours(grayImage, 10, (kinecto->width*kinecto->height)/2, 20, false);
-			contourFinder.draw(0,0,1024,768);
+			contourFinder.draw(0,0,WIDTH,HEIGHT);
 		}
 	}
 

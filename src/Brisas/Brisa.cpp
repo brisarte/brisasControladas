@@ -3,8 +3,8 @@
 void Brisa::setup() {
 	configBrisa = true;
 	//btnConfigBrisa = gui->loadTexture(iconPath);fboBrisa.clear();
-	pixelsBrisa.allocate(1024,768, OF_IMAGE_COLOR);
-	fboBrisa.allocate(1024, 768);
+	pixelsBrisa.allocate(WIDTH,HEIGHT, OF_IMAGE_COLOR);
+	fboBrisa.allocate(WIDTH, HEIGHT);
 	fboBrisa.begin();
     ofClear(255,255,255, 0);
     fboBrisa.end();
@@ -176,10 +176,10 @@ void Brisa::desenharControlesDistorcao() {
 	if (ImGui::CollapsingHeader("Distorções")) {
 		ImGui::SliderFloat("brilho", &brilhoBrisa, 0, 1); ImGui::SameLine(); ImGui::Text("n funciona");
 		ImGui::SliderFloat("contraste", &contrasteBrisa, 0, 1);ImGui::SameLine(); ImGui::Text("n funciona");
-		ImGui::SliderInt("desloca X", &deslocX, -600, 600);
-		ImGui::SliderInt("desloca Y", &deslocY, -600, 600);
-		ImGui::SliderFloat("Proporcao", &proporcao, 0.2, 10);
-		ImGui::SliderFloat("Rotação", &rotacao, 0, 360); ImGui::SameLine();
+		ImGui::SliderInt("desloca X", &deslocX, -200, 200);
+		ImGui::SliderInt("desloca Y", &deslocY, -200, 200);
+		ImGui::SliderFloat("Proporcao", &proporcao, 0.2, 2);
+		ImGui::SliderFloat("Rotação", &rotacao, -180, 180); ImGui::SameLine();
 		ImGui::Checkbox("Automático", &rotacionaSozinho);
 		ImGui::Checkbox("Torcer automático", &torceSozinho);
 	}

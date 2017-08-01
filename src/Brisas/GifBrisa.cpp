@@ -4,9 +4,7 @@ GifBrisa::GifBrisa(vector<Brisa*> *brisasParent) {
 	setup();
 	brisasAtivas = brisasParent;
 	cout << brisasAtivas->size();
-	// Configura a brisa e defini o ícone
-	iconPath = "../data/img/icon/gif.png";
-	fboBrisa.allocate(1024, 768);
+	fboBrisa.allocate(WIDTH, HEIGHT);
 	fboBrisa.begin();
     ofClear(0,0,0, 0);
     fboBrisa.end();
@@ -28,12 +26,12 @@ void GifBrisa::update( float dt ) {
 
 	if( video.isLoaded() ) {
 		ofPushMatrix();
-		ofTranslate(512 + deslocX, 384 + deslocY, 0);
+		ofTranslate(WIDTH/2 +deslocX, HEIGHT / 2 + deslocY, 0);
 		video.setAnchorPercent(0.5, 0.5);
 		ofRotate(rotacao);
 
 		ofScale(proporcao, proporcao, 1);
-		video.draw(-(widthDraw - 1024) / 2, -(heightDraw - 768) / 2, widthDraw, heightDraw);
+		video.draw(-(widthDraw - WIDTH) / 2, -(heightDraw - HEIGHT) / 2 + 100, widthDraw, heightDraw);
 		ofPopMatrix();
 	}
 
@@ -52,14 +50,14 @@ void GifBrisa::drawControles(int iBrisa) {
 		ImGui::OpenPopup("loadVideo");
 	}
 	if (ImGui::BeginPopup("loadVideo")) {
-		listaVideos(); 
+		listaGifs(); 
 		ImGui::EndPopup();
 	} 
 
 	ImGui::SliderInt("desloca X", &deslocX, -600, 600);
 	ImGui::SliderInt("desloca Y", &deslocY, -600, 600);
-	ImGui::SliderFloat("Proporcao", &proporcao, 0.2, 10);
-	ImGui::SliderFloat("Rotação", &rotacao, 0, 360);
+	ImGui::SliderFloat("Proporcao", &proporcao, 0.2, 4);
+	ImGui::SliderFloat("Rotação", &rotacao, -180, 180);
 
 	desenharControlesShader();
 
@@ -68,17 +66,30 @@ void GifBrisa::drawControles(int iBrisa) {
 
 
 
-void GifBrisa::listaVideos() {
+void GifBrisa::listaGifs() {
 
-	ofDirectory dirVideos;
+	ofDirectory dirVideosF;
+
 	//2. Carrega numero de pastas de sequencias
-	int nVideos = dirVideos.listDir("../data/gifs/mp4/");
+	int nVideosFolder = dirVideosF.listDir("../data/gifs/");
 
 	//4. Abre pastas
-	for (int i=0; i<nVideos; i++) {	
-		string video = dirVideos.getPath( i );
-		if (ImGui::Selectable(video.substr(16).c_str())) {
-			setupVideo(video);
+	for (int i = 0; i<nVideosFolder; i++) {
+		string videoFolder = dirVideosF.getPath(i);
+
+		if (ImGui::CollapsingHeader(videoFolder.substr(14).c_str())) {
+
+			//2. Carrega numero de pastas de sequencias
+			ofDirectory dirVideos;
+			int nVideos = dirVideos.listDir(videoFolder.c_str());
+			//4. Abre pastas
+			for (int i = 0; i < nVideos; i++) {
+				string video = dirVideos.getPath(i);
+				if (ImGui::Selectable(video.substr(14).c_str())) {
+					setupVideo(video);
+				}
+
+			}
 		}
 
 	}
@@ -105,11 +116,11 @@ void GifBrisa::setupVideo(string videoPath) {
 		// background-size: cover;
 		float videoProp = (float)widthOrig/heightOrig;
 		cout << "\nProporções calculadas: " << caminhoVideo;
-		if( videoProp > 4./3. ) {
-			heightDraw = 768;
+		if( videoProp >= 4./3. ) {
+			heightDraw = HEIGHT;
 			widthDraw = widthOrig * (heightDraw/heightOrig);
 		} else {
-			widthDraw = 1024;
+			widthDraw = WIDTH;
 			heightDraw = heightOrig * (widthDraw/widthOrig);
 		}
 		cout << "\nredimensionado: " << widthOrig << "x" << heightOrig << " => " 

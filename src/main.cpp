@@ -3,17 +3,18 @@
 #include "GuiApp.h"
 #include "ofAppGLFWWindow.h"
 
+
 //========================================================================
 int main(){
 	int monitores = 2;
 	
 	ofGLFWWindowSettings settings;
 
-	settings.width = 1024;
-	settings.height = 768;
-	// settings.setPosition(ofVec2f( (monitores-1)*1024 ,0));
-	settings.setPosition(ofVec2f( 866,0));
-	settings.resizable = false;
+	settings.width = WIDTH;
+	settings.height = HEIGHT;
+	// settings.setPosition(ofVec2f( (monitores-1)*WIDTH ,0));
+	settings.setPosition(ofVec2f( 1366,0));
+	settings.resizable = true;
 	settings.decorated = false;
 	settings.multiMonitorFullScreen = true;
 	settings.numSamples = 8;

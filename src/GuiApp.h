@@ -50,6 +50,8 @@ public:
 		btnCriaGif, btnCriaMatriz, btnCriaSombras, btnCriaMandala, btnCriaBorda;
 
 	vector<ImVec4> coresPaleta;
+	ofBlendMode blendMode;
+	int iBlend;
     bool desenhaMiniaturas;
 
 };

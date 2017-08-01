@@ -15,8 +15,8 @@ PoligonoBrisa::PoligonoBrisa(vector<Brisa*> *brisasParent, vector<ImVec4> *cores
     rotacionar = false;
 
 	int sizePaleta = coresPaleta->size();
-	int iCor1 = ofRandom(0, sizePaleta);
-	int iCor2 = ofRandom(0, sizePaleta);
+	int iCor1 = ofRandom(0, sizePaleta-1);
+	int iCor2 = ofRandom(0, sizePaleta-1);
 	// Caso as cores sejam iguais troca a segunda	
 	if (iCor1 == iCor2) {
 		iCor2 = iCor2+1 > sizePaleta ? iCor2-1 : iCor2+1;
@@ -58,8 +58,8 @@ void PoligonoBrisa::draw() {
 void PoligonoBrisa::drawControles(int iBrisa) {
 	ImGui::Text("poligon");
 
-	ImGui::ColorEdit3("Base", (float*)&corBrisa);
-	ImGui::ColorEdit3("Complementar", (float*)&corComplementar);
+	ImGui::ColorEdit4("Base", (float*)&corBrisa);
+	ImGui::ColorEdit4("Complementar", (float*)&corComplementar);
  
  	ImGui::SliderInt("Vértices", &vertices, 0, 9);ImGui::SameLine();
 	ImGui::Checkbox("Troca sozinho", &trocaVertices);
@@ -88,7 +88,7 @@ void PoligonoBrisa::desenhaPoligono(int radius) {
 	}
 	glPushMatrix();
 
-	glTranslatef(1024/2,768/2, 0);
+	glTranslatef(WIDTH/2,HEIGHT/2, 0);
 	
 
 	if (rotacionar) {

@@ -6,7 +6,7 @@ VideoBrisa::VideoBrisa(vector<Brisa*> *brisasParent) {
 	cout << brisasAtivas->size();
 	// Configura a brisa e defini o ícone
 	iconPath = "../data/img/icon/video.png";
-	fboBrisa.allocate(1024, 768);
+	fboBrisa.allocate(WIDTH, HEIGHT);
 	fboBrisa.begin();
     ofClear(0,0,0, 0);
     fboBrisa.end();
@@ -23,7 +23,7 @@ void VideoBrisa::update( float dt ) {
     ofClear(0,0,0, 0);
 
 	if( video.isLoaded() ) {
-		video.draw(-(widthDraw-1024)/2, -(heightDraw-768)/2, widthDraw, heightDraw);
+		video.draw(-(widthDraw-WIDTH)/2, -(heightDraw-HEIGHT)/2, widthDraw, heightDraw);
 	}
 
     fboBrisa.end();
@@ -68,30 +68,29 @@ void VideoBrisa::drawControles(int iBrisa) {
 
 void VideoBrisa::listaVideos() {
 
-	ofDirectory dirVideos;
+	ofDirectory dirVideosF;
 
-	if (ImGui::CollapsingHeader("Videos Old")) {
-
-		//2. Carrega numero de pastas de sequencias
-		int nVideos = dirVideos.listDir("../data/videos/naovaiusar/");
-
-		//4. Abre pastas
-		for (int i = 0; i < nVideos; i++) {
-			string video = dirVideos.getPath(i);
-			if (ImGui::Selectable(video.c_str())) {
-				setupVideo(video);
-			}
-
-		}
-	}
+	
 	//2. Carrega numero de pastas de sequencias
-	int nVideos = dirVideos.listDir("../data/videos/");
+	int nVideosFolder = dirVideosF.listDir("../data/videos/");
 
 	//4. Abre pastas
-	for (int i=0; i<nVideos; i++) {	
-		string video = dirVideos.getPath( i );
-		if (ImGui::Selectable(video.c_str())) {
-			setupVideo(video);
+	for (int i=0; i<nVideosFolder; i++) {	
+		string videoFolder = dirVideosF.getPath( i );
+
+		if (ImGui::CollapsingHeader(videoFolder.substr(16).c_str())) {
+
+			//2. Carrega numero de pastas de sequencias
+			ofDirectory dirVideos;
+			int nVideos = dirVideos.listDir(videoFolder.c_str());
+			//4. Abre pastas
+			for (int i = 0; i < nVideos; i++) {
+				string video = dirVideos.getPath(i);
+				if (ImGui::Selectable(video.substr(16).c_str())) {
+					setupVideo(video);
+				}
+
+			}
 		}
 
 	}
@@ -119,10 +118,10 @@ void VideoBrisa::setupVideo(string videoPath) {
 		float videoProp = (float)widthOrig/heightOrig;
 		cout << "\nProporções calculadas: " << caminhoVideo;
 		if( videoProp > 4./3. ) {
-			heightDraw = 768;
+			heightDraw = HEIGHT;
 			widthDraw = widthOrig * (heightDraw/heightOrig);
 		} else {
-			widthDraw = 1024;
+			widthDraw = WIDTH;
 			heightDraw = heightOrig * (widthDraw/widthOrig);
 		}
 		cout << "\nredimensionado: " << widthOrig << "x" << heightOrig << " => " 

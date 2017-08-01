@@ -1,9 +1,8 @@
 #include "Brisa.h"
 
-MatrizBrisa::MatrizBrisa(ofxKinect *kinectGlobal, vector<Brisa*> *brisasParent) {
+MatrizBrisa::MatrizBrisa(ofxKinect *kinectGlobal, vector<Brisa*> *brisasParent, vector<ImVec4> *paletaGeral) {
 	// Configura a brisa e defini o ícone
 	brisasAtivas = brisasParent;
-	iconPath = "../data/img/icon/matriz.png";
 	kinecto = kinectGlobal;
 	camera = 1; // 0 = camera RGB (default) | 1 = camera Depth
 	setup();
@@ -16,13 +15,7 @@ MatrizBrisa::MatrizBrisa(ofxKinect *kinectGlobal, vector<Brisa*> *brisasParent) 
 	intervaloX = 50;
 	intervaloY = 46;
 
-	coresBrisa[0] = ofColor::fromHex(0x00126D);
-	coresBrisa[1] = ofColor::fromHex(0xF8D03F);
-	coresBrisa[2] = ofColor::fromHex(0xF8A63C);
-	coresBrisa[3] = ofColor::fromHex(0xE82130);
-	coresBrisa[4] = ofColor::fromHex(0xED6134);
-	coresBrisa[5] = ofColor::fromHex(0xD12585);
-	coresBrisa[6] = ofColor::fromHex(0x531577);
+	coresPaleta = paletaGeral;
 }
 
 void MatrizBrisa::ligaKinect() {
@@ -57,40 +50,6 @@ void MatrizBrisa::update( float dt ) {
 		grayImage.erode_3x3();
 		grayImage.blurHeavily();
 
-		if (blurKinect) {
-			blurGray = grayImage;
-			blurGray.erode_3x3();
-			blurGray.erode_3x3();
-			blurGray.dilate_3x3();
-			blurGray.dilate_3x3();
-			blurGray.dilate_3x3();
-			blurGray.dilate_3x3();
-			blurGray.erode_3x3();
-			blurGray.blurHeavily();
-			blurGray.blurHeavily();
-			blurGray.erode_3x3();
-			blurGray.dilate_3x3();
-			blurGray.erode_3x3();
-			blurGray.dilate_3x3();
-			blurGray.erode_3x3();
-			blurGray.dilate_3x3();
-			blurGray.erode_3x3();
-			blurGray.dilate_3x3();
-			blurGray.erode_3x3();
-			blurGray.dilate_3x3();
-			blurGray.erode_3x3();
-			blurGray.dilate_3x3();
-			blurGray.erode_3x3();
-			blurGray.dilate_3x3();
-			blurGray.erode_3x3();
-			blurGray.blurHeavily();
-			blurGray.blurHeavily();
-			blurGray.blurHeavily();
-			blurGray.blurHeavily();
-			if (desenhaBlur) {
-				blurGray.draw(0, 0, 1024, 768);
-			}
-		}
 		grayPixels = grayImage.getPixels();
 
 		int grayWidth = grayImage.getWidth();
@@ -99,16 +58,7 @@ void MatrizBrisa::update( float dt ) {
 			for (int y = 0; y < grayHeight; y += intervaloY) {
 				int index = y*grayWidth + x; // Pega brilho do pixel[x,y]
 				int brilho = grayPixels[index];
-				if (brilho > 10) {
-					// sorteia cor desse quadrado
-					ofColor corQuad = coresBrisa[(int)ofRandom(0, 6)];
-					corQuad.setBrightness(brilho);
-					ofSetColor(corQuad);
-				}
-				else {
-					ofSetColor(0, 0, 0, 0);
-				}
-				ofDrawRectangle(x * (1024 / (float)grayWidth), y * (768 / (float)grayHeight), intervaloX* (1024 / (float)grayWidth), intervaloY*(768 / (float)grayHeight));
+				desenhaPixels(brilho, grayWidth, grayHeight, x, y, intervaloX, intervaloY);
 			}
 		}
 	}
@@ -121,10 +71,63 @@ void MatrizBrisa::draw() {
 	aplicarShader();
 }
 
+
+void MatrizBrisa::desenhaColunas(int brilho, int width, int height, int x, int y, int gapX, int gapY) {
+	int altura = brilho;
+	ofColor corPilar = coresPaleta->at(0);
+	ofColor corQuadrado = coresPaleta->at(1);
+	ofColor corBorda = coresPaleta->at(2);
+
+	ofColor corPilarEscuro = corPilar;
+	corPilarEscuro.setBrightness(100); // Escurece o lado do pilar
+
+	int tamanhoCol = gapX*0.72;
+
+	glPushMatrix();
+
+	glTranslatef(x*gapX, y*gapX * 0.81 - altura, 0);
+	ofSetColor(corPilar);
+	
+	ofFill();
+	ofDrawRectangle(-tamanhoCol*0.7, tamanhoCol*0.57, tamanhoCol*0.7, tamanhoCol * 5);
+	ofSetColor(corBorda);
+	ofNoFill();
+	ofDrawRectangle(-tamanhoCol*0.7, tamanhoCol*0.57, tamanhoCol*0.7, tamanhoCol * 5);
+
+	ofSetColor(corPilarEscuro);
+	ofFill();
+	ofDrawRectangle(0, tamanhoCol*0.57, tamanhoCol*0.7, tamanhoCol * 5);
+	ofSetColor(corBorda);
+	ofNoFill();
+	ofDrawRectangle(0, tamanhoCol*0.57, tamanhoCol*0.7, tamanhoCol * 5);
+
+	glScalef(1, 0.8, 1);
+	glRotatef(45, 0, 0, 1);
+	ofSetColor(corQuadrado);
+	ofFill();
+	ofDrawRectangle(0, 0, tamanhoCol, tamanhoCol);
+	ofSetColor(corBorda);
+	ofNoFill();
+	ofDrawRectangle(0, 0, tamanhoCol, tamanhoCol);
+
+
+	glPopMatrix();
+}
+
+void MatrizBrisa::desenhaPixels(int brilho, int width, int height, int x,int y, int gapX, int gapY) {
+	if (brilho > 10) {
+		// sorteia cor desse quadrado
+		ofColor corQuad = coresPaleta->at((int)ofRandom(0, coresPaleta->size() - 1));
+		corQuad.setBrightness(brilho);
+		ofSetColor(corQuad);
+	}
+	else {
+		ofSetColor(0, 0, 0, 0);
+	}
+	ofDrawRectangle(x * (WIDTH / (float)width), y * (HEIGHT / (float)height), gapX* (WIDTH / (float)width), gapY*(HEIGHT / (float)height));
+}
+
 void MatrizBrisa::drawControles(int iBrisa) {
-	ImGui::ColorEdit3("Cor da Brisa ", (float*)&corBrisa);
-
-
 	// Botões de liga e desliga do kinect
 	if ( kinecto->isConnected() ) {
 		if (ImGui::Button("Desliga Kinect")) { desligaKinect(); } 

@@ -13,7 +13,27 @@ void ofApp::update(){
 
 	// Atualiza as brisas configuradas
 	brisasAtivas = gui->brisasAtivas;
+	switch (gui->iBlend) {
+	case 1:
+		gui->blendMode = OF_BLENDMODE_ALPHA;
+		break;
+	case 2:
+		gui->blendMode = OF_BLENDMODE_ADD;
+		break;
+	case 3:
+		gui->blendMode = OF_BLENDMODE_SCREEN;
+		break;
+	case 4:
+		gui->blendMode = OF_BLENDMODE_MULTIPLY;
+		break;
+	case 5:
+		gui->blendMode = OF_BLENDMODE_SUBTRACT;
+		break;
+	default:
+		gui->blendMode = OF_BLENDMODE_ALPHA;
+	}
 
+	ofEnableBlendMode(gui->blendMode);
 }
 
 //--------------------------------------------------------------

@@ -23,6 +23,8 @@ void GuiApp::setup(){
 
 	coresPaleta.push_back(ofColor::fromHex(0x00126D));
 	coresPaleta.push_back(ofColor::fromHex(0xC0126D));
+
+	iBlend = 2;
 }
 
 void GuiApp::update(){
@@ -80,11 +82,11 @@ void GuiApp::draw() {
 	}
 	if (criaMatriz) {
 		cout << "btn pressionado: criaMatriz";
-		brisasAtivas.push_back(new MatrizBrisa(&kinectGlobal, &brisasAtivas));
+		brisasAtivas.push_back(new MatrizBrisa(&kinectGlobal, &brisasAtivas, &coresPaleta));
 	}
 	if (criaSombras) {
 		cout << "btn pressionado: criaSombras";
-		brisasAtivas.push_back(new SombraBrisa(&kinectGlobal, &brisasAtivas));
+		brisasAtivas.push_back(new SombraBrisa(&kinectGlobal, &brisasAtivas, &coresPaleta));
 	}
 
 
@@ -109,6 +111,15 @@ void GuiApp::draw() {
 			coresPaleta.push_back(ofColor::fromHex(0xC0126D));
 		}
 	}
+
+
+	ImGui::Text("Blend Mode");
+	ImGui::RadioButton("alpha", &iBlend, 1); ImGui::SameLine();
+	ImGui::RadioButton("add", &iBlend, 2); ImGui::SameLine();
+	ImGui::RadioButton("screen", &iBlend, 3); //ImGui::SameLine();
+	ImGui::RadioButton("multiply", &iBlend, 4); ImGui::SameLine();
+	ImGui::RadioButton("subtract", &iBlend, 5);
+
 	// Me mostra essas brisa
 	for (int i = 0; i < brisasAtivas.size(); i++)
 	{

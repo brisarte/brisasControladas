@@ -5,7 +5,7 @@ ImagemBrisa::ImagemBrisa(vector<Brisa*> *brisasParent) {
 	brisasAtivas = brisasParent;
 	// Configura a brisa e defini o ícone
 	iconPath = "../data/img/icon/kinect.png";
-	fboBrisa.allocate(1024, 768);
+	fboBrisa.allocate(WIDTH, HEIGHT);
 	fboBrisa.begin();
     ofClear(0,0,0, 0);
     fboBrisa.end();
@@ -27,7 +27,7 @@ void ImagemBrisa::update( float dt ) {
 	// Distorce a imagem e aplica filtros
 	if (img.isAllocated()) {
 		ofPushMatrix();
-		ofTranslate(512 + deslocX, 384 + deslocY, 0);
+		ofTranslate(WIDTH/2 + deslocX, HEIGHT/2 + deslocY, 0);
 		img.setAnchorPercent(0.5, 0.5);
 		if (rotacionaSozinho) {
 			rotacao += ofNoise(ofGetElapsedTimef());
