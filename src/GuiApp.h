@@ -34,24 +34,26 @@ public:
 };
 
 class GuiApp: public ofBaseApp {
-public:
-    void setup();
-    void update();
-    void draw();
+    public:
+        void setup();
+        void update();
+        void draw();
 
-    
-    ofxImGui::Gui gui;
+        void ligaKinect();
+        void desligaKinect();
 
-    vector<Brisa*> brisas;
-    vector<Brisa*> brisasAtivas;
-    ofxKinect kinectGlobal;
+        ofxImGui::Gui gui;
 
-    GLuint btnCriaVideo,btnCriaPoligono, btnCriaKinect, btnCriaImg, 
-		btnCriaGif, btnCriaMatriz, btnCriaSombras, btnCriaMandala, btnCriaBorda;
+        vector<Brisa*> brisas;
+        vector<Brisa*> brisasAtivas;
+        ofxKinect kinectGlobal;
 
-	vector<ImVec4> coresPaleta;
-	ofBlendMode blendMode;
-	int iBlend;
-    bool desenhaMiniaturas;
+        GLuint btnCriaVideo,btnCriaPoligono, btnCriaKinect, btnCriaImg, 
+               btnCriaGif, btnCriaMatriz, btnCriaSombras, btnCriaMandala, btnCriaBorda;
+
+        vector<ImVec4> coresPaleta;
+        ofBlendMode blendMode;
+        int iBlend;
+        bool desenhaMiniaturas;
 
 };
