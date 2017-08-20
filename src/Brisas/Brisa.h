@@ -1,8 +1,8 @@
 #ifndef BRISA_H__
 #define BRISA_H__
 
-const float WIDTH = 800;
-const float HEIGHT = 600;
+const float WIDTH = 1024;
+const float HEIGHT = 768;
 
 #include "ofxImGui.h"
 #include "ofxOpenCv.h"
@@ -87,9 +87,6 @@ class MatrizBrisa : public Brisa {
     void draw();
     void update(float dt);
 
-    void ligaKinect();
-    void desligaKinect();
-
     void drawControles(int iBrisa);
     void desenhaPixels(int brilho, int width, int height, int x, int y, int gapX, int gapY);
     void desenhaColunas(int brilho, int width, int height, int x, int y, int gapX, int gapY);
@@ -105,7 +102,6 @@ class MatrizBrisa : public Brisa {
 
 class VideoBrisa : public Brisa {
     float heightDraw, widthDraw, heightOrig, widthOrig;
-
 
     public:
     VideoBrisa(vector<Brisa*> *brisasParent);
@@ -178,11 +174,14 @@ class FonteKinect : public Brisa {
 
     void ligaKinect();
     void desligaKinect();
+    int iBlur;
 
-    void drawControles(int iBrisa);
+    void drawControles();
 
     bool mirrorHorizontal, mirrorVertical;
     ofxCvGrayscaleImage grayImage;
+    ofImage exemploGray, exemploCor;
+    ofxCvColorImage colorImage;
 };
 
 class KinectBrisa : public Brisa {

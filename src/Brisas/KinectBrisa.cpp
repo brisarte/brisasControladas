@@ -10,6 +10,7 @@ KinectBrisa::KinectBrisa(ofxKinect *kinectGlobal, vector<Brisa*> *brisasParent) 
     nivelFade = 20;
     setup();
     ofSetBackgroundAuto(false);
+    ligaContornos = true;
     fonteKinect = new FonteKinect(kinectGlobal, 2);
 }
 
@@ -19,19 +20,19 @@ void KinectBrisa::update( float dt ) {
     fboBrisa.begin();
 
     if (clearFrames) {
-        // Defini um alpha de acordo com o nivel Fade
+        // Define um alpha de acordo com o nivel Fade
         ofSetColor( ofFloatColor(1.0, 1.0, 1.0, 0.05*(nivelFade/100) ) );
     } else {
         ofSetColor(255,255,255,255);
     }
 
-        grayImage = fonteKinect->grayImage;
-        grayImage.draw(0,0,WIDTH,HEIGHT);
+    grayImage = fonteKinect->grayImage;
+    grayImage.draw(0,0,WIDTH,HEIGHT);
 
-        if (ligaContornos) {
-            contourFinder.findContours(grayImage, 10, (kinecto->width*kinecto->height)/2, 20, false);
-            contourFinder.draw(0,0,WIDTH,HEIGHT);
-        }
+    if (ligaContornos) {
+        contourFinder.findContours(grayImage, 10, (kinecto->width*kinecto->height)/2, 20, false);
+        contourFinder.draw(0,0,WIDTH,HEIGHT);
+    }
 
     fboBrisa.end();
     fboBrisa.readToPixels(pixelsBrisa);
@@ -56,6 +57,7 @@ void KinectBrisa::drawControles(int iBrisa) {
 
     ImGui::Checkbox("Contornos", &ligaContornos);
 
+    fonteKinect->drawControles();
     desenharControlesShader();
 
     if (ImGui::Button("Excluir Brisa")) { excluiBrisa(iBrisa); } 

@@ -24,10 +24,10 @@ void GuiApp::setup(){
     coresPaleta.push_back(ofColor::fromHex(0xC0126D));
 
     iBlend = 2;
+    anguloKinect = 0;
 }
 
 void GuiApp::update(){
-
     // Quanto tempo passou desde o ultimo update?
     // Resp = t1 - t0
     t0 = t1;
@@ -39,7 +39,6 @@ void GuiApp::update(){
     {
         brisasAtivas[i]->update(dt);
     }
-
 }
 
 void GuiApp::draw() {
@@ -98,13 +97,14 @@ void GuiApp::draw() {
 
     // Botões de liga e desliga do kinect
     if ( kinectGlobal.isConnected() ) {
+        kinectGlobal.setCameraTiltAngle(anguloKinect);
+        ImGui::SliderInt("angulo", &anguloKinect, -30, 30);
         if (ImGui::Button("Desliga Kinect")) { desligaKinect(); } 
     } else {
         if (ImGui::Button("Liga Kinect")) { ligaKinect(); } 
     }
     
-    if (ImGui::CollapsingHeader("Paleta de cores"))
-    {
+    if (ImGui::CollapsingHeader("Paleta de cores")) {
         for (int i = 0; i < coresPaleta.size(); i++) {
             string nomeCor = "Cor " + to_string(i + 1);
             ImGui::ColorEdit4(nomeCor.c_str(), (float*)&coresPaleta[i]);

@@ -1,56 +1,55 @@
 #include "Brisa.h"
 
 ImagemBrisa::ImagemBrisa(vector<Brisa*> *brisasParent) {
-	setup();
-	brisasAtivas = brisasParent;
-	// Configura a brisa e defini o ícone
-	iconPath = "../data/img/icon/kinect.png";
-	fboBrisa.allocate(WIDTH, HEIGHT);
-	fboBrisa.begin();
+    setup();
+    brisasAtivas = brisasParent;
+    // Configura a brisa e defini o ícone
+    fboBrisa.allocate(WIDTH, HEIGHT);
+    fboBrisa.begin();
     ofClear(0,0,0, 0);
     fboBrisa.end();
 
-	rotacao = 0;
-	proporcao = 1;
-	deslocX = deslocY = 0;
-	rotacionaSozinho = false;
-	torceSozinho = false;
-	converterGray = false;
+    rotacao = 0;
+    proporcao = 1;
+    deslocX = deslocY = 0;
+    rotacionaSozinho = false;
+    torceSozinho = false;
+    converterGray = false;
 }
 
 void ImagemBrisa::update( float dt ) {
-	
-	fboBrisa.begin();
+
+    fboBrisa.begin();
     ofClear(0,0,0, 0);
-	ofSetColor(corBrisa);
+    ofSetColor(corBrisa);
 
-	// Distorce a imagem e aplica filtros
-	if (img.isAllocated()) {
-		ofPushMatrix();
-		ofTranslate(WIDTH/2 + deslocX, HEIGHT/2 + deslocY, 0);
-		img.setAnchorPercent(0.5, 0.5);
-		if (rotacionaSozinho) {
-			rotacao += ofNoise(ofGetElapsedTimef());
-			if (rotacao > 360) rotacao = 0;
-		}
-		ofRotate(rotacao);
+    // Distorce a imagem e aplica filtros
+    if (img.isAllocated()) {
+        ofPushMatrix();
+        ofTranslate(WIDTH/2 + deslocX, HEIGHT/2 + deslocY, 0);
+        img.setAnchorPercent(0.5, 0.5);
+        if (rotacionaSozinho) {
+            rotacao += ofNoise(ofGetElapsedTimef());
+            if (rotacao > 360) rotacao = 0;
+        }
+        ofRotate(rotacao);
 
-		ofScale(proporcao, proporcao, 1);
+        ofScale(proporcao, proporcao, 1);
 
-		if (converterGray) {
-			imagemGray = img;
-			imagemGray.brightnessContrast(brilhoBrisa, contrasteBrisa);
-			imagemGray.setAnchorPercent(0.5, 0.5);
-			imagemGray.draw(0, 0);
-		}
-		else {
-			img.draw(0, 0);
-		}
-		ofPopMatrix();
-	}
+        if (converterGray) {
+            imagemGray = img;
+            imagemGray.brightnessContrast(brilhoBrisa, contrasteBrisa);
+            imagemGray.setAnchorPercent(0.5, 0.5);
+            imagemGray.draw(0, 0);
+        }
+        else {
+            img.draw(0, 0);
+        }
+        ofPopMatrix();
+    }
 
     fboBrisa.end();
-	fboBrisa.readToPixels(pixelsBrisa);
+    fboBrisa.readToPixels(pixelsBrisa);
 }
 
 void ImagemBrisa::draw() {

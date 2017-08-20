@@ -47,6 +47,7 @@ class GuiApp: public ofBaseApp {
         vector<Brisa*> brisas;
         vector<Brisa*> brisasAtivas;
         ofxKinect kinectGlobal;
+        int anguloKinect;
 
         GLuint btnCriaVideo,btnCriaPoligono, btnCriaKinect, btnCriaImg, 
                btnCriaGif, btnCriaMatriz, btnCriaSombras, btnCriaMandala, btnCriaBorda;
