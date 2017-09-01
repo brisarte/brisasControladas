@@ -55,8 +55,28 @@ void Brisa::desenhaJanela(int i) {
 
         drawControles(i);
 
+        if (ImGui::Button("Trazer pra frente")) { trazerFrente(i); } ImGui::SameLine();
+        if (ImGui::Button("Esconder pra trás")) { esconderTras(i); } 
+        if (ImGui::Button("Excluir Brisa")) { excluiBrisa(i); } 
         ImGui::End();
     }
+}
+
+void Brisa::esconderTras( int iBrisa ) {
+    if( iBrisa >= brisasAtivas->size()-1 ) {
+        std::iter_swap(brisasAtivas->begin()+iBrisa, brisasAtivas->begin());
+    } else {
+        std::iter_swap(brisasAtivas->begin()+iBrisa, brisasAtivas->begin()+iBrisa+1);
+    }
+}
+
+void Brisa::trazerFrente( int iBrisa ) {
+    if( iBrisa <= 0 ) {
+        std::iter_swap(brisasAtivas->begin(), brisasAtivas->end()-1);
+    } else {
+        std::iter_swap(brisasAtivas->begin()+iBrisa, brisasAtivas->begin()+iBrisa-1);
+    }
+
 }
 
 void Brisa::excluiBrisa(int iBrisa) {

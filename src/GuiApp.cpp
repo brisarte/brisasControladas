@@ -87,8 +87,6 @@ void GuiApp::draw() {
         brisasAtivas.push_back(new SombraBrisa(&kinectGlobal, &brisasAtivas, &coresPaleta));
     }
 
-
-
     ImGui::SetNextWindowSize(ofVec2f(20, 10), ImGuiSetCond_FirstUseEver);
     ImGui::Begin("Controles Gerais");
 

@@ -52,49 +52,47 @@ void ImagemBrisa::update( float dt ) {
 }
 
 void ImagemBrisa::draw() {
-	aplicarShader();
+    aplicarShader();
 }
 
 void ImagemBrisa::drawControles(int iBrisa) {
 
-	if (ImGui::Button("Carregar Imagem")) { 
-		ImGui::OpenPopup("loadImagens");
-	}
-	if (ImGui::BeginPopup("loadImagens")) {
-		listaImagens(); 
-		ImGui::EndPopup();
-	} 
+    if (ImGui::Button("Carregar Imagem")) { 
+        ImGui::OpenPopup("loadImagens");
+    }
+    if (ImGui::BeginPopup("loadImagens")) {
+        listaImagens(); 
+        ImGui::EndPopup();
+    } 
 
-	ImGui::Checkbox("Converter pra p&b", &converterGray);
-	desenharControlesDistorcao();
+    ImGui::Checkbox("Converter pra p&b", &converterGray);
+    desenharControlesDistorcao();
 
-	desenharControlesShader();
-
-	if (ImGui::Button("Excluir Brisa")) { excluiBrisa(iBrisa); } 
+    desenharControlesShader();
 }
 
 
 
 void ImagemBrisa::listaImagens() {
 
-	ofDirectory dirImg;
-	//2. Carrega numero de pastas de sequencias
-	int nImgs = dirImg.listDir("../data/img/imagens");
+    ofDirectory dirImg;
+    //2. Carrega numero de pastas de sequencias
+    int nImgs = dirImg.listDir("../data/img/imagens");
 
-	//4. Abre pastas
-	for (int i=0; i<nImgs; i++) {
-		string video = dirImg.getPath( i );
-		if (ImGui::Selectable(video.c_str())) {
-			setupImagem(video);
-		}
+    //4. Abre pastas
+    for (int i=0; i<nImgs; i++) {
+        string video = dirImg.getPath( i );
+        if (ImGui::Selectable(video.c_str())) {
+            setupImagem(video);
+        }
 
-	}
+    }
 }
 
 void ImagemBrisa::setupImagem(string imgPath) {
-	caminhoImagem = imgPath;
-	if(caminhoImagem != "") {
-		img.load(imgPath);
-		img.setAnchorPercent(0.5, 0.5);
-	}
+    caminhoImagem = imgPath;
+    if(caminhoImagem != "") {
+        img.load(imgPath);
+        img.setAnchorPercent(0.5, 0.5);
+    }
 }

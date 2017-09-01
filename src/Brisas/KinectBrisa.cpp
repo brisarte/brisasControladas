@@ -64,6 +64,4 @@ void KinectBrisa::drawControles(int iBrisa) {
 
     fonteKinect->drawControles();
     desenharControlesShader();
-
-    if (ImGui::Button("Excluir Brisa")) { excluiBrisa(iBrisa); } 
 }

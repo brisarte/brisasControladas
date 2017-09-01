@@ -57,8 +57,6 @@ void GifBrisa::drawControles(int iBrisa) {
     ImGui::SliderFloat("Rotação", &rotacao, -180, 180);
 
     desenharControlesShader();
-
-    if (ImGui::Button("Excluir Brisa")) { excluiBrisa(iBrisa); } 
 }
 
 

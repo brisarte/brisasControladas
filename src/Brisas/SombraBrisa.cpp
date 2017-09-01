@@ -101,6 +101,4 @@ void SombraBrisa::drawControles(int iBrisa) {
     ImGui::Checkbox("Limpa Frames", &clearFrames);
 
     fonteKinect->drawControles();
-
-    if (ImGui::Button("Excluir Brisa")) { excluiBrisa(iBrisa); } 
 }

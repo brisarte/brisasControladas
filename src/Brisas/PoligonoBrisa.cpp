@@ -69,7 +69,6 @@ void PoligonoBrisa::drawControles(int iBrisa) {
 
     ImGui::Checkbox("Ligar Shader", &ligaShader);
 
-    if (ImGui::Button("Excluir Brisa")) { excluiBrisa(iBrisa); } 
 }
 
 

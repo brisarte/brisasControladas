@@ -50,6 +50,8 @@ class Brisa {
         float proporcao, rotacao;
         int deslocX, deslocY;
         void desenharControlesDistorcao();
+
+        void trazerFrente( int iBrisa ), esconderTras( int iBrisa );
 };
 
 class FonteKinect : public Brisa {
