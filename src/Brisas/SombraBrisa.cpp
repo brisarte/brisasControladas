@@ -1,137 +1,104 @@
 #include "Brisa.h"
 
-SombraBrisa::SombraBrisa(ofxKinect *kinectGlobal, vector<Brisa*> *brisasParent) {
-	// Configura a brisa e defini o ícone
-	brisasAtivas = brisasParent;
-	iconPath = "../data/img/icon/matriz.png";
-	kinecto = kinectGlobal;
-	camera = 1; // 0 = camera RGB (default) | 1 = camera Depth
-	setup();
+SombraBrisa::SombraBrisa(ofxKinect *kinectGlobal, vector<Brisa*> *brisasParent, vector<ImVec4> *coresPaleta) {
+    brisasAtivas = brisasParent;
+    setup();
 
-	mirrorHorizontal = mirrorVertical = false;
-	desenhaBlur = true;
-	blurKinect = false;
-	brightnessGray = 0.5;
-	contrastGray = 0.95;
-	intervaloX = 50;
-	intervaloY = 46;
+    mirrorHorizontal = mirrorVertical = false;
+    desenhaBlur = true;
+    blurKinect = false;
+    brightnessGray = 0.5;
+    contrastGray = 0.95;
+    iBlur = 2;
+    sombraHoriz = true;
+    sombraVert = false;
 
-	coresBrisa[0] = ofColor::fromHex(0x00126D);
-	coresBrisa[1] = ofColor::fromHex(0xF8D03F);
-	coresBrisa[2] = ofColor::fromHex(0xF8A63C);
-	coresBrisa[3] = ofColor::fromHex(0xE82130);
-	coresBrisa[4] = ofColor::fromHex(0xED6134);
-	coresBrisa[5] = ofColor::fromHex(0xD12585);
-	coresBrisa[6] = ofColor::fromHex(0x531577);
-}
+    int sizePaleta = coresPaleta->size();
+    int iCor1 = ofRandom(0, sizePaleta-1);
+    int iCor2 = ofRandom(0, sizePaleta-1);
 
-void SombraBrisa::ligaKinect() {
-	if( !kinecto->isConnected() ) {
-		kinecto->setRegistration(true);
-		kinecto->init();
-		kinecto->open();
-		kinecto->setCameraTiltAngle(0);
-	}
-}
+    // Caso as cores sejam iguais troca a segunda	
+    if (iCor1 == iCor2) {
+        iCor2 = iCor2 + 1 > sizePaleta ? iCor2 - 1 : iCor2 + 1;
+    }
+    corBrisa = coresPaleta->at(iCor1);
+    corComplementar = coresPaleta->at(iCor2);
 
-void SombraBrisa::desligaKinect() {
-	kinecto->close();
+    fonteKinect = new FonteKinect(kinectGlobal, 2);
+    fonteKinect->setBlur(20);
 }
 
 void SombraBrisa::update( float dt ) {
-	fboBrisa.begin();
-    
-	if (clearFrames) {
-		ofClear(255,255,255, 0);
-	}
+    fonteKinect->update(dt);
+    fboBrisa.begin();
 
-	ofSetColor(corBrisa);
+    if (clearFrames) {
+        ofClear(255,255,255, 0);
+    }
 
-	if ( kinecto->isConnected() ) {
-		kinecto->update();
-		grayImage.setFromPixels(kinecto->getDepthPixels());
-		grayImage.mirror(mirrorVertical, mirrorHorizontal);
-		grayImage.brightnessContrast(brightnessGray, contrastGray);
-		grayImage.blurHeavily();
-		grayImage.dilate_3x3();
-		grayImage.erode_3x3();
-		grayImage.blurHeavily();
+    fonteKinect->pixelsBrisa.setImageType(OF_IMAGE_GRAYSCALE);
+    grayImage.setFromPixels(fonteKinect->pixelsBrisa);
 
-		if (blurKinect) {
-			blurGray = grayImage;
-			blurGray.erode_3x3();
-			blurGray.erode_3x3();
-			blurGray.dilate_3x3();
-			blurGray.dilate_3x3();
-			blurGray.blurHeavily();
-			blurGray.blurHeavily();
-			blurGray.erode_3x3();
-			blurGray.dilate_3x3();
-			blurGray.erode_3x3();
-			blurGray.blurHeavily();
-			if (desenhaBlur) {
-				blurGray.draw(0, 0, 1024, 768);
-			}
-		}
-		grayPixels = grayImage.getPixels();
+    grayImage.mirror(mirrorVertical, mirrorHorizontal);
+    grayImage.brightnessContrast(brightnessGray, contrastGray);
 
-		int grayWidth = grayImage.getWidth();
-		int grayHeight = grayImage.getHeight();
-		for (int x = 0; x < grayWidth; x += intervaloX) {
-			for (int y = 0; y < grayHeight; y += intervaloY) {
-				int index = y*grayWidth + x; // Pega brilho do pixel[x,y]
-				int brilho = grayPixels[index];
-				if (brilho > 10) {
-					// sorteia cor desse quadrado
-					ofColor corQuad = coresBrisa[(int)ofRandom(0, 6)];
-					corQuad.setBrightness(brilho);
-					ofSetColor(corQuad);
-				}
-				else {
-					ofSetColor(0, 0, 0, 0);
-				}
-				ofDrawRectangle(x * (1024 / (float)grayWidth), y * (768 / (float)grayHeight), intervaloX* (1024 / (float)grayWidth), intervaloY*(768 / (float)grayHeight));
-			}
-		}
-	}
+    blurGray = grayImage;
+    for (int i = 0; i < iBlur; i++) {
+        blurGray.erode_3x3();
+        blurGray.dilate_3x3();
+        blurGray.blurHeavily();
+        blurGray.erode_3x3();
+        blurGray.dilate_3x3();
+        blurGray.blur(3);
+    }
+    ofSetColor(corBrisa);
+    blurGray.draw(0, 0, WIDTH, HEIGHT);
+    // Desenha as sombras repetidas (efeito caleidoscopio)
+    if (sombraHoriz || sombraVert) {
+        ofEnableBlendMode(OF_BLENDMODE_ADD);
+        if (sombraVert) {
+            ofSetColor(corComplementar);
+            blurGray.mirror(true, false);
+            blurGray.draw(0, 0, WIDTH, HEIGHT);
+        }
+        if (sombraHoriz) {
+            ofSetColor(corComplementar);
+            blurGray.mirror(false, true);
+            blurGray.draw(0, 0, WIDTH, HEIGHT);
+        }
+        if (sombraVert && sombraHoriz) {
+            ofSetColor(corBrisa);
+            blurGray.mirror(true, false);
+            blurGray.draw(0, 0, WIDTH, HEIGHT);
+        }
+    }
+
+    grayPixels = grayImage.getPixels();
 
     fboBrisa.end();
-	fboBrisa.readToPixels(pixelsBrisa);
+    fboBrisa.readToPixels(pixelsBrisa);
 }
 
 void SombraBrisa::draw() {
-	aplicarShader();
+    aplicarShader();
+}
+
+void SombraBrisa::desenhaMiniatura(int i) {
+    imgBtn.setFromPixels(pixelsBrisa);
+    imgBtn.draw(0,i*150,200,150);
+    fonteKinect->fboBrisa.draw(200,i*150,200,150);
 }
 
 void SombraBrisa::drawControles(int iBrisa) {
-	ImGui::ColorEdit3("Cor da Brisa ", (float*)&corBrisa);
+    ImGui::ColorEdit4("Base", (float*)&corBrisa);
+    ImGui::ColorEdit4("Complementar", (float*)&corComplementar);
 
+    // Camêra fonte
+    ImGui::Text("Sombras");
+    ImGui::Checkbox("--", &sombraHoriz);
+    ImGui::Checkbox("|", &sombraVert);
 
-	// Botões de liga e desliga do kinect
-	if ( kinecto->isConnected() ) {
-		if (ImGui::Button("Desliga Kinect")) { desligaKinect(); } 
-	} else {
-		if (ImGui::Button("Liga Kinect")) { ligaKinect(); } 
-	}
+    ImGui::Checkbox("Limpa Frames", &clearFrames);
 
-	// Camêra fonte
-	ImGui::Text("Camêra selecionada:");
-	ImGui::RadioButton("Nenhuma", &camera, 0); ImGui::SameLine();
-	ImGui::RadioButton("RGB", &camera, 1); ImGui::SameLine();
-	ImGui::RadioButton("Profundidade", &camera, 2);
-
-	ImGui::Checkbox("mirror <->", &mirrorHorizontal);
-	ImGui::Checkbox("mirror V", &mirrorVertical);
-
-	ImGui::Checkbox("blur Kinect", &blurKinect);
-
-	ImGui::SliderInt("intervalo X", &intervaloX, 2, 100);
-	ImGui::SliderInt("intervalo Y", &intervaloY, 2, 100);
-
-	ImGui::SliderFloat("brilho", &brightnessGray, 0, 1);
-	ImGui::SliderFloat("contraste", &contrastGray, 0, 1);
-
-	ImGui::Checkbox("Limpa Frames", &clearFrames);
-
-	if (ImGui::Button("Excluir Brisa")) { excluiBrisa(iBrisa); } 
+    fonteKinect->drawControles();
 }

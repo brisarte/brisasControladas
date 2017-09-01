@@ -9,6 +9,7 @@
 
 uniform sampler2DRect texture0;     //it can be named in any way, GLSL just links it
 
+uniform sampler2DRect texture1;   //second image
 
 #define N (256)
 uniform float specArray[N];
@@ -19,19 +20,18 @@ uniform float specArray[N];
 void main(){
   vec2 pos = gl_TexCoord[0].st;     
   
-  // Imagem da camera
+  // Imagem do video
   vec4 color0 = texture2DRect(texture0, pos);
+  // Imagem do sensor de profundidade
+  vec4 corDepth =  texture2DRect(texture1, pos);
+
 
   vec4 color;
 
   color = color0;  
-  if(color.r > 0.8 && color.g > 0.8 && color.b > 0.8) {
-    color.a = ((color.r + color.g + color.b)/3) - 0.7;
-  } 
-  if(color.r > 0.9 && color.g > 0.9 && color.b > 0.9) {
-    color.a = 0;
-  }  
-	
+  color.r = 1 - color.r;
+  color.g = 1 - color.g;
+  color.b = 1 - color.b;
 
 
   gl_FragColor = color;
