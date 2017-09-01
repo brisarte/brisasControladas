@@ -4,13 +4,17 @@ FonteKinect::FonteKinect(ofxKinect *kinectGlobal, int cameraSelecionada = 0) {
     // Configura a brisa e defini o ícone
     kinect = kinectGlobal;
     camera = cameraSelecionada; // 0 = camera RGB (default) | 1 = camera Depth
-    exemploGray.load("../data/img/exemplogray.png");
-    exemploGray.setImageType(OF_IMAGE_GRAYSCALE); 
-    exemploCor.load("../data/img/exemplogray.png");
+
     mirrorHorizontal = mirrorVertical = false;
     setup();
     ofSetBackgroundAuto(false);
-    iBlur = 0;
+    iRastro = 0;
+    iBlur = 4;
+    iErode = 10;
+    iDilate = 10;
+    colorImage.allocate(640,480);
+    floatImage.allocate(640,480);
+    grayImage.allocate(640,480);
 }
 
 void FonteKinect::ligaKinect() {
@@ -31,33 +35,73 @@ void FonteKinect::update( float dt ) {
 
     ofSetColor(255,255,255,255);
 
-    // TODO atribuir videos "exemplo"
-    if ( kinect->isConnected() ) {
-        kinect->update();
-        grayImage.setFromPixels(kinect->getDepthPixels());
-        colorImage.setFromPixels(kinect->getPixels());
+    // Camera RGB
+    if (camera == 1) {
+        // Kinect ta funcionando
+        if ( kinect->isConnected() ) {
+            kinect->update();
+            colorImage.setFromPixels(kinect->getPixels());
+        } else {
+            // Kinect desligado, carrega video Demo
+            if( danceRGB.isLoaded() )  {
+                danceRGB.update();
+            } else {
+                danceRGB.load("../data/kinectdemo/rgbdance.mp4");
+                danceRGB.play();
+            }
+            colorImage.setFromPixels(danceRGB.getPixels());
+        }
     } else {
-        colorImage.setFromPixels(exemploCor.getPixels());
-        grayImage.setFromPixels(exemploGray.getPixels());
+    // Camera Depth
+        // Kinect ta funcionando
+        if ( kinect->isConnected() ) {
+            kinect->update();
+            colorImage.setFromPixels(kinect->getDepthPixels());
+        } else {
+            // Kinect desligado, carrega video Demo
+            if( danceDepth.isLoaded() )  {
+                danceDepth.update();
+            } else {
+                danceDepth.load("../data/kinectdemo/depthdance.mp4");
+                danceDepth.play();
+            }
+            colorImage.setFromPixels(danceDepth.getPixels());
+        }
+    }
+    
+    int maxI = 0;
+    maxI = iBlur > maxI ? iBlur : maxI;
+    maxI = iErode > maxI ? iErode : maxI;
+    maxI = iDilate > maxI ? iDilate : maxI;
+
+    // Aplica blur, erode e dilate
+    for (int i = 0; i < maxI; i++) {
+        if (iErode >= i )
+            colorImage.erode();
+        if (iDilate >= i )
+            colorImage.dilate();
+        if (iBlur >= i )
+            colorImage.blurGaussian(5);
     }
 
-    for (int i = 0; i < iBlur; i++) {
-        grayImage.erode_3x3();
-        grayImage.dilate_3x3();
-        grayImage.blurHeavily();
-        grayImage.erode_3x3();
-        grayImage.dilate_3x3();
-        grayImage.blur(3);
+    //Aplica o Rastro
+    ofFloatPixels & pixF = floatImage.getFloatPixelsRef();
+    floatColor = colorImage;
+    ofFloatPixels & pixA = floatColor.getFloatPixelsRef();
+    int numPixels = pixF.size();
+    for (int i = 0; i < numPixels; i++) {
+        pixF[i] = pixF[i] * ((float)iRastro/100) + pixA[i] * (1 - (float)iRastro/100);// Aumenta contraste de distancia
     }
+    floatImage.flagImageChanged();
+    colorImage = floatImage;
 
     colorImage.mirror(mirrorVertical, mirrorHorizontal);
-    grayImage.mirror(mirrorVertical, mirrorHorizontal);
-
-    grayImage.brightnessContrast(brilhoBrisa, contrasteBrisa);
     if (camera == 1) {
-        colorImage.draw(0,0,1024,768);
+        colorImage.draw(0,0,WIDTH,HEIGHT);
     } else {
-        grayImage.draw(0,0,1024,768);
+        grayImage = colorImage;
+        grayImage.brightnessContrast(brilhoBrisa, contrasteBrisa);
+        grayImage.draw(0,0,WIDTH,HEIGHT);
     }
 
     fboBrisa.end();
@@ -78,9 +122,14 @@ void FonteKinect::drawControles() {
 	ImGui::Checkbox("Espelho Horizontal", &mirrorHorizontal);
 	ImGui::Checkbox("Espelho Vertical", &mirrorVertical);
 
-        ImGui::SliderFloat("brilho", &brilhoBrisa, 0, 1);
-        ImGui::SliderFloat("contraste", &contrasteBrisa, 0, 1);
         ImGui::SliderInt("blur", &iBlur, 0, 10);
+        ImGui::SliderInt("erode", &iErode, 0, 10);
+        ImGui::SliderInt("dilate", &iDilate, 0, 10);
+        ImGui::SliderInt("Rastro", &iRastro, 0, 99);
+        if (camera == 2) {
+            ImGui::SliderFloat("brilho", &brilhoBrisa, 0, 1);
+            ImGui::SliderFloat("contraste", &contrasteBrisa, 0, 1);
+        }
 
     }
 }

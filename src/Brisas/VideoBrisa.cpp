@@ -1,16 +1,13 @@
 #include "Brisa.h"
 
 VideoBrisa::VideoBrisa(vector<Brisa*> *brisasParent) {
-	setup();
-	brisasAtivas = brisasParent;
-	cout << brisasAtivas->size();
-	// Configura a brisa e defini o ícone
-	iconPath = "../data/img/icon/video.png";
-	fboBrisa.allocate(WIDTH, HEIGHT);
-	fboBrisa.begin();
+    setup();
+    brisasAtivas = brisasParent;
+    fboBrisa.allocate(WIDTH, HEIGHT);
+    fboBrisa.begin();
     ofClear(0,0,0, 0);
     fboBrisa.end();
-	posVideo = 0;
+    posVideo = 0;
 }
 
 void VideoBrisa::update( float dt ) {
@@ -22,9 +19,9 @@ void VideoBrisa::update( float dt ) {
     fboBrisa.begin();
     ofClear(0,0,0, 0);
 
-	if( video.isLoaded() ) {
-		video.draw(-(widthDraw-WIDTH)/2, -(heightDraw-HEIGHT)/2, widthDraw, heightDraw);
-	}
+    if( video.isLoaded() ) {
+        video.draw(-(widthDraw-WIDTH)/2, -(heightDraw-HEIGHT)/2, widthDraw, heightDraw);
+    }
 
     fboBrisa.end();
     fboBrisa.readToPixels(pixelsBrisa);

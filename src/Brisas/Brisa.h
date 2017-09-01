@@ -174,21 +174,21 @@ class FonteKinect : public Brisa {
 
     void ligaKinect();
     void desligaKinect();
-    int iBlur;
+    int iBlur,iErode,iDilate;
+    int iRastro;
 
     void drawControles();
 
     bool mirrorHorizontal, mirrorVertical;
     ofxCvGrayscaleImage grayImage;
-    ofImage exemploGray, exemploCor;
+    ofVideoPlayer danceRGB, danceDepth;
     ofxCvColorImage colorImage;
+    ofxCvFloatImage floatImage, floatColor;
 };
 
 class KinectBrisa : public Brisa {
 
     ofxKinect *kinecto;
-    int camera;
-    float angKinect;
     float nivelFade;
     public:
     KinectBrisa(ofxKinect *kinectGlobal, vector<Brisa*> *brisasParent);
@@ -201,8 +201,11 @@ class KinectBrisa : public Brisa {
 
     bool mirrorHorizontal, mirrorVertical;
     bool ligaContornos;
+    bool bFindHoles;
+    int minArea,maxArea,blobsConsiderados;
     ofxCvContourFinder contourFinder;
     ofxCvGrayscaleImage grayImage;
+
     FonteKinect* fonteKinect;
 };
 class PoligonoBrisa : public Brisa {

@@ -4,7 +4,6 @@ KinectBrisa::KinectBrisa(ofxKinect *kinectGlobal, vector<Brisa*> *brisasParent) 
     // Configura a brisa e defini o ícone
     brisasAtivas = brisasParent;
     kinecto = kinectGlobal;
-    camera = 0; // 0 = camera RGB (default) | 1 = camera Depth
     mirrorHorizontal = mirrorVertical = false;
     clearFrames = true;
     nivelFade = 20;
@@ -12,6 +11,10 @@ KinectBrisa::KinectBrisa(ofxKinect *kinectGlobal, vector<Brisa*> *brisasParent) 
     ofSetBackgroundAuto(false);
     ligaContornos = true;
     fonteKinect = new FonteKinect(kinectGlobal, 2);
+    minArea = 10;
+    maxArea = (640*480)/2; // (kinect_width*kinect_height)/2
+    blobsConsiderados = 10;
+    bFindHoles = false;
 }
 
 
@@ -25,12 +28,12 @@ void KinectBrisa::update( float dt ) {
     } else {
         ofSetColor(255,255,255,255);
     }
-
-    grayImage = fonteKinect->grayImage;
+    fonteKinect->pixelsBrisa.setImageType(OF_IMAGE_GRAYSCALE);
+    grayImage.setFromPixels(fonteKinect->pixelsBrisa);
     grayImage.draw(0,0,WIDTH,HEIGHT);
 
     if (ligaContornos) {
-        contourFinder.findContours(grayImage, 10, (kinecto->width*kinecto->height)/2, 20, false);
+        contourFinder.findContours(grayImage, minArea, maxArea, blobsConsiderados, bFindHoles);
         contourFinder.draw(0,0,WIDTH,HEIGHT);
     }
 
@@ -56,6 +59,10 @@ void KinectBrisa::drawControles(int iBrisa) {
 
 
     ImGui::Checkbox("Contornos", &ligaContornos);
+    ImGui::Checkbox("Contorno: buracos", &bFindHoles);
+    ImGui::SliderInt("min Area", &minArea, 0, 100);
+    ImGui::SliderInt("max Area", &maxArea, 100, (640*480) );
+    ImGui::SliderInt("blobs", &blobsConsiderados, 0, 20 );
 
     fonteKinect->drawControles();
     desenharControlesShader();
