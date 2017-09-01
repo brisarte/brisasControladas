@@ -22,7 +22,6 @@ class Brisa {
         GLuint pixelsBtn;
         ofPixels pixelsBrisa;
         void mostraBrisas();
-        ImVec4 corBrisa;
         ofImage imgBtn;
 
         ofShader shaderBrisa;
@@ -53,6 +52,54 @@ class Brisa {
         void desenharControlesDistorcao();
 };
 
+class FonteKinect : public Brisa {
+
+    ofxKinect *kinect;
+    int camera;
+    float angKinect;
+    float nivelFade;
+    public:
+    FonteKinect(ofxKinect *kinectGlobal, int cameraSelecionada);
+    void setBlur( int novoBlur );
+    void draw();
+    void update( float dt );
+
+    void ligaKinect();
+    void desligaKinect();
+    int iBlur,iErode,iDilate;
+    int iRastro;
+
+    void drawControles();
+
+    bool mirrorHorizontal, mirrorVertical;
+    ofxCvGrayscaleImage grayImage;
+    ofVideoPlayer danceRGB, danceDepth;
+    ofxCvColorImage colorImage;
+    ofxCvFloatImage floatImage, floatColor;
+};
+
+class KinectBrisa : public Brisa {
+
+    float nivelFade;
+    public:
+    KinectBrisa(ofxKinect *kinectGlobal, vector<Brisa*> *brisasParent);
+    void draw();
+    void update( float dt );
+
+    void desenhaMiniatura(int i);
+
+    void drawControles(int iBrisa);
+
+    bool mirrorHorizontal, mirrorVertical;
+    bool ligaContornos;
+    bool bFindHoles;
+    int minArea,maxArea,blobsConsiderados;
+    ofxCvContourFinder contourFinder;
+    ofxCvGrayscaleImage grayImage;
+
+    FonteKinect* fonteKinect;
+};
+
 class SombraBrisa : public Brisa {
 
     ofxKinect *kinecto;
@@ -63,18 +110,18 @@ class SombraBrisa : public Brisa {
     void draw();
     void update(float dt);
 
-    void ligaKinect();
-    void desligaKinect();
-
+    void desenhaMiniatura(int i);
     void drawControles(int iBrisa);
     bool blurKinect, desenhaBlur, mirrorHorizontal, mirrorVertical;
     float brightnessGray, contrastGray;
     int iBlur;
     bool sombraHoriz, sombraVert;
-    ImVec4 corComplementar;
+    ImVec4 corBrisa, corComplementar;
     ofPixels grayPixels;
 
     ofxCvGrayscaleImage grayImage, blurGray;
+
+    FonteKinect* fonteKinect;
 };
 
 class MatrizBrisa : public Brisa {
@@ -87,6 +134,7 @@ class MatrizBrisa : public Brisa {
     void draw();
     void update(float dt);
 
+    void desenhaMiniatura(int i);
     void drawControles(int iBrisa);
     void desenhaPixels(int brilho, int width, int height, int x, int y, int gapX, int gapY);
     void desenhaColunas(int brilho, int width, int height, int x, int y, int gapX, int gapY);
@@ -98,6 +146,7 @@ class MatrizBrisa : public Brisa {
     vector<ImVec4> *coresPaleta;
 
     ofxCvGrayscaleImage grayImage, blurGray;
+    FonteKinect* fonteKinect;
 };
 
 class VideoBrisa : public Brisa {
@@ -160,54 +209,6 @@ class ImagemBrisa : public Brisa {
 
 };
 
-
-class FonteKinect : public Brisa {
-
-    ofxKinect *kinect;
-    int camera;
-    float angKinect;
-    float nivelFade;
-    public:
-    FonteKinect(ofxKinect *kinectGlobal, int cameraSelecionada);
-    void draw();
-    void update( float dt );
-
-    void ligaKinect();
-    void desligaKinect();
-    int iBlur,iErode,iDilate;
-    int iRastro;
-
-    void drawControles();
-
-    bool mirrorHorizontal, mirrorVertical;
-    ofxCvGrayscaleImage grayImage;
-    ofVideoPlayer danceRGB, danceDepth;
-    ofxCvColorImage colorImage;
-    ofxCvFloatImage floatImage, floatColor;
-};
-
-class KinectBrisa : public Brisa {
-
-    ofxKinect *kinecto;
-    float nivelFade;
-    public:
-    KinectBrisa(ofxKinect *kinectGlobal, vector<Brisa*> *brisasParent);
-    void draw();
-    void update( float dt );
-
-    void desenhaMiniatura(int i);
-
-    void drawControles(int iBrisa);
-
-    bool mirrorHorizontal, mirrorVertical;
-    bool ligaContornos;
-    bool bFindHoles;
-    int minArea,maxArea,blobsConsiderados;
-    ofxCvContourFinder contourFinder;
-    ofxCvGrayscaleImage grayImage;
-
-    FonteKinect* fonteKinect;
-};
 class PoligonoBrisa : public Brisa {
 
     public:
@@ -216,9 +217,8 @@ class PoligonoBrisa : public Brisa {
         void update( float dt );
 
         void drawControles(int iBrisa);
-
         void desenhaPoligono(int radius);
-        ImVec4 corComplementar;
+        ImVec4 corBrisa, corComplementar;
         int vertices;
         int quantidade;
         int distancia;

@@ -3,7 +3,6 @@
 MatrizBrisa::MatrizBrisa(ofxKinect *kinectGlobal, vector<Brisa*> *brisasParent, vector<ImVec4> *paletaGeral) {
     // Configura a brisa e defini o ícone
     brisasAtivas = brisasParent;
-    kinecto = kinectGlobal;
     camera = 1; // 0 = camera RGB (default) | 1 = camera Depth
     setup();
 
@@ -14,38 +13,31 @@ MatrizBrisa::MatrizBrisa(ofxKinect *kinectGlobal, vector<Brisa*> *brisasParent, 
     intervaloX = 50;
     intervaloY = 46;
 
+    fonteKinect = new FonteKinect(kinectGlobal, 2);
+    fonteKinect->setBlur(20);
+
     coresPaleta = paletaGeral;
 }
 
 void MatrizBrisa::update( float dt ) {
+    fonteKinect->update(dt);
     fboBrisa.begin();
 
     if (clearFrames) {
         ofClear(255,255,255, 0);
     }
 
-    ofSetColor(corBrisa);
+    fonteKinect->pixelsBrisa.setImageType(OF_IMAGE_GRAYSCALE);
+    grayImage.setFromPixels(fonteKinect->pixelsBrisa);
 
-    if ( kinecto->isConnected() ) {
-        kinecto->update();
-        grayImage.setFromPixels(kinecto->getDepthPixels());
-        grayImage.mirror(mirrorVertical, mirrorHorizontal);
-        grayImage.brightnessContrast(brightnessGray, contrastGray);
-        grayImage.blurHeavily();
-        grayImage.dilate_3x3();
-        grayImage.erode_3x3();
-        grayImage.blurHeavily();
-
-        grayPixels = grayImage.getPixels();
-
-        int grayWidth = grayImage.getWidth();
-        int grayHeight = grayImage.getHeight();
-        for (int x = 0; x < grayWidth; x += intervaloX) {
-            for (int y = 0; y < grayHeight; y += intervaloY) {
-                int index = y*grayWidth + x; // Pega brilho do pixel[x,y]
-                int brilho = grayPixels[index];
-                desenhaPixels(brilho, grayWidth, grayHeight, x, y, intervaloX, intervaloY);
-            }
+    grayPixels = grayImage.getPixels();
+    int grayWidth = grayImage.getWidth();
+    int grayHeight = grayImage.getHeight();
+    for (int x = 0; x < grayWidth; x += intervaloX) {
+        for (int y = 0; y < grayHeight; y += intervaloY) {
+            int index = y*grayWidth + x; // Pega brilho do pixel[x,y]
+            int brilho = grayPixels[index];
+            desenhaPixels(brilho, grayWidth, grayHeight, x, y, intervaloX, intervaloY);
         }
     }
 
@@ -96,7 +88,6 @@ void MatrizBrisa::desenhaColunas(int brilho, int width, int height, int x, int y
     ofNoFill();
     ofDrawRectangle(0, 0, tamanhoCol, tamanhoCol);
 
-
     glPopMatrix();
 }
 
@@ -113,6 +104,12 @@ void MatrizBrisa::desenhaPixels(int brilho, int width, int height, int x,int y, 
     ofDrawRectangle(x * (WIDTH / (float)width), y * (HEIGHT / (float)height), gapX* (WIDTH / (float)width), gapY*(HEIGHT / (float)height));
 }
 
+void MatrizBrisa::desenhaMiniatura(int i) {
+    imgBtn.setFromPixels(pixelsBrisa);
+    imgBtn.draw(0,i*150,200,150);
+    fonteKinect->fboBrisa.draw(200,i*150,200,150);
+}
+
 void MatrizBrisa::drawControles(int iBrisa) {
 
     ImGui::Checkbox("blur Kinect", &blurKinect);
@@ -121,6 +118,8 @@ void MatrizBrisa::drawControles(int iBrisa) {
     ImGui::SliderInt("intervalo Y", &intervaloY, 2, 100);
 
     ImGui::Checkbox("Limpa Frames", &clearFrames);
+
+    fonteKinect->drawControles();
 
     if (ImGui::Button("Excluir Brisa")) { excluiBrisa(iBrisa); } 
 }

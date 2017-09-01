@@ -3,7 +3,6 @@
 KinectBrisa::KinectBrisa(ofxKinect *kinectGlobal, vector<Brisa*> *brisasParent) {
     // Configura a brisa e defini o ícone
     brisasAtivas = brisasParent;
-    kinecto = kinectGlobal;
     mirrorHorizontal = mirrorVertical = false;
     clearFrames = true;
     nivelFade = 20;
@@ -57,9 +56,8 @@ void KinectBrisa::drawControles(int iBrisa) {
         ImGui::SliderFloat("Fade", &nivelFade, 0, 100);
     }
 
-
     ImGui::Checkbox("Contornos", &ligaContornos);
-    ImGui::Checkbox("Contorno: buracos", &bFindHoles);
+    ImGui::Checkbox("Encontrar buracos", &bFindHoles);
     ImGui::SliderInt("min Area", &minArea, 0, 100);
     ImGui::SliderInt("max Area", &maxArea, 100, (640*480) );
     ImGui::SliderInt("blobs", &blobsConsiderados, 0, 20 );

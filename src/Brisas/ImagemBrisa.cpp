@@ -21,7 +21,6 @@ void ImagemBrisa::update( float dt ) {
 
     fboBrisa.begin();
     ofClear(0,0,0, 0);
-    ofSetColor(corBrisa);
 
     // Distorce a imagem e aplica filtros
     if (img.isAllocated()) {
@@ -57,7 +56,6 @@ void ImagemBrisa::draw() {
 }
 
 void ImagemBrisa::drawControles(int iBrisa) {
-	ImGui::ColorEdit3("Cor da Brisa ", (float*)&corBrisa);
 
 	if (ImGui::Button("Carregar Imagem")) { 
 		ImGui::OpenPopup("loadImagens");

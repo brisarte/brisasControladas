@@ -9,8 +9,6 @@ void Brisa::setup() {
     ofClear(255,255,255, 0);
     fboBrisa.end();
 
-    corBrisa = ofColor(255, 255, 255);
-
     ligaShader = false;
     clearFrames = true;
 
