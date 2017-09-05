@@ -38,14 +38,18 @@ class GuiApp: public ofBaseApp {
         void setup();
         void update();
         void draw();
+        void mousePressed(int x, int y, int iButton) ;
 
         void ligaKinect();
         void desligaKinect();
+
+        void adicionaBrisa();
 
         ofxImGui::Gui gui;
 
         vector<Brisa*> brisas;
         vector<Brisa*> brisasAtivas;
+        int iBrisaFocada;
         ofxKinect kinectGlobal;
         int anguloKinect;
 
@@ -56,5 +60,4 @@ class GuiApp: public ofBaseApp {
         ofBlendMode blendMode;
         int iBlend;
         bool desenhaMiniaturas;
-
 };

@@ -45,8 +45,61 @@ void GuiApp::draw() {
     ofBackground(0, 0, 0);
 
     gui.begin();
+    adicionaBrisa();
 
+    ImGui::SetNextWindowSize(ofVec2f(20, 10), ImGuiSetCond_FirstUseEver);
+    ImGui::Begin("Controles Gerais");
 
+    ImGui::Text("%.1f FPS (%.3f ms/frame) ", ImGui::GetIO().Framerate, 1000.0f / ImGui::GetIO().Framerate);
+    ImGui::Checkbox("Desenha miniaturas", &desenhaMiniaturas);
+
+    // Botões de liga e desliga do kinect
+    if ( kinectGlobal.isConnected() ) {
+        kinectGlobal.setCameraTiltAngle(anguloKinect);
+        ImGui::SliderInt("angulo", &anguloKinect, -30, 30);
+        if (ImGui::Button("Desliga Kinect")) { desligaKinect(); } 
+    } else {
+        if (ImGui::Button("Liga Kinect")) { ligaKinect(); } 
+    }
+    
+    if (ImGui::CollapsingHeader("Paleta de cores")) {
+        for (int i = 0; i < coresPaleta.size(); i++) {
+            string nomeCor = "Cor " + to_string(i + 1);
+            ImGui::ColorEdit4(nomeCor.c_str(), (float*)&coresPaleta[i]);
+            ImGui::SameLine();
+            nomeCor = "[X] Excluir " + to_string(i + 1);
+            if (ImGui::Button(nomeCor.c_str())) { coresPaleta.erase(coresPaleta.begin() + i); }
+        }
+
+        if (ImGui::Button(" + ")) {
+            coresPaleta.push_back(ofColor::fromHex(0xC0126D));
+        }
+    }
+
+    ImGui::Text("Blend Mode");
+    ImGui::RadioButton("alpha", &iBlend, 1); ImGui::SameLine();
+    ImGui::RadioButton("add", &iBlend, 2); ImGui::SameLine();
+    ImGui::RadioButton("screen", &iBlend, 3); //ImGui::SameLine();
+
+    // Me mostra essas brisa
+    for (int i = 0; i < brisasAtivas.size(); i++)
+    {
+        if( desenhaMiniaturas ) {
+            bool focada = ( i == iBrisaFocada );
+            brisasAtivas[i]->desenhaMiniatura(i, focada);
+        }
+        if ( i == iBrisaFocada ) {
+            brisasAtivas[i]->desenhaJanela(i);
+        }
+    }
+
+    ImGui::End();
+
+    gui.end();
+
+}
+
+void GuiApp::adicionaBrisa() {
     ImGui::Text("Adicione uma camada de brisa:");
     bool criaKinect = ImGui::ImageButton((ImTextureID)(uintptr_t)btnCriaKinect, ImVec2(120, 90)); ImGui::SameLine();
     bool criaMatriz = ImGui::ImageButton((ImTextureID)(uintptr_t)btnCriaMatriz, ImVec2(120, 90)); ImGui::SameLine();
@@ -80,60 +133,12 @@ void GuiApp::draw() {
     }
     if (criaMatriz) {
         cout << "btn pressionado: criaMatriz";
-        brisasAtivas.push_back(new MatrizBrisa(&kinectGlobal, &brisasAtivas, &coresPaleta));
+        brisasAtivas.push_back(new MatrizBrisa(&kinectGlobal, &brisasAtivas, coresPaleta));
     }
     if (criaSombras) {
         cout << "btn pressionado: criaSombras";
         brisasAtivas.push_back(new SombraBrisa(&kinectGlobal, &brisasAtivas, &coresPaleta));
     }
-
-    ImGui::SetNextWindowSize(ofVec2f(20, 10), ImGuiSetCond_FirstUseEver);
-    ImGui::Begin("Controles Gerais");
-
-    ImGui::Text("%.1f FPS (%.3f ms/frame) ", ImGui::GetIO().Framerate, 1000.0f / ImGui::GetIO().Framerate);
-    ImGui::Checkbox("Desenha miniaturas", &desenhaMiniaturas);
-
-    // Botões de liga e desliga do kinect
-    if ( kinectGlobal.isConnected() ) {
-        kinectGlobal.setCameraTiltAngle(anguloKinect);
-        ImGui::SliderInt("angulo", &anguloKinect, -30, 30);
-        if (ImGui::Button("Desliga Kinect")) { desligaKinect(); } 
-    } else {
-        if (ImGui::Button("Liga Kinect")) { ligaKinect(); } 
-    }
-    
-    if (ImGui::CollapsingHeader("Paleta de cores")) {
-        for (int i = 0; i < coresPaleta.size(); i++) {
-            string nomeCor = "Cor " + to_string(i + 1);
-            ImGui::ColorEdit4(nomeCor.c_str(), (float*)&coresPaleta[i]);
-            ImGui::SameLine();
-            nomeCor = "[X] Excluir " + to_string(i + 1);
-            if (ImGui::Button(nomeCor.c_str())) { coresPaleta.erase(coresPaleta.begin() + i); }
-        }
-
-        if (ImGui::Button(" + ")) {
-            coresPaleta.push_back(ofColor::fromHex(0xC0126D));
-        }
-    }
-
-
-    ImGui::Text("Blend Mode");
-    ImGui::RadioButton("alpha", &iBlend, 1); ImGui::SameLine();
-    ImGui::RadioButton("add", &iBlend, 2); ImGui::SameLine();
-    ImGui::RadioButton("screen", &iBlend, 3); //ImGui::SameLine();
-
-    // Me mostra essas brisa
-    for (int i = 0; i < brisasAtivas.size(); i++)
-    {
-        if( desenhaMiniaturas ) {
-            brisasAtivas[i]->desenhaMiniatura(i);
-        }
-        brisasAtivas[i]->desenhaJanela(i);
-    }
-
-    ImGui::End();
-
-    gui.end();
 
 }
 
@@ -150,3 +155,13 @@ void GuiApp::desligaKinect() {
     kinectGlobal.close();
 }
 
+void GuiApp::mousePressed(int x, int y, int iButton) {
+    int widthMiniatura = 160;
+    int heightMiniatura = 120;
+    int qtd = 4;
+    if( y < heightMiniatura*qtd && x < widthMiniatura ) {
+        iBrisaFocada = floor( (float)y/heightMiniatura );
+        cout << "\nx:" << x << " y:"<<y<<" btn:"<<iButton;
+        cout << " - Brisa Focada: " << iBrisaFocada;
+    }
+}

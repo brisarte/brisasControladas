@@ -1,7 +1,6 @@
 #include "Brisa.h"
 
 void Brisa::setup() {
-    configBrisa = true;
     //btnConfigBrisa = gui->loadTexture(iconPath);fboBrisa.clear();
     pixelsBrisa.allocate(WIDTH,HEIGHT, OF_IMAGE_COLOR);
     fboBrisa.allocate(WIDTH, HEIGHT);
@@ -32,9 +31,21 @@ void Brisa::draw() {
 void Brisa::drawControles(int iBrisa) {
 }
 
-void Brisa::desenhaMiniatura(int i) {
+void Brisa::desenhaMiniatura(int i, bool ativa) {
+    int widthMiniatura = 160;
+    int heightMiniatura = 120;
+    int border = 2;
     imgBtn.setFromPixels(pixelsBrisa);
-    imgBtn.draw(0,i*150,200,150);
+    if(ativa) {
+        ofSetColor(205, 100, 100);
+    } else {
+        ofSetColor(30);
+    }
+    ofRect(0,i*(heightMiniatura+border*2),widthMiniatura+border*2,heightMiniatura+border*2);
+    ofSetColor(0);
+    ofRect(2,i*(heightMiniatura+border*2)+border,widthMiniatura,heightMiniatura);
+    ofSetColor(255);
+    imgBtn.draw(2,i*(heightMiniatura+border*2)+border,widthMiniatura,heightMiniatura);
 }
 
 void Brisa::desenhaJanela(int i) {
@@ -43,23 +54,25 @@ void Brisa::desenhaJanela(int i) {
     std::string text = "Brisa ";
     text += std::to_string(i);
 
-    if (ImGui::Button( text.c_str() )) { 
-        configBrisa ^= 1;
-        cout << "\nBrisa " << i << ": configBrisa=" << configBrisa;
-    }
+    
+    ImGui::SetNextWindowSize(ofVec2f(500,248), ImGuiSetCond_Always);
+    ImGui::SetNextWindowPos(ofVec2f(0,500), ImGuiSetCond_Always);
+    string titulo = "Configurações Brisa #" + to_string(i+1);
+    ImGuiWindowFlags window_flags = 0;
+  //  window_flags |= ImGuiWindowFlags_NoResize;
+    window_flags |= ImGuiWindowFlags_NoCollapse;
+    window_flags |= ImGuiWindowFlags_NoMove;
+    bool janelaAberta = true;
+    ImGui::Begin(titulo.c_str(), &janelaAberta, window_flags );
 
-    if(configBrisa) {
-        ImGui::SetNextWindowSize(ofVec2f(300,200), ImGuiSetCond_FirstUseEver);
-        string titulo = "Configurações Brisa #" + to_string(i+1);
-        ImGui::Begin(titulo.c_str(), &configBrisa);
+    drawControles(i);
 
-        drawControles(i);
+    if (ImGui::Button("Trazer pra frente")) { trazerFrente(i); } ImGui::SameLine();
+    if (ImGui::Button("Esconder pra trás")) { esconderTras(i); } 
+    desenharControlesShader();
+    if (ImGui::Button("Excluir Brisa")) { excluiBrisa(i); } 
 
-        if (ImGui::Button("Trazer pra frente")) { trazerFrente(i); } ImGui::SameLine();
-        if (ImGui::Button("Esconder pra trás")) { esconderTras(i); } 
-        if (ImGui::Button("Excluir Brisa")) { excluiBrisa(i); } 
-        ImGui::End();
-    }
+    ImGui::End();
 }
 
 void Brisa::esconderTras( int iBrisa ) {

@@ -1,6 +1,6 @@
 #include "Brisa.h"
 
-MatrizBrisa::MatrizBrisa(ofxKinect *kinectGlobal, vector<Brisa*> *brisasParent, vector<ImVec4> *paletaGeral) {
+MatrizBrisa::MatrizBrisa(ofxKinect *kinectGlobal, vector<Brisa*> *brisasParent, vector<ImVec4> paletaGeral) {
     // Configura a brisa e defini o ícone
     brisasAtivas = brisasParent;
     camera = 1; // 0 = camera RGB (default) | 1 = camera Depth
@@ -52,9 +52,9 @@ void MatrizBrisa::draw() {
 
 void MatrizBrisa::desenhaColunas(int brilho, int width, int height, int x, int y, int gapX, int gapY) {
     int altura = brilho;
-    ofColor corPilar = coresPaleta->at(0);
-    ofColor corQuadrado = coresPaleta->at(1);
-    ofColor corBorda = coresPaleta->at(2);
+    ofColor corPilar = coresPaleta[0];
+    ofColor corQuadrado = coresPaleta[1];
+    ofColor corBorda = coresPaleta[2];
 
     ofColor corPilarEscuro = corPilar;
     corPilarEscuro.setBrightness(100); // Escurece o lado do pilar
@@ -94,7 +94,7 @@ void MatrizBrisa::desenhaColunas(int brilho, int width, int height, int x, int y
 void MatrizBrisa::desenhaPixels(int brilho, int width, int height, int x,int y, int gapX, int gapY) {
     if (brilho > 10) {
         // sorteia cor desse quadrado
-        ofColor corQuad = coresPaleta->at((int)ofRandom(0, coresPaleta->size() - 1));
+        ofColor corQuad = coresPaleta[(int)ofRandom(0, coresPaleta.size() - 1)];
         corQuad.setBrightness(brilho);
         ofSetColor(corQuad);
     }
@@ -102,12 +102,6 @@ void MatrizBrisa::desenhaPixels(int brilho, int width, int height, int x,int y, 
         ofSetColor(0, 0, 0, 0);
     }
     ofDrawRectangle(x * (WIDTH / (float)width), y * (HEIGHT / (float)height), gapX* (WIDTH / (float)width), gapY*(HEIGHT / (float)height));
-}
-
-void MatrizBrisa::desenhaMiniatura(int i) {
-    imgBtn.setFromPixels(pixelsBrisa);
-    imgBtn.draw(0,i*150,200,150);
-    fonteKinect->fboBrisa.draw(200,i*150,200,150);
 }
 
 void MatrizBrisa::drawControles(int iBrisa) {
@@ -119,5 +113,20 @@ void MatrizBrisa::drawControles(int iBrisa) {
 
     ImGui::Checkbox("Limpa Frames", &clearFrames);
 
+    if (ImGui::CollapsingHeader("Paleta de cores")) {
+        for (int i = 0; i < coresPaleta.size(); i++) {
+            string nomeCor = "Cor " + to_string(i + 1);
+            ImGui::ColorEdit4(nomeCor.c_str(), (float*)&coresPaleta[i]);
+            ImGui::SameLine();
+            nomeCor = "[X] Excluir " + to_string(i + 1);
+            if (ImGui::Button(nomeCor.c_str())) { coresPaleta.erase(coresPaleta.begin() + i); }
+        }
+
+        if (ImGui::Button(" + ")) {
+            coresPaleta.push_back(ofColor::fromHex(0xC0126D));
+        }
+    }
+    
     fonteKinect->drawControles();
+    fonteKinect->fboBrisa.draw(504,504,308,231);
 }

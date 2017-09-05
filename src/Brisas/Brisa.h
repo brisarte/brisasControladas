@@ -17,7 +17,6 @@ class Brisa {
 
         string iconPath;
         GLuint btnConfigBrisa; // Botão pra mostrar as configs
-        bool configBrisa;
         ofFbo fboBrisa;
         GLuint pixelsBtn;
         ofPixels pixelsBrisa;
@@ -36,7 +35,7 @@ class Brisa {
 
         virtual void drawControles(int iBrisa);
         void excluiBrisa(int iBrisa);
-        virtual void desenhaMiniatura(int i);
+        virtual void desenhaMiniatura(int i, bool focada);
         void desenhaJanela(int i);
 
         void listaShaders();
@@ -132,7 +131,7 @@ class MatrizBrisa : public Brisa {
     int camera;
 
     public:
-    MatrizBrisa(ofxKinect *kinectGlobal, vector<Brisa*> *brisasParent, vector<ImVec4> *coresPaleta);
+    MatrizBrisa(ofxKinect *kinectGlobal, vector<Brisa*> *brisasParent, vector<ImVec4> coresPaleta);
     void draw();
     void update(float dt);
 
@@ -145,7 +144,7 @@ class MatrizBrisa : public Brisa {
     ofPixels grayPixels;
     int intervaloX, intervaloY;
 
-    vector<ImVec4> *coresPaleta;
+    vector<ImVec4> coresPaleta;
 
     ofxCvGrayscaleImage grayImage, blurGray;
     FonteKinect* fonteKinect;

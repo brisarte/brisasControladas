@@ -83,12 +83,6 @@ void SombraBrisa::draw() {
     aplicarShader();
 }
 
-void SombraBrisa::desenhaMiniatura(int i) {
-    imgBtn.setFromPixels(pixelsBrisa);
-    imgBtn.draw(0,i*150,200,150);
-    fonteKinect->fboBrisa.draw(200,i*150,200,150);
-}
-
 void SombraBrisa::drawControles(int iBrisa) {
     ImGui::ColorEdit4("Base", (float*)&corBrisa);
     ImGui::ColorEdit4("Complementar", (float*)&corComplementar);
@@ -101,4 +95,6 @@ void SombraBrisa::drawControles(int iBrisa) {
     ImGui::Checkbox("Limpa Frames", &clearFrames);
 
     fonteKinect->drawControles();
+
+    fonteKinect->fboBrisa.draw(504,504,308,231);
 }

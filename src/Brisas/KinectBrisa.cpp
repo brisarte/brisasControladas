@@ -44,12 +44,6 @@ void KinectBrisa::draw() {
     aplicarShader();
 }
 
-void KinectBrisa::desenhaMiniatura(int i) {
-    imgBtn.setFromPixels(pixelsBrisa);
-    imgBtn.draw(0,i*150,200,150);
-    fonteKinect->fboBrisa.draw(200,i*150,200,150);
-}
-
 void KinectBrisa::drawControles(int iBrisa) {
     ImGui::Checkbox("Liga Fade", &clearFrames);
     if(clearFrames){
@@ -64,4 +58,6 @@ void KinectBrisa::drawControles(int iBrisa) {
 
     fonteKinect->drawControles();
     desenharControlesShader();
+
+    fonteKinect->fboBrisa.draw(504,504,308,231);
 }
