@@ -35,7 +35,7 @@ class Brisa {
 
         virtual void drawControles(int iBrisa);
         void excluiBrisa(int iBrisa);
-        virtual void desenhaMiniatura(int i, bool focada);
+        virtual void desenhaMiniatura(int i, int j, bool focada);
         void desenhaJanela(int i);
 
         void listaShaders();
@@ -67,7 +67,7 @@ class FonteKinect : public Brisa {
 
     void ligaKinect();
     void desligaKinect();
-    int iBlur,iErode,iDilate;
+    int iBlurH,iBlur,iErode,iDilate;
     int iRastro;
 
     void drawControles();
@@ -137,12 +137,15 @@ class MatrizBrisa : public Brisa {
 
     void desenhaMiniatura(int i);
     void drawControles(int iBrisa);
+    void desenhaPonto(int brilho, int width, int height, int x, int y, int gapX, int gapY);
     void desenhaPixels(int brilho, int width, int height, int x, int y, int gapX, int gapY);
     void desenhaColunas(int brilho, int width, int height, int x, int y, int gapX, int gapY);
     bool blurKinect, desenhaBlur, mirrorHorizontal, mirrorVertical;
     float brightnessGray, contrastGray;
     ofPixels grayPixels;
     int intervaloX, intervaloY;
+    bool intercalaPontos;
+    int tipoMatriz;
 
     vector<ImVec4> coresPaleta;
 

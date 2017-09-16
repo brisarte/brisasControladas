@@ -42,7 +42,7 @@ void GuiApp::update(){
 }
 
 void GuiApp::draw() {
-    ofBackground(0, 0, 0);
+    ofBackground(100, 100, 100);
 
     gui.begin();
     adicionaBrisa();
@@ -91,6 +91,11 @@ void GuiApp::draw() {
         if ( i == iBrisaFocada ) {
             brisasAtivas[i]->desenhaJanela(i);
         }
+    }
+
+    for (int i = 0; i < timeline0.size(); i++)
+    {
+        timeline0[i]->desenhaMiniatura(i, focada);
     }
 
     ImGui::End();

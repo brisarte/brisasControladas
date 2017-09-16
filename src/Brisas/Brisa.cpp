@@ -31,7 +31,7 @@ void Brisa::draw() {
 void Brisa::drawControles(int iBrisa) {
 }
 
-void Brisa::desenhaMiniatura(int i, bool ativa) {
+void Brisa::desenhaMiniatura(int i, int j, bool ativa) {
     int widthMiniatura = 160;
     int heightMiniatura = 120;
     int border = 2;
