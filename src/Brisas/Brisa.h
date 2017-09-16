@@ -35,7 +35,7 @@ class Brisa {
 
         virtual void drawControles(int iBrisa);
         void excluiBrisa(int iBrisa);
-        virtual void desenhaMiniatura(int i, int j, bool focada);
+        virtual void desenhaMiniatura(int i, bool focada);
         void desenhaJanela(int i);
 
         void listaShaders();
