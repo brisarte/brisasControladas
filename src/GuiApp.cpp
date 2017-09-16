@@ -95,6 +95,7 @@ void GuiApp::draw() {
 
     for (int i = 0; i < timeline0.size(); i++)
     {
+        bool focada = false;
         timeline0[i]->desenhaMiniatura(i, focada);
     }
 
