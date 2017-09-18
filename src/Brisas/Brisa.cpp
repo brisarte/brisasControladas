@@ -13,6 +13,7 @@ void Brisa::setup() {
 
     iBrisaShader = 0;
 
+    opacidade = 0;
     // Inicializa variaveis de distorções
     brilhoBrisa = contrasteBrisa = 0.5;
     deslocX = deslocY = 0;
@@ -55,16 +56,17 @@ void Brisa::desenhaJanela(int i) {
     text += std::to_string(i);
 
     
-    ImGui::SetNextWindowSize(ofVec2f(500,248), ImGuiSetCond_Always);
-    ImGui::SetNextWindowPos(ofVec2f(0,500), ImGuiSetCond_Always);
+    ImGui::SetNextWindowSize(ofVec2f(500,548), ImGuiSetCond_Once);
+    ImGui::SetNextWindowPos(ofVec2f(400,0), ImGuiSetCond_Once);
     string titulo = "Configurações Brisa #" + to_string(i+1);
     ImGuiWindowFlags window_flags = 0;
   //  window_flags |= ImGuiWindowFlags_NoResize;
     window_flags |= ImGuiWindowFlags_NoCollapse;
-    window_flags |= ImGuiWindowFlags_NoMove;
+  //  window_flags |= ImGuiWindowFlags_NoMove;
     bool janelaAberta = true;
     ImGui::Begin(titulo.c_str(), &janelaAberta, window_flags );
 
+    ImGui::SliderInt("Opacidade", &opacidade, 0, 255);
     drawControles(i);
 
     if (ImGui::Button("Trazer pra frente")) { trazerFrente(i); } ImGui::SameLine();
@@ -192,12 +194,13 @@ void Brisa::aplicarShader() {
             shaderBrisa.setUniformTexture("texture1", brisasAtivas->at(iBrisaShader)->fboBrisa.getTextureReference(), 1); //"1" means that it is texture 1
         }
 
-        ofSetColor(255, 255, 255);
+        ofSetColor(255, 255, 255, opacidade);
         fboBrisa.draw(0, 0);
 
         shaderBrisa.end();
     }
     else {
+        ofSetColor(255, 255, 255, opacidade);
         fboBrisa.draw(0, 0);
     }
 }

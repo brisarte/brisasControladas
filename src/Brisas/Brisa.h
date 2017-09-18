@@ -48,6 +48,7 @@ class Brisa {
         bool rotacionaSozinho, torceSozinho;
         float proporcao, rotacao;
         int deslocX, deslocY;
+        int opacidade;
         void desenharControlesDistorcao();
 
         void trazerFrente( int iBrisa ), esconderTras( int iBrisa );
