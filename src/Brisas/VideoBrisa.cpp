@@ -57,10 +57,6 @@ void VideoBrisa::drawControles(int iBrisa) {
         listaVideos(); 
         ImGui::EndPopup();
     }
-
-    desenharControlesShader();
-
-    if (ImGui::Button("Excluir Brisa")) { excluiBrisa(iBrisa); } 
 }
 
 

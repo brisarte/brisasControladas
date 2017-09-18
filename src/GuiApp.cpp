@@ -42,50 +42,10 @@ void GuiApp::update(){
 }
 
 void GuiApp::draw() {
-    ofBackground(0, 0, 0);
+    ofBackground(100, 100, 100);
 
     gui.begin();
-
-
-    ImGui::Text("Adicione uma camada de brisa:");
-    bool criaKinect = ImGui::ImageButton((ImTextureID)(uintptr_t)btnCriaKinect, ImVec2(120, 90)); ImGui::SameLine();
-    bool criaMatriz = ImGui::ImageButton((ImTextureID)(uintptr_t)btnCriaMatriz, ImVec2(120, 90)); ImGui::SameLine();
-    bool criaSombras = ImGui::ImageButton((ImTextureID)(uintptr_t)btnCriaSombras, ImVec2(120, 90));
-    bool criaVideo = ImGui::ImageButton((ImTextureID)(uintptr_t)btnCriaVideo, ImVec2(120, 90)); ImGui::SameLine();
-    bool criaGif = ImGui::ImageButton((ImTextureID)(uintptr_t)btnCriaGif, ImVec2(120, 90)); ImGui::SameLine();
-    bool criaImg = ImGui::ImageButton((ImTextureID)(uintptr_t)btnCriaImg, ImVec2(120, 90));
-    bool criaPoligono = ImGui::ImageButton((ImTextureID)(uintptr_t)btnCriaPoligono, ImVec2(120, 90)); ImGui::SameLine();
-    bool criaMandala = ImGui::ImageButton((ImTextureID)(uintptr_t)btnCriaMandala, ImVec2(120, 90)); ImGui::SameLine();
-    bool criaBorda = ImGui::ImageButton((ImTextureID)(uintptr_t)btnCriaBorda, ImVec2(120, 90));
-
-    if (criaVideo) {
-        cout << "btn pressionado: criaVideo";
-        brisasAtivas.push_back(new VideoBrisa(&brisasAtivas));
-    }
-    if (criaPoligono) {
-        cout << "btn pressionado: criaPoligono";
-        brisasAtivas.push_back(new PoligonoBrisa(&brisasAtivas, &coresPaleta));
-    }
-    if (criaKinect) {
-        cout << "btn pressionado: criaKinect";
-        brisasAtivas.push_back(new KinectBrisa(&kinectGlobal, &brisasAtivas));
-    }
-    if (criaImg) {
-        cout << "btn pressionado: criaImg";
-        brisasAtivas.push_back(new ImagemBrisa(&brisasAtivas));
-    }
-    if (criaGif) {
-        cout << "btn pressionado: criaGif";
-        brisasAtivas.push_back(new GifBrisa(&brisasAtivas));
-    }
-    if (criaMatriz) {
-        cout << "btn pressionado: criaMatriz";
-        brisasAtivas.push_back(new MatrizBrisa(&kinectGlobal, &brisasAtivas, &coresPaleta));
-    }
-    if (criaSombras) {
-        cout << "btn pressionado: criaSombras";
-        brisasAtivas.push_back(new SombraBrisa(&kinectGlobal, &brisasAtivas, &coresPaleta));
-    }
+    adicionaBrisa();
 
     ImGui::SetNextWindowSize(ofVec2f(20, 10), ImGuiSetCond_FirstUseEver);
     ImGui::Begin("Controles Gerais");
@@ -116,7 +76,6 @@ void GuiApp::draw() {
         }
     }
 
-
     ImGui::Text("Blend Mode");
     ImGui::RadioButton("alpha", &iBlend, 1); ImGui::SameLine();
     ImGui::RadioButton("add", &iBlend, 2); ImGui::SameLine();
@@ -126,14 +85,66 @@ void GuiApp::draw() {
     for (int i = 0; i < brisasAtivas.size(); i++)
     {
         if( desenhaMiniaturas ) {
-            brisasAtivas[i]->desenhaMiniatura(i);
+            bool focada = ( i == iBrisaFocada );
+            brisasAtivas[i]->desenhaMiniatura(i, focada);
         }
-        brisasAtivas[i]->desenhaJanela(i);
+        if ( i == iBrisaFocada ) {
+            brisasAtivas[i]->desenhaJanela(i);
+        }
+    }
+
+    for (int i = 0; i < timeline0.size(); i++)
+    {
+        bool focada = false;
+        timeline0[i]->desenhaMiniatura(i, focada);
     }
 
     ImGui::End();
 
     gui.end();
+
+}
+
+void GuiApp::adicionaBrisa() {
+    ImGui::Text("Adicione uma camada de brisa:");
+    bool criaKinect = ImGui::ImageButton((ImTextureID)(uintptr_t)btnCriaKinect, ImVec2(120, 90)); ImGui::SameLine();
+    bool criaMatriz = ImGui::ImageButton((ImTextureID)(uintptr_t)btnCriaMatriz, ImVec2(120, 90)); ImGui::SameLine();
+    bool criaSombras = ImGui::ImageButton((ImTextureID)(uintptr_t)btnCriaSombras, ImVec2(120, 90)); ImGui::SameLine();
+    bool criaVideo = ImGui::ImageButton((ImTextureID)(uintptr_t)btnCriaVideo, ImVec2(120, 90));
+    bool criaGif = ImGui::ImageButton((ImTextureID)(uintptr_t)btnCriaGif, ImVec2(120, 90)); ImGui::SameLine();
+    bool criaImg = ImGui::ImageButton((ImTextureID)(uintptr_t)btnCriaImg, ImVec2(120, 90)); ImGui::SameLine();
+    bool criaPoligono = ImGui::ImageButton((ImTextureID)(uintptr_t)btnCriaPoligono, ImVec2(120, 90)); 
+//    bool criaMandala = ImGui::ImageButton((ImTextureID)(uintptr_t)btnCriaMandala, ImVec2(120, 90)); ImGui::SameLine();
+//    bool criaBorda = ImGui::ImageButton((ImTextureID)(uintptr_t)btnCriaBorda, ImVec2(120, 90));
+
+    if (criaVideo) {
+        cout << "btn pressionado: criaVideo";
+        brisasAtivas.push_back(new VideoBrisa(&brisasAtivas));
+    }
+    if (criaPoligono) {
+        cout << "btn pressionado: criaPoligono";
+        brisasAtivas.push_back(new PoligonoBrisa(&brisasAtivas, &coresPaleta));
+    }
+    if (criaKinect) {
+        cout << "btn pressionado: criaKinect";
+        brisasAtivas.push_back(new KinectBrisa(&kinectGlobal, &brisasAtivas));
+    }
+    if (criaImg) {
+        cout << "btn pressionado: criaImg";
+        brisasAtivas.push_back(new ImagemBrisa(&brisasAtivas));
+    }
+    if (criaGif) {
+        cout << "btn pressionado: criaGif";
+        brisasAtivas.push_back(new GifBrisa(&brisasAtivas));
+    }
+    if (criaMatriz) {
+        cout << "btn pressionado: criaMatriz";
+        brisasAtivas.push_back(new MatrizBrisa(&kinectGlobal, &brisasAtivas, coresPaleta));
+    }
+    if (criaSombras) {
+        cout << "btn pressionado: criaSombras";
+        brisasAtivas.push_back(new SombraBrisa(&kinectGlobal, &brisasAtivas, &coresPaleta));
+    }
 
 }
 
@@ -150,3 +161,13 @@ void GuiApp::desligaKinect() {
     kinectGlobal.close();
 }
 
+void GuiApp::mousePressed(int x, int y, int iButton) {
+    int widthMiniatura = 160;
+    int heightMiniatura = 120;
+    int qtd = 4;
+    if( y < heightMiniatura*qtd && x < widthMiniatura ) {
+        iBrisaFocada = floor( (float)y/heightMiniatura );
+        cout << "\nx:" << x << " y:"<<y<<" btn:"<<iButton;
+        cout << " - Brisa Focada: " << iBrisaFocada;
+    }
+}

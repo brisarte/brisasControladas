@@ -1,7 +1,6 @@
 #include "Brisa.h"
 
 void Brisa::setup() {
-    configBrisa = true;
     //btnConfigBrisa = gui->loadTexture(iconPath);fboBrisa.clear();
     pixelsBrisa.allocate(WIDTH,HEIGHT, OF_IMAGE_COLOR);
     fboBrisa.allocate(WIDTH, HEIGHT);
@@ -14,6 +13,7 @@ void Brisa::setup() {
 
     iBrisaShader = 0;
 
+    opacidade = 0;
     // Inicializa variaveis de distorções
     brilhoBrisa = contrasteBrisa = 0.5;
     deslocX = deslocY = 0;
@@ -32,9 +32,21 @@ void Brisa::draw() {
 void Brisa::drawControles(int iBrisa) {
 }
 
-void Brisa::desenhaMiniatura(int i) {
+void Brisa::desenhaMiniatura(int i, bool ativa) {
+    int widthMiniatura = 160;
+    int heightMiniatura = 120;
+    int border = 2;
     imgBtn.setFromPixels(pixelsBrisa);
-    imgBtn.draw(0,i*150,200,150);
+    if(ativa) {
+        ofSetColor(205, 100, 100);
+    } else {
+        ofSetColor(30);
+    }
+    ofRect(0,i*(heightMiniatura+border*2),widthMiniatura+border*2,heightMiniatura+border*2);
+    ofSetColor(0);
+    ofRect(2,i*(heightMiniatura+border*2)+border,widthMiniatura,heightMiniatura);
+    ofSetColor(255);
+    imgBtn.draw(2,i*(heightMiniatura+border*2)+border,widthMiniatura,heightMiniatura);
 }
 
 void Brisa::desenhaJanela(int i) {
@@ -43,23 +55,26 @@ void Brisa::desenhaJanela(int i) {
     std::string text = "Brisa ";
     text += std::to_string(i);
 
-    if (ImGui::Button( text.c_str() )) { 
-        configBrisa ^= 1;
-        cout << "\nBrisa " << i << ": configBrisa=" << configBrisa;
-    }
+    
+    ImGui::SetNextWindowSize(ofVec2f(500,548), ImGuiSetCond_Once);
+    ImGui::SetNextWindowPos(ofVec2f(400,0), ImGuiSetCond_Once);
+    string titulo = "Configurações Brisa #" + to_string(i+1);
+    ImGuiWindowFlags window_flags = 0;
+  //  window_flags |= ImGuiWindowFlags_NoResize;
+    window_flags |= ImGuiWindowFlags_NoCollapse;
+  //  window_flags |= ImGuiWindowFlags_NoMove;
+    bool janelaAberta = true;
+    ImGui::Begin(titulo.c_str(), &janelaAberta, window_flags );
 
-    if(configBrisa) {
-        ImGui::SetNextWindowSize(ofVec2f(300,200), ImGuiSetCond_FirstUseEver);
-        string titulo = "Configurações Brisa #" + to_string(i+1);
-        ImGui::Begin(titulo.c_str(), &configBrisa);
+    ImGui::SliderInt("Opacidade", &opacidade, 0, 255);
+    drawControles(i);
 
-        drawControles(i);
+    if (ImGui::Button("Trazer pra frente")) { trazerFrente(i); } ImGui::SameLine();
+    if (ImGui::Button("Esconder pra trás")) { esconderTras(i); } 
+    desenharControlesShader();
+    if (ImGui::Button("Excluir Brisa")) { excluiBrisa(i); } 
 
-        if (ImGui::Button("Trazer pra frente")) { trazerFrente(i); } ImGui::SameLine();
-        if (ImGui::Button("Esconder pra trás")) { esconderTras(i); } 
-        if (ImGui::Button("Excluir Brisa")) { excluiBrisa(i); } 
-        ImGui::End();
-    }
+    ImGui::End();
 }
 
 void Brisa::esconderTras( int iBrisa ) {
@@ -179,12 +194,13 @@ void Brisa::aplicarShader() {
             shaderBrisa.setUniformTexture("texture1", brisasAtivas->at(iBrisaShader)->fboBrisa.getTextureReference(), 1); //"1" means that it is texture 1
         }
 
-        ofSetColor(255, 255, 255);
+        ofSetColor(255, 255, 255, opacidade);
         fboBrisa.draw(0, 0);
 
         shaderBrisa.end();
     }
     else {
+        ofSetColor(255, 255, 255, opacidade);
         fboBrisa.draw(0, 0);
     }
 }

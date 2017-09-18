@@ -1,22 +1,22 @@
 #include "Brisa.h"
 
-MatrizBrisa::MatrizBrisa(ofxKinect *kinectGlobal, vector<Brisa*> *brisasParent, vector<ImVec4> *paletaGeral) {
+MatrizBrisa::MatrizBrisa(ofxKinect *kinectGlobal, vector<Brisa*> *brisasParent, vector<ImVec4> paletaGeral) {
     // Configura a brisa e defini o ícone
     brisasAtivas = brisasParent;
     camera = 1; // 0 = camera RGB (default) | 1 = camera Depth
     setup();
 
     desenhaBlur = true;
-    blurKinect = false;
     brightnessGray = 0.5;
     contrastGray = 0.95;
     intervaloX = 50;
-    intervaloY = 46;
 
     fonteKinect = new FonteKinect(kinectGlobal, 2);
     fonteKinect->setBlur(20);
 
     coresPaleta = paletaGeral;
+    intercalaPontos = true;
+    tipoMatriz = 2;
 }
 
 void MatrizBrisa::update( float dt ) {
@@ -26,6 +26,7 @@ void MatrizBrisa::update( float dt ) {
     if (clearFrames) {
         ofClear(255,255,255, 0);
     }
+    intervaloY = (int)intervaloX*0.92;
 
     fonteKinect->pixelsBrisa.setImageType(OF_IMAGE_GRAYSCALE);
     grayImage.setFromPixels(fonteKinect->pixelsBrisa);
@@ -33,11 +34,44 @@ void MatrizBrisa::update( float dt ) {
     grayPixels = grayImage.getPixels();
     int grayWidth = grayImage.getWidth();
     int grayHeight = grayImage.getHeight();
-    for (int x = 0; x < grayWidth; x += intervaloX) {
-        for (int y = 0; y < grayHeight; y += intervaloY) {
-            int index = y*grayWidth + x; // Pega brilho do pixel[x,y]
-            int brilho = grayPixels[index];
-            desenhaPixels(brilho, grayWidth, grayHeight, x, y, intervaloX, intervaloY);
+    int brilho = 100;
+    int index = 0;
+    int y = 0;
+    int x = 0;
+    for (y = 0; y < grayHeight; y += intervaloY) {
+        for (x = 0; x < grayWidth; x += intervaloX) {
+            index = y*grayWidth + x; // Pega brilho do pixel[x,y]
+            brilho = grayPixels[index];
+            desenhaPonto(brilho, grayWidth, grayHeight, x, y, intervaloX, intervaloY);
+        }
+        
+        if(intercalaPontos) {
+            for (x = intervaloX/2; x < grayWidth; x += intervaloX) {
+                index = y*grayWidth + x; // Pega brilho do pixel[x,y]
+                brilho = grayPixels[index];
+                desenhaPonto(brilho, grayWidth, grayHeight, x, y+intervaloY/2, intervaloX, intervaloY);
+            }
+            //Coluna extra
+            brilho = (grayPixels[index]  + grayPixels[index-1] + grayPixels[index-2])/3;
+            desenhaPonto(brilho, grayWidth, grayHeight, x, y+intervaloY/2, intervaloX, intervaloY);
+        }
+    }
+    // Coloca linhas extras
+    int ultimoY = y - intervaloY;
+    for (; y < (grayHeight+(intervaloY*18)); y += intervaloY) {
+        for (x = 0; x < grayWidth; x += intervaloX) {
+            index = ultimoY*grayWidth + x; // Pega brilho do pixel[x,y]
+            brilho = grayPixels[index] ;
+            desenhaPonto(brilho, grayWidth, grayHeight, x, y, intervaloX, intervaloY);
+        }
+        if(intercalaPontos) {
+            for (x = intervaloX/2; x < grayWidth; x += intervaloX) {
+                index = ultimoY*grayWidth + x; // Pega brilho do pixel[x,y]
+                brilho = grayPixels[index] ;
+                desenhaPonto(brilho, grayWidth, grayHeight, x, y+intervaloY/2, intervaloX, intervaloY);
+            }
+            brilho = (grayPixels[index]  + grayPixels[index-1] + grayPixels[index-2])/3;
+            desenhaPonto(brilho, grayWidth, grayHeight, x, y+intervaloY/2, intervaloX, intervaloY);
         }
     }
 
@@ -49,12 +83,21 @@ void MatrizBrisa::draw() {
     aplicarShader();
 }
 
+void MatrizBrisa::desenhaPonto(int brilho, int width, int height, int x, int y, int gapX, int gapY) {
+    if (tipoMatriz == 1) {
+        desenhaPixels(brilho, width, height, x, y, gapX, gapY);
+    } else {
+        desenhaColunas(brilho, width, height, x, y, gapX, gapY);
+    }
+}
 
 void MatrizBrisa::desenhaColunas(int brilho, int width, int height, int x, int y, int gapX, int gapY) {
     int altura = brilho;
-    ofColor corPilar = coresPaleta->at(0);
-    ofColor corQuadrado = coresPaleta->at(1);
-    ofColor corBorda = coresPaleta->at(2);
+    ofColor corPilar = coresPaleta[0];
+    ofColor corQuadrado = coresPaleta[1];
+    //corQuadrado.setBrightness(((float)x/width)*255);
+    //corQuadrado.setHueAngle(((float)y/height)*360);
+    ofColor corBorda = coresPaleta[2];
 
     ofColor corPilarEscuro = corPilar;
     corPilarEscuro.setBrightness(100); // Escurece o lado do pilar
@@ -63,7 +106,8 @@ void MatrizBrisa::desenhaColunas(int brilho, int width, int height, int x, int y
 
     glPushMatrix();
 
-    glTranslatef(x*gapX, y*gapX * 0.81 - altura, 0);
+    //glTranslatef(x*gapX * (WIDTH / (float)width), y*gapY* (HEIGHT / (float)height) * 0.81 - altura, 0);
+    glTranslatef(x, y - altura, 0);
     ofSetColor(corPilar);
 
     ofFill();
@@ -94,7 +138,7 @@ void MatrizBrisa::desenhaColunas(int brilho, int width, int height, int x, int y
 void MatrizBrisa::desenhaPixels(int brilho, int width, int height, int x,int y, int gapX, int gapY) {
     if (brilho > 10) {
         // sorteia cor desse quadrado
-        ofColor corQuad = coresPaleta->at((int)ofRandom(0, coresPaleta->size() - 1));
+        ofColor corQuad = coresPaleta[floor(ofRandom(0, coresPaleta.size()))];
         corQuad.setBrightness(brilho);
         ofSetColor(corQuad);
     }
@@ -104,20 +148,31 @@ void MatrizBrisa::desenhaPixels(int brilho, int width, int height, int x,int y, 
     ofDrawRectangle(x * (WIDTH / (float)width), y * (HEIGHT / (float)height), gapX* (WIDTH / (float)width), gapY*(HEIGHT / (float)height));
 }
 
-void MatrizBrisa::desenhaMiniatura(int i) {
-    imgBtn.setFromPixels(pixelsBrisa);
-    imgBtn.draw(0,i*150,200,150);
-    fonteKinect->fboBrisa.draw(200,i*150,200,150);
-}
-
 void MatrizBrisa::drawControles(int iBrisa) {
 
-    ImGui::Checkbox("blur Kinect", &blurKinect);
-
-    ImGui::SliderInt("intervalo X", &intervaloX, 2, 100);
-    ImGui::SliderInt("intervalo Y", &intervaloY, 2, 100);
+    ImGui::SliderInt("Tamanho quadrado", &intervaloX, 2, 100);
 
     ImGui::Checkbox("Limpa Frames", &clearFrames);
+    ImGui::Checkbox("Intercala", &intercalaPontos);
 
+    ImGui::Text("Tipo Matriz");
+    ImGui::RadioButton("quadrados", &tipoMatriz, 1); ImGui::SameLine();
+    ImGui::RadioButton("colunas", &tipoMatriz, 2); 
+
+    if (ImGui::CollapsingHeader("Paleta de cores")) {
+        for (int i = 0; i < coresPaleta.size(); i++) {
+            string nomeCor = "Cor " + to_string(i + 1);
+            ImGui::ColorEdit4(nomeCor.c_str(), (float*)&coresPaleta[i]);
+            ImGui::SameLine();
+            nomeCor = "[X] Excluir " + to_string(i + 1);
+            if (ImGui::Button(nomeCor.c_str())) { coresPaleta.erase(coresPaleta.begin() + i); }
+        }
+
+        if (ImGui::Button(" + ")) {
+            coresPaleta.push_back(ofColor::fromHex(0xC0126D));
+        }
+    }
+    
     fonteKinect->drawControles();
+    fonteKinect->fboBrisa.draw(504,504,308,231);
 }

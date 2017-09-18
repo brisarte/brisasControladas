@@ -6,46 +6,24 @@
 #include "ofxKinect.h"
 #include "Brisas/Brisa.h"
 
-
-//classe da Brisa
-class configsBrisa {
-
-public: 
-    int tipoBrisa;
-
-    int iShader;
-    string urlpath;
-    ofVideoPlayer video;
-    float hOriginal, wOriginal; //tamanhos do arquivo
-    float hVideo, wVideo; //tamanhos novos
-    ofFbo fboKinect;
-
-    // Brisa Contorno
-
-    // Brisa Gif
-    string gifPath;
-    string urlpasta;
-    vector<ofTexture> listaImg;
-
-    // Brisa Poligono
-    ofColor cor1,cor2;
-    int vertices;
-
-};
-
 class GuiApp: public ofBaseApp {
     public:
         void setup();
         void update();
         void draw();
+        void mousePressed(int x, int y, int iButton) ;
 
         void ligaKinect();
         void desligaKinect();
 
+        void adicionaBrisa();
+
         ofxImGui::Gui gui;
 
+        vector<Brisa*> timeline0, timeline1, timeline2, timeline3;
         vector<Brisa*> brisas;
         vector<Brisa*> brisasAtivas;
+        int iBrisaFocada;
         ofxKinect kinectGlobal;
         int anguloKinect;
 
@@ -56,5 +34,4 @@ class GuiApp: public ofBaseApp {
         ofBlendMode blendMode;
         int iBlend;
         bool desenhaMiniaturas;
-
 };
