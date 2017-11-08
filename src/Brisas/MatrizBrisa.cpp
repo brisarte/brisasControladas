@@ -125,6 +125,8 @@ void MatrizBrisa::desenhaColunas(int brilho, int width, int height, int x, int y
 
     glScalef(1, 0.8, 1);
     glRotatef(45, 0, 0, 1);
+    int angle = corQuadrado.getSaturation();
+    corQuadrado.setSaturation(angle+altura/3);
     ofSetColor(corQuadrado);
     ofFill();
     ofDrawRectangle(0, 0, tamanhoCol, tamanhoCol);
