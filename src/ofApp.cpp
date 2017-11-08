@@ -39,11 +39,13 @@ void ofApp::update(){
 //--------------------------------------------------------------
 void ofApp::draw(){
     ofBackground(0, 0, 0);
+    ofEnableAntiAliasing();
     // Me mostra essas brisa
     for( int i = brisasAtivas.size()-1; i >= 0; i-- )
     {
         brisasAtivas[i]->draw();
     }
+    ofEnableAntiAliasing();
 }
 
 //--------------------------------------------------------------
