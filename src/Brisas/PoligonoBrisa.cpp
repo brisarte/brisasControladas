@@ -1,9 +1,10 @@
 #include "Brisa.h"
 
-PoligonoBrisa::PoligonoBrisa(vector<Brisa*> *brisasParent, vector<ImVec4> *coresPaleta) {
+PoligonoBrisa::PoligonoBrisa(vector<Brisa*> *brisasParent, vector<ImVec4> *coresPaleta, ofxOscReceiver *receiver) {
     setup();
     // Configura a brisa e defini o ícone
     brisasAtivas = brisasParent;
+    receiverOSC = receiver;
 
     vertices = 6;
     trocaVertices = true;

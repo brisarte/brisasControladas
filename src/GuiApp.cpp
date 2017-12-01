@@ -25,6 +25,8 @@ void GuiApp::setup(){
 
     iBlend = 2;
     anguloKinect = 0;
+
+    receiverOSC.setup( PORT_OSC );
 }
 
 void GuiApp::update(){
@@ -119,31 +121,31 @@ void GuiApp::adicionaBrisa() {
 
     if (criaVideo) {
         cout << "btn pressionado: criaVideo";
-        brisasAtivas.push_back(new VideoBrisa(&brisasAtivas));
+        brisasAtivas.push_back(new VideoBrisa(&brisasAtivas, &receiverOSC));
     }
     if (criaPoligono) {
         cout << "btn pressionado: criaPoligono";
-        brisasAtivas.push_back(new PoligonoBrisa(&brisasAtivas, &coresPaleta));
+        brisasAtivas.push_back(new PoligonoBrisa(&brisasAtivas, &coresPaleta, &receiverOSC));
     }
     if (criaKinect) {
         cout << "btn pressionado: criaKinect";
-        brisasAtivas.push_back(new KinectBrisa(&kinectGlobal, &brisasAtivas));
+        brisasAtivas.push_back(new KinectBrisa(&kinectGlobal, &brisasAtivas, &receiverOSC));
     }
     if (criaImg) {
         cout << "btn pressionado: criaImg";
-        brisasAtivas.push_back(new ImagemBrisa(&brisasAtivas));
+        brisasAtivas.push_back(new ImagemBrisa(&brisasAtivas, &receiverOSC));
     }
     if (criaGif) {
         cout << "btn pressionado: criaGif";
-        brisasAtivas.push_back(new GifBrisa(&brisasAtivas));
+        brisasAtivas.push_back(new GifBrisa(&brisasAtivas, &receiverOSC));
     }
     if (criaMatriz) {
         cout << "btn pressionado: criaMatriz";
-        brisasAtivas.push_back(new MatrizBrisa(&kinectGlobal, &brisasAtivas, coresPaleta));
+        brisasAtivas.push_back(new MatrizBrisa(&kinectGlobal, &brisasAtivas, coresPaleta, &receiverOSC));
     }
     if (criaSombras) {
         cout << "btn pressionado: criaSombras";
-        brisasAtivas.push_back(new SombraBrisa(&kinectGlobal, &brisasAtivas, &coresPaleta));
+        brisasAtivas.push_back(new SombraBrisa(&kinectGlobal, &brisasAtivas, &coresPaleta, &receiverOSC));
     }
 
 }

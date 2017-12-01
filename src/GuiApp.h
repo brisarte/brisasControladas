@@ -5,6 +5,9 @@
 #include "ofxOpenCv.h"
 #include "ofxKinect.h"
 #include "Brisas/Brisa.h"
+#include "ofxOsc.h"
+
+#define PORT_OSC 9001
 
 class GuiApp: public ofBaseApp {
     public:
@@ -34,4 +37,5 @@ class GuiApp: public ofBaseApp {
         ofBlendMode blendMode;
         int iBlend;
         bool desenhaMiniaturas;
+        ofxOscReceiver receiverOSC;
 };

@@ -1,8 +1,9 @@
 #include "Brisa.h"
 
-GifBrisa::GifBrisa(vector<Brisa*> *brisasParent) {
+GifBrisa::GifBrisa(vector<Brisa*> *brisasParent, ofxOscReceiver *receiver) {
     setup();
     brisasAtivas = brisasParent;
+    receiverOSC = receiver;
     cout << brisasAtivas->size();
     fboBrisa.allocate(WIDTH, HEIGHT);
     fboBrisa.begin();

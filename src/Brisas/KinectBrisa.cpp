@@ -1,12 +1,13 @@
 #include "Brisa.h"
 
-KinectBrisa::KinectBrisa(ofxKinect *kinectGlobal, vector<Brisa*> *brisasParent) {
+KinectBrisa::KinectBrisa(ofxKinect *kinectGlobal, vector<Brisa*> *brisasParent, ofxOscReceiver *receiver) {
+    setup();
     // Configura a brisa e defini o ícone
     brisasAtivas = brisasParent;
+    receiverOSC = receiver;
     mirrorHorizontal = mirrorVertical = false;
     clearFrames = true;
     nivelFade = 20;
-    setup();
     ofSetBackgroundAuto(false);
     ligaContornos = true;
     fonteKinect = new FonteKinect(kinectGlobal, 2);

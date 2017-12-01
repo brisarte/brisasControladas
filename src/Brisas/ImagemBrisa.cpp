@@ -1,8 +1,9 @@
 #include "Brisa.h"
 
-ImagemBrisa::ImagemBrisa(vector<Brisa*> *brisasParent) {
+ImagemBrisa::ImagemBrisa(vector<Brisa*> *brisasParent, ofxOscReceiver *receiver) {
     setup();
     brisasAtivas = brisasParent;
+    receiverOSC = receiver;
     // Configura a brisa e defini o ícone
     fboBrisa.allocate(WIDTH, HEIGHT);
     fboBrisa.begin();
