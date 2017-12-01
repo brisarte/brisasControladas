@@ -1,10 +1,11 @@
 #include "Brisa.h"
 
-MatrizBrisa::MatrizBrisa(ofxKinect *kinectGlobal, vector<Brisa*> *brisasParent, vector<ImVec4> paletaGeral) {
+MatrizBrisa::MatrizBrisa(ofxKinect *kinectGlobal, vector<Brisa*> *brisasParent, vector<ImVec4> paletaGeral, ofxOscReceiver *receiver) {
+    setup();
     // Configura a brisa e defini o ícone
     brisasAtivas = brisasParent;
+    receiverOSC = receiver;
     camera = 1; // 0 = camera RGB (default) | 1 = camera Depth
-    setup();
 
     desenhaBlur = true;
     brightnessGray = 0.5;

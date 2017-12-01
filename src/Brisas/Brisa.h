@@ -7,6 +7,7 @@ const float HEIGHT = 768;
 #include "ofxImGui.h"
 #include "ofxOpenCv.h"
 #include "ofxKinect.h"
+#include "ofxOsc.h"
 
 
 class Brisa {
@@ -25,6 +26,8 @@ class Brisa {
 
         ofShader shaderBrisa;
         string fragShaderPath;
+        float p1Shader, p2Shader, p3Shader;
+        float minp1, maxp1, minp2, maxp2, minp3, maxp3;
         int iBrisaShader;
         bool ligaShader;
         bool clearFrames;
@@ -52,6 +55,8 @@ class Brisa {
         void desenharControlesDistorcao();
 
         void trazerFrente( int iBrisa ), esconderTras( int iBrisa );
+
+        ofxOscReceiver *receiverOSC;
 };
 
 class FonteKinect : public Brisa {
@@ -84,7 +89,7 @@ class KinectBrisa : public Brisa {
 
     float nivelFade;
     public:
-    KinectBrisa(ofxKinect *kinectGlobal, vector<Brisa*> *brisasParent);
+    KinectBrisa(ofxKinect *kinectGlobal, vector<Brisa*> *brisasParent, ofxOscReceiver *receiver);
     void draw();
     void update( float dt );
 
@@ -108,7 +113,7 @@ class SombraBrisa : public Brisa {
     int camera;
 
     public:
-    SombraBrisa(ofxKinect *kinectGlobal, vector<Brisa*> *brisasParent, vector<ImVec4> *coresPaleta);
+    SombraBrisa(ofxKinect *kinectGlobal, vector<Brisa*> *brisasParent, vector<ImVec4> *coresPaleta, ofxOscReceiver *receiver);
     void draw();
     void update(float dt);
 
@@ -132,7 +137,7 @@ class MatrizBrisa : public Brisa {
     int camera;
 
     public:
-    MatrizBrisa(ofxKinect *kinectGlobal, vector<Brisa*> *brisasParent, vector<ImVec4> coresPaleta);
+    MatrizBrisa(ofxKinect *kinectGlobal, vector<Brisa*> *brisasParent, vector<ImVec4> coresPaleta, ofxOscReceiver *receiver);
     void draw();
     void update(float dt);
 
@@ -158,7 +163,7 @@ class VideoBrisa : public Brisa {
     float heightDraw, widthDraw, heightOrig, widthOrig;
 
     public:
-    VideoBrisa(vector<Brisa*> *brisasParent);
+    VideoBrisa(vector<Brisa*> *brisasParent, ofxOscReceiver *receiver);
     void draw();
     void update(float dt);
 
@@ -179,7 +184,7 @@ class GifBrisa : public Brisa {
 
 
     public:
-    GifBrisa(vector<Brisa*> *brisasParent);
+    GifBrisa(vector<Brisa*> *brisasParent, ofxOscReceiver *receiver);
     void draw();
     void update(float dt);
 
@@ -197,7 +202,7 @@ class GifBrisa : public Brisa {
 class ImagemBrisa : public Brisa {
 
     public:
-        ImagemBrisa(vector<Brisa*> *brisasParent);
+        ImagemBrisa(vector<Brisa*> *brisasParent, ofxOscReceiver *receiver);
         void draw();
         void update(float dt);
 
@@ -217,7 +222,7 @@ class ImagemBrisa : public Brisa {
 class PoligonoBrisa : public Brisa {
 
     public:
-        PoligonoBrisa(vector<Brisa*> *brisasParent, vector<ImVec4> *coresPaleta);
+        PoligonoBrisa(vector<Brisa*> *brisasParent, vector<ImVec4> *coresPaleta, ofxOscReceiver *receiver);
         void draw();
         void update( float dt );
 

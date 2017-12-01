@@ -5,7 +5,7 @@
 #include "ofxKinect.h"
 #include "GuiApp.h"
 #include "Brisas/Brisa.h"
-
+#include "ofxOsc.h"
 
 class ofApp : public ofBaseApp{
 
@@ -32,4 +32,5 @@ class ofApp : public ofBaseApp{
         shared_ptr<ofAppBaseWindow> window;
         shared_ptr<ofBaseGLRenderer> gl;
 
+        ofxOscReceiver receiverOSC;
 };

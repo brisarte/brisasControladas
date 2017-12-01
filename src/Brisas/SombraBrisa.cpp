@@ -1,8 +1,9 @@
 #include "Brisa.h"
 
-SombraBrisa::SombraBrisa(ofxKinect *kinectGlobal, vector<Brisa*> *brisasParent, vector<ImVec4> *coresPaleta) {
-    brisasAtivas = brisasParent;
+SombraBrisa::SombraBrisa(ofxKinect *kinectGlobal, vector<Brisa*> *brisasParent, vector<ImVec4> *coresPaleta, ofxOscReceiver *receiver) {
     setup();
+    brisasAtivas = brisasParent;
+    receiverOSC = receiver;
 
     mirrorHorizontal = mirrorVertical = false;
     desenhaBlur = true;
